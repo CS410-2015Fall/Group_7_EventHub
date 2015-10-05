@@ -1,0 +1,14 @@
+<ion-view view-title="Dashboard" name="dashboard-view">
+  <ion-nav-buttons side="left">
+    <button class="button icon-left ion-refresh" ng-click="refresh()"></button>
+  </ion-nav-buttons>
+  <ion-nav-buttons side="right">
+    <button class="button icon-right ion-power" ng-click="logout()"></button>
+  </ion-nav-buttons>
+  
+  <ion-content class="padding">
+    <div class="row"><div class="col text-center">
+      <h3 class="title">Welcome {{username}}!</h3>
+      Display overview + calendar here.
+  </ion-content>
+</ion-view>
