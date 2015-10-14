@@ -7,6 +7,11 @@ App.config(function ($stateProvider, $urlRouterProvider) {
     templateUrl: 'templates/login.html',
     controller: 'LoginCtrl'
   })
+  .state('register', {
+    url: '/register',
+    templateUrl: 'templates/register.html',
+    controller: 'RegisterCtrl'
+  })
   .state('main', {
     url: '/',
     abstract: true,
@@ -47,7 +52,7 @@ App.run(function($httpBackend){
 App.run(function ($rootScope, $state, AuthService, AUTH_EVENTS) {
   $rootScope.$on('$stateChangeStart', function (event,next, nextParams, fromState) {
     if (!AuthService.isAuthenticated()) {
-      if (next.name !== 'login') {
+      if (next.name !== 'login' && next.name !== 'register') {
         event.preventDefault();
         $state.go('login');
       }

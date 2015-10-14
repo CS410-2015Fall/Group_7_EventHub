@@ -33,6 +33,15 @@ App.controller('LoginCtrl', function($scope, $state, $ionicPopup, AuthService) {
   };
 });
 
+App.controller('RegisterCtrl', function($scope, $state, $http, $ionicPopup) {
+  $scope.register = function(data) {
+    $ionicPopup.alert({
+      title: 'Refresh',
+      template: 'Not yet implemented! ;)'
+    });
+  };
+});
+
 App.controller('DashCtrl', function($scope, $state, $http, $ionicPopup, AuthService) {
   $scope.logout = function() {
     AuthService.logout();

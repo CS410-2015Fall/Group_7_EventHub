@@ -1,0 +1,23 @@
+<body ng-app='App'>
+  <ion-view view-title="Register" name="register-view" class="start-screen">
+    <ion-nav-buttons side="left">
+      <a href="#/login"><button class="button icon-left ion-ios-arrow-back"></button></a>
+    </ion-nav-buttons>
+    <ion-content class="padding">
+        <div class="list">
+            <label class="item item-input">
+                <input type="text" placeholder="Create a Username" ng-model="data.username">
+            </label>
+            <label class="item item-input">
+                <input type="password" placeholder="Create a Password" ng-model="data.password">
+            </label>
+            <label class="item item-input">
+                <input type="text" placeholder="Email Address" ng-model="data.email">
+            </label>
+        </div>
+        <div class="padding">
+          <button class="button button-block button-positive" ng-click="register(data)">Register</button>
+       </div>
+    </ion-content>
+  </ion-view>
+</body>
