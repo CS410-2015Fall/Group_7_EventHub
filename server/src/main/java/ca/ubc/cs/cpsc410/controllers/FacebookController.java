@@ -1,4 +1,4 @@
-package cpsc410server.controllers;
+package ca.ubc.cs.cpsc410.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.social.facebook.api.Facebook;
