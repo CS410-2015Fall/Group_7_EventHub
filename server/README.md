@@ -49,6 +49,10 @@ Output if user exists:
 Output if user does not exist:
 
     Error: User vincent does not exist!
+
+Output if incorrect password received:
+
+    Error: Password incorrect!
     
 Retrieving all data about a specific user (by ID):
 

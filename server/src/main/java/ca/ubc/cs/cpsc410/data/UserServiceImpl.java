@@ -38,9 +38,11 @@ public class UserServiceImpl implements UserService {
     public User validateUser(User user) {
         List<User> existingUsers = repository.findAll();
         for (User existingUser : existingUsers) {
-            if (existingUser.getUsername().equals(user.getUsername()) &&
-                    existingUser.getPassword().equals(user.getPassword())) {
-                return existingUser;
+            if (existingUser.getUsername().equals(user.getUsername())) {
+                if (existingUser.getPassword().equals(user.getPassword())) {
+                    return existingUser;
+                }
+                throw new RuntimeException("Error: Password incorrect!");
             }
         }
         throw new RuntimeException(String.format(
