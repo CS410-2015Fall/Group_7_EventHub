@@ -43,7 +43,8 @@ public class UserServiceImpl implements UserService {
                 return existingUser;
             }
         }
-        return null;
+        throw new RuntimeException(String.format(
+                "Error: User %s does not exist!", user.getUsername()));
     }
 
 }
