@@ -1,5 +1,7 @@
 package ca.ubc.cs.cpsc410.data;
 
+import org.springframework.data.repository.query.Param;
+
 /**
  * Created by vincent on 20/10/15.
  * <p>
@@ -7,6 +9,8 @@ package ca.ubc.cs.cpsc410.data;
  */
 public interface UserService {
 
-    User save(User user);
+    User createUser(User user);
+
+    User validateUser(User user);
 
 }

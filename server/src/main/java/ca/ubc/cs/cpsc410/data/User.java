@@ -14,19 +14,18 @@ public class User {
     @Id
     @NotNull
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    @Column(name = "id", nullable = false, updatable = false)
+    @Column(name = "id", unique = true, nullable = false, updatable = false)
     private int id;
 
     @NotNull
-    @Column(name = "username", nullable = false)
+    @Column(name = "username", unique = true, nullable = false)
     private String username;
 
     @NotNull
     @Column(name = "password", nullable = false)
     private String password;
 
-    @NotNull
-    @Column(name = "email", nullable = false)
+    @Column(name = "email")
     private String email;
 
     public int getId() {
