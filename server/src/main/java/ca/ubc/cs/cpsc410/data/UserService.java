@@ -2,6 +2,8 @@ package ca.ubc.cs.cpsc410.data;
 
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
+
 /**
  * Created by vincent on 20/10/15.
  * <p>
@@ -12,5 +14,7 @@ public interface UserService {
     User createUser(User user);
 
     User validateUser(User user);
+
+    List<User> getAllUsers();
 
 }

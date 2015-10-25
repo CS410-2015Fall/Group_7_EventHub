@@ -49,4 +49,9 @@ public class UserServiceImpl implements UserService {
                 "Error: User %s does not exist!", user.getUsername()));
     }
 
+    @Override
+    public List<User> getAllUsers() {
+        return repository.findAll();
+    }
+
 }

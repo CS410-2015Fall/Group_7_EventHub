@@ -8,6 +8,7 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
 
 /**
  * Created by vincent on 20/10/15.
@@ -32,6 +33,11 @@ public class UserController {
     @RequestMapping(value = "/user/validateUser", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
     public User validateUser(@RequestBody @Valid final User user) {
         return userService.validateUser(user);
+    }
+
+    @RequestMapping(value = "/user/getAllUsers", method = RequestMethod.GET)
+    public List<User> getAllUsers() {
+        return userService.getAllUsers();
     }
 
     @ExceptionHandler
