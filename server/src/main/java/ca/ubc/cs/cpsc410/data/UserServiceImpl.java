@@ -50,6 +50,30 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public User findByUsername(User user) {
+        List<User> existingUsers = repository.findAll();
+        for (User existingUser : existingUsers) {
+            if (existingUser.getUsername().equals(user.getUsername())) {
+                return existingUser;
+            }
+        }
+        throw new RuntimeException(String.format(
+                "Error: User %s does not exist!", user.getUsername()));
+    }
+
+    @Override
+    public User findByEmail(User user) {
+        List<User> existingUsers = repository.findAll();
+        for (User existingUser : existingUsers) {
+            if (existingUser.getEmail().equals(user.getEmail())) {
+                return existingUser;
+            }
+        }
+        throw new RuntimeException(String.format(
+                "Error: No user with email %s!", user.getEmail()));
+    }
+
+    @Override
     public List<User> getAllUsers() {
         return repository.findAll();
     }
