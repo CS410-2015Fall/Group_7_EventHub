@@ -76,6 +76,8 @@ App.controller('DashCtrl', function($scope, $state, $http, $ionicPopup, AuthServ
 
 App.controller('FriendsController', function($scope, $state, $http, $ionicPopup) {
   
+  $scope.data = {};
+  
   $scope.friends = [
     {
       'first': 'John',
@@ -87,7 +89,31 @@ App.controller('FriendsController', function($scope, $state, $http, $ionicPopup)
     }
   ];
 
-  // $http.get('').success(function(data) {
-  //   friendsController.list = data;
-  // });
+  $scope.deleteContact = function(item) {
+    console.log('deleting a friend');
+    console.log(item);
+  };
+
+  $scope.addFriend = function() {
+    $ionicPopup.show({
+      template: '<input type="text" ng-model="data.friendUsername">',
+      title: 'Add friend by username',
+      scope: $scope,
+      buttons: [
+        { text: 'Cancel' },
+        {
+          text: '<b>Add</b>',
+          type: 'button-positive',
+          onTap: function(e) {
+            if (!$scope.data.friendUsername) {
+              //don't allow the user to close unless he enters friend username
+              e.preventDefault();
+            } else {
+              return $scope.data.friendUsername;
+            }
+          }
+        }
+      ]
+    });
+  };
 });
