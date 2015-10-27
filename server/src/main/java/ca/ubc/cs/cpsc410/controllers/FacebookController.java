@@ -1,4 +1,4 @@
-package cpsc410server.controllers;
+package ca.ubc.cs.cpsc410.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.social.facebook.api.Facebook;
@@ -7,8 +7,13 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+/**
+ * Created by vincent on 20/10/15.
+ * <p>
+ * Represents controller to handle all Facebook-related API operations
+ */
 @Controller
-@RequestMapping("/")
+@RequestMapping("/facebook")
 public class FacebookController {
 
     private Facebook facebook;
