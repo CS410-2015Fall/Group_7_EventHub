@@ -1,7 +1,7 @@
 var App = angular.module('App');
 
-App.service('AuthService', function($q, $http) {
-  var LOCAL_TOKEN_KEY = 'yourTokenKey';
+App.service('AuthService', function($q, $http, $ionicPopup) {
+  var LOCAL_TOKEN_KEY = 'LocalTokenKey';
   var username = 'admin';
   var isAuthenticated = false;
   var authToken;
@@ -23,7 +23,6 @@ App.service('AuthService', function($q, $http) {
     isAuthenticated = true;
     authToken = token;
 
-    // Set the token as header for your requests!
     $http.defaults.headers.common['X-Auth-Token'] = token;
   }
 
@@ -37,13 +36,21 @@ App.service('AuthService', function($q, $http) {
 
   var login = function(name, pw) {
     return $q(function(resolve, reject) {
-      if (name == 'user' && pw == '1') {
-        // Make a request and receive your auth token from your server
-        storeUserCredentials(name + '.yourServerToken');
-        resolve('Login success.');
-      } else {
-        reject('Login Failed.');
-      }
+      $http.defaults.headers.common['Content-Type'] = 'application/json;charset=UTF-8';
+      $http({
+        method: 'POST',
+        url: 'http://vcheng.org:8080/user/validateUser',
+        data: {'username': name, 'password': pw}
+      })
+      .then(function(response) {
+        storeUserCredentials(response.username + 'ServerToken');
+        resolve('Login success');
+      }, function(response) {
+        $ionicPopup.alert({
+          title: 'Problem logging in',
+          template: 'Invalid credentials.'
+        });
+      });
     });
   };
 

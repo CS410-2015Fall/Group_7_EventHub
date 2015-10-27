@@ -1,4 +1,4 @@
-var App = angular.module("App", ["ionic", "ngMockE2E"]);
+var App = angular.module("App", ["ionic"]);
 
 App.config(function ($stateProvider, $urlRouterProvider) {
   $stateProvider
@@ -30,7 +30,8 @@ App.config(function ($stateProvider, $urlRouterProvider) {
     url: 'main/friends',
     views: {
         'friends-tab': {
-          templateUrl: 'templates/friends.html'
+          templateUrl: 'templates/friends.html',
+          controller: 'FriendsController'
         }
     }
   })
@@ -45,9 +46,9 @@ App.config(function ($stateProvider, $urlRouterProvider) {
   $urlRouterProvider.otherwise('/main/dash');
 });
 
-App.run(function($httpBackend){
-  $httpBackend.whenGET(/templates\/\w+.*/).passThrough();
-});
+// App.run(function($httpBackend){
+//   $httpBackend.whenGET(/templates\/\w+.*/).passThrough();
+// });
 
 App.run(function ($rootScope, $state, AuthService, AUTH_EVENTS) {
   $rootScope.$on('$stateChangeStart', function (event,next, nextParams, fromState) {

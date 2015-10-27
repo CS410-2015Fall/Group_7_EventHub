@@ -1,7 +1,19 @@
 <ion-view view-title="Friends" name="dashboard-view">
   <ion-content class="padding">
-    <div class="row"><div class="col text-center">
-      <h3 class="title">Friends</h3>
-      Add and Remove friends here.
+    <ion-list>
+    	<ion-item ng-repeat="friend in friends">
+    		<h2>{{friend.first}} {{friend.last}}</h2>
+    		<ion-option-button class="button-assertive" ng-click="deleteContact()">
+    			Delete
+    		</ion-option-button>
+    	</ion-item>
+    </ion-list>
   </ion-content>
+  <div class="float-button">
+  	<span class="height-fix">
+    	<a ui-sref="add-trip" class="content">
+      		<i class="ion-android-add"> </i>
+   		</a>
+  </span>
+</div>
 </ion-view>
