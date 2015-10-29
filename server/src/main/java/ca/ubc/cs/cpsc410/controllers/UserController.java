@@ -45,6 +45,21 @@ public class UserController {
         return userService.findByEmail(user);
     }
 
+    @RequestMapping(value = "/user/addFriend", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
+    public User addFriend(@RequestBody @Valid final List<User> users) {
+        return userService.addFriend(users);
+    }
+
+    @RequestMapping(value = "/user/removeFriend", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
+    public User removeFriend(@RequestBody @Valid final List<User> users) {
+        return userService.removeFriend(users);
+    }
+
+    @RequestMapping(value = "/user/getAllFriends", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
+    public List<User> getAllFriends(@RequestBody @Valid final User user) {
+        return userService.getAllFriends(user);
+    }
+
     @RequestMapping(value = "/user/getAllUsers", method = RequestMethod.GET)
     public List<User> getAllUsers() {
         return userService.getAllUsers();

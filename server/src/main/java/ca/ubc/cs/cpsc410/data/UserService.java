@@ -13,9 +13,25 @@ public interface UserService {
 
     User validateUser(User user);
 
+    User findById(User user);
+
     User findByUsername(User user);
 
     User findByEmail(User user);
+
+    /**
+     * @param user A list of 2 users, where the 1st user is the user to modify
+     *             and the 2nd user is the user to add as a friend
+     */
+    User addFriend(List<User> users);
+
+    /**
+     * @param user A list of 2 users, where the 1st user is the user to modify
+     *             and the 2nd user is the user to remove as a friend
+     */
+    User removeFriend(List<User> users);
+
+    List<User> getAllFriends(User user);
 
     List<User> getAllUsers();
 
