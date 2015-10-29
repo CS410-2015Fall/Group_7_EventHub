@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -120,7 +121,22 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<User> getAllFriends(User user) {
-        return null;
+        List<User> existingUsers = repository.findAll();
+        List<String> friendsAsStrings = new ArrayList<>();
+        List<User> friends = new ArrayList<>();
+        for (User existingUser : existingUsers) {
+            if (existingUser.getUsername().equals(user.getUsername())) {
+                friendsAsStrings = existingUser.getFriends();
+            }
+        }
+        for (String friend : friendsAsStrings) {
+            for (User existingUser : existingUsers) {
+                if (existingUser.getUsername().equals(friend)) {
+                    friends.add(existingUser);
+                }
+            }
+        }
+        return friends;
     }
 
     @Override
