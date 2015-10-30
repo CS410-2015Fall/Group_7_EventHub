@@ -35,6 +35,11 @@ public class UserController {
         return userService.validateUser(user);
     }
 
+    @RequestMapping(value = "/user/findById", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
+    public User findById(@RequestBody @Valid final User user) {
+        return userService.findById(user);
+    }
+
     @RequestMapping(value = "/user/findByUsername", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
     public User findByUsername(@RequestBody @Valid final User user) {
         return userService.findByUsername(user);

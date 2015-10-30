@@ -56,7 +56,14 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User findById(User user) {
-        return findByUsername(user);
+        List<User> existingUsers = repository.findAll();
+        for (User existingUser : existingUsers) {
+            if (existingUser.getId() == user.getId()) {
+                return existingUser;
+            }
+        }
+        throw new RuntimeException(String.format(
+                "Error: User ID %d does not exist!", user.getId()));
     }
 
     @Override
