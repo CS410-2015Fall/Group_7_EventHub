@@ -99,7 +99,11 @@ public class UserServiceImpl implements UserService {
         User userToAddAsFriend = users.get(1);
         List<User> existingUsers = repository.findAll();
         for (User existingUser : existingUsers) {
-            if (existingUser.equals(userToModify)) {
+            if (existingUser.getUsername().equals(userToModify.getUsername())) {
+                if (existingUser.getFriends().contains(userToAddAsFriend.getUsername())) {
+                    throw new RuntimeException(String.format(
+                            "Error: User %s is already a friend of user %s!", userToAddAsFriend, userToModify));
+                }
                 existingUser.getFriends().add(userToAddAsFriend.getUsername());
                 return repository.save(existingUser);
             }
@@ -117,7 +121,11 @@ public class UserServiceImpl implements UserService {
         User userToRemoveAsFriend = users.get(1);
         List<User> existingUsers = repository.findAll();
         for (User existingUser : existingUsers) {
-            if (existingUser.equals(userToModify)) {
+            if (existingUser.getUsername().equals(userToModify.getUsername())) {
+                if (!existingUser.getFriends().contains(userToRemoveAsFriend.getUsername())) {
+                    throw new RuntimeException(String.format(
+                            "Error: User %s is not a friend of user %s!", userToRemoveAsFriend, userToModify));
+                }
                 existingUser.getFriends().remove(userToRemoveAsFriend.getUsername());
                 return repository.save(existingUser);
             }

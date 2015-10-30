@@ -16,7 +16,7 @@ public class User {
     @Column(name = "id", unique = true, nullable = false, updatable = false)
     private int id;
 
-    @Column(name = "username", unique = true, nullable = false)
+    @Column(name = "username", unique = true, nullable = false, updatable = false)
     private String username;
 
     @Column(name = "password")
@@ -55,15 +55,19 @@ public class User {
 
         User user = (User) o;
 
-        if (username != null ? !username.equals(user.username) : user.username != null) return false;
-        return !(email != null ? !email.equals(user.email) : user.email != null);
+        return !(username != null ? !username.equals(user.username) : user.username != null);
 
     }
 
     @Override
     public int hashCode() {
-        int result = username != null ? username.hashCode() : 0;
-        result = 31 * result + (email != null ? email.hashCode() : 0);
-        return result;
+        return username != null ? username.hashCode() : 0;
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "username='" + username + '\'' +
+                '}';
     }
 }
