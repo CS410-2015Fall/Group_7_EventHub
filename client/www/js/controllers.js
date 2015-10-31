@@ -74,9 +74,10 @@ App.controller('DashCtrl', function($scope, $state, $http, $ionicPopup, AuthServ
   };
 });
 
-App.controller('FriendsController', function($scope, $state, $http, $ionicPopup) {
+App.controller('FriendsController', function($scope, $state, $http, $ionicPopup, AuthService) {
   
   $scope.data = {};
+  $scope.username = AuthService.username();
   
   $scope.friends = [
     {
@@ -95,6 +96,7 @@ App.controller('FriendsController', function($scope, $state, $http, $ionicPopup)
   };
 
   $scope.addFriend = function() {
+    var username = AuthService.username();
     $ionicPopup.show({
       template: '<input type="text" ng-model="data.friendUsername">',
       title: 'Add friend by username',
@@ -109,6 +111,26 @@ App.controller('FriendsController', function($scope, $state, $http, $ionicPopup)
               //don't allow the user to close unless he enters friend username
               e.preventDefault();
             } else {
+              $http.defaults.headers.post['Content-Type'] = 'application/json;charset=UTF-8';
+              $http({
+                method: 'POST',
+                url: 'http://vcheng.org:8080/user/addFriend',
+                data: [{'username': username}, {'username': $scope.data.username}]
+              })
+              .then(function(response) {
+                window.history.back();
+                console.log(response);
+                $ionicPopup.alert({
+                  title: 'Success',
+                  template: response
+                });
+              }, function(response) {
+                console.log(response);
+                $ionicPopup.alert({
+                  title: 'Error',
+                  template: response
+                });
+              });
               return $scope.data.friendUsername;
             }
           }

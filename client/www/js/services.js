@@ -19,11 +19,11 @@ App.service('AuthService', function($q, $http, $ionicPopup) {
   }
 
   function useCredentials(token) {
-    username = token.split('.')[0];
+    username = token;
     isAuthenticated = true;
     authToken = token;
 
-    $http.defaults.headers.common['X-Auth-Token'] = token;
+    $http.defaults.headers.common['X-Auth-Token'] = undefined;
   }
 
   function destroyUserCredentials() {
@@ -43,7 +43,7 @@ App.service('AuthService', function($q, $http, $ionicPopup) {
         data: {'username': name, 'password': pw}
       })
       .then(function(response) {
-        storeUserCredentials(response.username + 'ServerToken');
+        storeUserCredentials(response.data.username);
         resolve('Login success');
       }, function(response) {
         $ionicPopup.alert({
