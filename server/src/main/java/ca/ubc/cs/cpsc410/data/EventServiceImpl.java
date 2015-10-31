@@ -1,11 +1,11 @@
 package ca.ubc.cs.cpsc410.data;
 
-import java.util.Date;
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Date;
+import java.util.List;
 
 /**
  * Created by ryan on 28/10/15.
@@ -19,7 +19,7 @@ public class EventServiceImpl implements EventService {
 
     private final EventRepository eventRepository;
     private final UserRepository userRepository;
-    
+
     @Autowired
     public EventServiceImpl(final EventRepository eventRepository, final UserRepository userRepository) {
         this.eventRepository = eventRepository;
@@ -32,11 +32,11 @@ public class EventServiceImpl implements EventService {
             throw new RuntimeException("Error creating event: There is no event name specified!");
         }
         Date currentDate = new Date();
-        if (event.getStartDate().before(currentDate)) {
-            throw new RuntimeException("Error creating event: The start date has already passed!");
+        if (event.getStartDate() == 0 || new Date(event.getStartDate()).before(currentDate)) {
+            throw new RuntimeException("Error creating event: The start date has already passed or doesn't exist!");
         }
-        if (event.getEndDate().before(event.getStartDate())) {
-            throw new RuntimeException("Error creating event: The event ends before it starts!");
+        if (event.getEndDate() == 0 || new Date(event.getEndDate()).before(new Date(event.getStartDate()))) {
+            throw new RuntimeException("Error creating event: The event ends before it starts or doesn't exist!");
         }
         List<User> existingUsers = userRepository.findAll();
         for (User existingUser : existingUsers) {
