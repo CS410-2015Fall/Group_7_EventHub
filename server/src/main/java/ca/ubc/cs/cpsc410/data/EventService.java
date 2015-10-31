@@ -14,6 +14,10 @@ public interface EventService {
     
     Event finalizeEvent(Event event);
     
+    Event getEvent(Event event);
+    
+    Event updateEvent(Event event);
+    
     //List<Guest> updateEventGuest(Guest guest);
     
 }
