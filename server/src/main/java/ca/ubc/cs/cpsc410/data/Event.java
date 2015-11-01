@@ -1,6 +1,7 @@
 package ca.ubc.cs.cpsc410.data;
 
 import javax.persistence.*;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -29,11 +30,13 @@ public class Event {
     @Column(name = "type")
     private String type;
 
+    @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "startDate")
-    private long startDate;
+    private Date startDate;
 
+    @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "endDate")
-    private long endDate;
+    private Date endDate;
 
     @Column(name = "location")
     private String location;
@@ -62,11 +65,11 @@ public class Event {
         return type;
     }
 
-    public long getStartDate() {
+    public Date getStartDate() {
         return startDate;
     }
 
-    public long getEndDate() {
+    public Date getEndDate() {
         return endDate;
     }
 
