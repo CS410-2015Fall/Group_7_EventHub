@@ -48,7 +48,7 @@ App.config(function ($stateProvider, $urlRouterProvider) {
         }
     }
   });
-  $urlRouterProvider.otherwise('/main/dash');
+  $urlRouterProvider.otherwise('/login');
 });
 
 // App.run(function($httpBackend){
