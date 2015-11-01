@@ -16,16 +16,18 @@ import java.util.List;
 @Transactional
 public class UserServiceImpl implements UserService {
 
-    private final UserRepository repository;
+    private final UserRepository userRepository;
+    private final EventRepository eventRepository;
 
     @Autowired
-    public UserServiceImpl(final UserRepository repository) {
-        this.repository = repository;
+    public UserServiceImpl(final UserRepository userRepository, EventRepository eventRepository) {
+        this.userRepository = userRepository;
+        this.eventRepository = eventRepository;
     }
 
     @Override
     public User createUser(final User user) {
-        List<User> existingUsers = repository.findAll();
+        List<User> existingUsers = userRepository.findAll();
         for (User existingUser : existingUsers) {
             if (existingUser.getUsername().equals(user.getUsername())) {
                 throw new RuntimeException(String.format(
@@ -36,12 +38,12 @@ public class UserServiceImpl implements UserService {
                         "Error: User with email %s already exists!", user.getEmail()));
             }
         }
-        return repository.save(user);
+        return userRepository.save(user);
     }
 
     @Override
     public User validateUser(User user) {
-        List<User> existingUsers = repository.findAll();
+        List<User> existingUsers = userRepository.findAll();
         for (User existingUser : existingUsers) {
             if (existingUser.getUsername().equals(user.getUsername())) {
                 if (existingUser.getPassword().equals(user.getPassword())) {
@@ -56,7 +58,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User findById(User user) {
-        List<User> existingUsers = repository.findAll();
+        List<User> existingUsers = userRepository.findAll();
         for (User existingUser : existingUsers) {
             if (existingUser.getId() == user.getId()) {
                 return existingUser;
@@ -68,7 +70,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User findByUsername(User user) {
-        List<User> existingUsers = repository.findAll();
+        List<User> existingUsers = userRepository.findAll();
         for (User existingUser : existingUsers) {
             if (existingUser.getUsername().equals(user.getUsername())) {
                 return existingUser;
@@ -80,7 +82,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User findByEmail(User user) {
-        List<User> existingUsers = repository.findAll();
+        List<User> existingUsers = userRepository.findAll();
         for (User existingUser : existingUsers) {
             if (existingUser.getEmail().equals(user.getEmail())) {
                 return existingUser;
@@ -97,7 +99,7 @@ public class UserServiceImpl implements UserService {
         }
         User userToModify = users.get(0);
         User userToAddAsFriend = users.get(1);
-        List<User> existingUsers = repository.findAll();
+        List<User> existingUsers = userRepository.findAll();
         for (User existingUser : existingUsers) {
             if (existingUser.getUsername().equals(userToModify.getUsername())) {
                 if (existingUser.getFriends().contains(userToAddAsFriend.getUsername())) {
@@ -105,7 +107,7 @@ public class UserServiceImpl implements UserService {
                             "Error: User %s is already a friend of user %s!", userToAddAsFriend, userToModify));
                 }
                 existingUser.getFriends().add(userToAddAsFriend.getUsername());
-                return repository.save(existingUser);
+                return userRepository.save(existingUser);
             }
         }
         throw new RuntimeException(String.format(
@@ -119,7 +121,7 @@ public class UserServiceImpl implements UserService {
         }
         User userToModify = users.get(0);
         User userToRemoveAsFriend = users.get(1);
-        List<User> existingUsers = repository.findAll();
+        List<User> existingUsers = userRepository.findAll();
         for (User existingUser : existingUsers) {
             if (existingUser.getUsername().equals(userToModify.getUsername())) {
                 if (!existingUser.getFriends().contains(userToRemoveAsFriend.getUsername())) {
@@ -127,7 +129,7 @@ public class UserServiceImpl implements UserService {
                             "Error: User %s is not a friend of user %s!", userToRemoveAsFriend, userToModify));
                 }
                 existingUser.getFriends().remove(userToRemoveAsFriend.getUsername());
-                return repository.save(existingUser);
+                return userRepository.save(existingUser);
             }
         }
         throw new RuntimeException(String.format(
@@ -136,7 +138,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<User> getAllFriends(User user) {
-        List<User> existingUsers = repository.findAll();
+        List<User> existingUsers = userRepository.findAll();
         List<String> friendsAsStrings = new ArrayList<>();
         List<User> friends = new ArrayList<>();
         for (User existingUser : existingUsers) {
@@ -156,7 +158,29 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<User> getAllUsers() {
-        return repository.findAll();
+        return userRepository.findAll();
+    }
+
+    @Override
+    public List<Event> getAllEvents(User user) {
+        List<User> existingUsers = userRepository.findAll();
+        List<Event> existingEvents = eventRepository.findAll();
+        for (User existingUser : existingUsers) {
+            if (existingUser.getUsername().equals(user.getUsername())) {
+                List<Integer> eventsAsInts = existingUser.getEvents();
+                List<Event> eventsToReturn = new ArrayList<>();
+                for (Event event : existingEvents) {
+                    for (int eventAsInt : eventsAsInts) {
+                        if (event.getId() == eventAsInt) {
+                            eventsToReturn.add(event);
+                        }
+                    }
+                }
+                return eventsToReturn;
+            }
+        }
+        throw new RuntimeException(String.format(
+                "Error: User %s does not exist!", user.getUsername()));
     }
 
 }

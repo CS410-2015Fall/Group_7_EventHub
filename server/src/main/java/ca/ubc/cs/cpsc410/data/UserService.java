@@ -35,4 +35,8 @@ public interface UserService {
 
     List<User> getAllUsers();
 
+    //List<Event> sendEvents(List<Event> events);
+
+    List<Event> getAllEvents(User user);
+
 }

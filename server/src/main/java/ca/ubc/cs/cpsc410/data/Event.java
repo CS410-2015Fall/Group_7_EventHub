@@ -1,6 +1,7 @@
 package ca.ubc.cs.cpsc410.data;
 
 import javax.persistence.*;
+import java.util.List;
 
 /**
  * Created by ryan on 28/10/15
@@ -25,6 +26,9 @@ public class Event {
     @Column(name = "description")
     private String description;
 
+    @Column(name = "type")
+    private String type;
+
     @Column(name = "startDate")
     private long startDate;
 
@@ -34,7 +38,9 @@ public class Event {
     @Column(name = "location")
     private String location;
 
-    // guest list
+    @ElementCollection(targetClass = String.class)
+    @Column(name = "invitees")
+    private List<String> invitees;
 
     public int getId() {
         return id;
@@ -52,6 +58,10 @@ public class Event {
         return description;
     }
 
+    public String getType() {
+        return type;
+    }
+
     public long getStartDate() {
         return startDate;
     }
@@ -64,6 +74,8 @@ public class Event {
         return location;
     }
 
-    // guest list
+    public List<String> getInvitees() {
+        return invitees;
+    }
 
 }

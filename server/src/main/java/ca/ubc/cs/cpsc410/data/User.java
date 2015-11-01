@@ -26,7 +26,12 @@ public class User {
     private String email;
 
     @ElementCollection(targetClass = String.class)
+    @Column(name = "friends")
     private List<String> friends;
+
+    @ElementCollection(targetClass = Integer.class)
+    @Column(name = "events")
+    private List<Integer> events;
 
     public int getId() {
         return id;
@@ -46,6 +51,10 @@ public class User {
 
     public List<String> getFriends() {
         return friends;
+    }
+
+    public List<Integer> getEvents() {
+        return events;
     }
 
     @Override
