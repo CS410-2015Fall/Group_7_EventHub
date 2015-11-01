@@ -1,12 +1,12 @@
-<ion-view view-title="Friends" name="dashboard-view">
+<ion-view view-title="Friends" name="dashboard-view" cache-view="false">
   <ion-nav-buttons side="right">
     <button class="button icon-right ion-android-person-add" ng-click="addFriend()"></button>
   </ion-nav-buttons>
   <ion-content class="padding">
     <ion-list>
-    	<ion-item ng-repeat="friend in friends">
-    		<h2>{{friend.first}} {{friend.last}}</h2>
-    		<ion-option-button class="button-assertive" ng-click="deleteContact({{friend}})">
+    	<ion-item ng-repeat="friend in model.friends">
+    		<h2>{{friend}}</h2>
+    		<ion-option-button class="button-assertive" ng-click="removeFriend(friend)">
     			Delete
     		</ion-option-button>
     	</ion-item>

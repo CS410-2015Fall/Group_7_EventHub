@@ -1,4 +1,4 @@
-var App = angular.module("App", ["ionic", "ngCordova"]);
+var App = angular.module("App", ["ionic", "ngCordova", "checklist-model"]);
 
 App.config(function ($stateProvider, $urlRouterProvider) {
   $stateProvider

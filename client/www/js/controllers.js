@@ -11,10 +11,6 @@ App.controller('AppCtrl', function($scope, $state, $ionicPopup, AuthService, AUT
       template: 'Sorry, You have to login again.'
     });
   });
-
-  $scope.setCurrentUsername = function(name) {
-    $scope.username = name;
-  };
 });
 
 App.controller('LoginCtrl', function($scope, $state, $ionicPopup, AuthService) {
@@ -23,7 +19,6 @@ App.controller('LoginCtrl', function($scope, $state, $ionicPopup, AuthService) {
   $scope.login = function(data) {
     AuthService.login(data.username, data.password).then(function(authenticated) {
       $state.go('main.dash', {}, {reload: true});
-      $scope.setCurrentUsername(data.username);
     }, function(err) {
       var alertPopup = $ionicPopup.alert({
         title: 'Login failed!',
@@ -60,8 +55,8 @@ App.controller('RegisterCtrl', function($scope, $state, $http, $ionicPopup) {
   };
 });
 
-App.controller('CreateEventCtrl', function($scope, UserDataService, AuthService) {
-  $scope.friends = UserDataService.getFriends();
+App.controller('CreateEventCtrl', function($scope, $http, $ionicPopup, UserDataService, AuthService) {
+  $scope.friends = UserDataService.getCurrentFriends();
   $scope.data = {};
   $scope.goBack = function() {
     window.history.back();
@@ -75,43 +70,38 @@ App.controller('CreateEventCtrl', function($scope, UserDataService, AuthService)
       'location': data.eventLocation,
       'startDate': (1900 + data.eventDate.getYear()) + '-' + data.eventDate.getMonth() + '-' + data.eventDate.getDate(),
       'host': AuthService.username(),
-      // 'invitees': 
+      'invitees': data.guests
     };
-    console.log(request);
-    // $http.defaults.headers.post['Content-Type'] = 'application/json;charset=UTF-8';
-    // $http({
-    //   method: 'POST',
-    //   url: 'http://vcheng.org:8080/event/createEvent',
-    //   data: request
-    // })
-    // .then(function(response) {
-    //   window.history.back();
-    //   console.log(response);
-    //   $ionicPopup.alert({
-    //     title: 'Success',
-    //     template: response
-    //   });
-    // }, function(response) {
-    //   console.log(response);
-    //   $ionicPopup.alert({
-    //     title: 'Error',
-    //     template: response
-    //   });
-    // });
+
+    $http.defaults.headers.post['Content-Type'] = 'application/json;charset=UTF-8';
+    $http({
+      method: 'POST',
+      url: 'http://vcheng.org:8080/event/createEvent',
+      data: request
+    })
+    .then(function(response) {
+      window.history.back();
+      $ionicPopup.alert({
+        title: 'Success',
+        template: 'Event created!'
+      });
+    }, function(response) {
+      $ionicPopup.alert({
+        title: 'Error',
+        template: 'Please try again later.'
+      });
+    });
   };
 });
 
-App.controller('DashCtrl', function($scope, $state, $http, $ionicPopup, AuthService) {
+App.controller('DashCtrl', function($scope, $state, $http, $ionicPopup, AuthService, UserDataService) {
   $scope.logout = function() {
     AuthService.logout();
     $state.go('login');
   };
 
   $scope.refresh = function() {
-  	$ionicPopup.alert({
-  		title: 'Refresh',
-  		template: 'Not yet implemented! ;)'
-  	});
+  	UserDataService.refresh();
   };
 
   $scope.createEvent = function() {
@@ -119,12 +109,14 @@ App.controller('DashCtrl', function($scope, $state, $http, $ionicPopup, AuthServ
   };
 });
 
-App.controller('FriendsController', function($scope, $state, $http, $ionicPopup, AuthService, UserDataService) {
+App.controller('FriendsController', function($scope, UserDataService, AuthService, $state, $http, $ionicPopup) {
   
   $scope.data = {};
   $scope.username = AuthService.username();
-  
-  $scope.friends = UserDataService.getFriends();
+  $scope.userService = UserDataService;
+
+  $scope.model = {};
+  $scope.model.friends = UserDataService.getCurrentFriends();
 
   $scope.deleteContact = function(item) {
     console.log('deleting a friend');
@@ -147,11 +139,13 @@ App.controller('FriendsController', function($scope, $state, $http, $ionicPopup,
               //don't allow the user to close unless he enters friend username
               e.preventDefault();
             } else {
+              var request = [{'username': username}, {'username': $scope.data.friendUsername}];
+              console.log(request);
               $http.defaults.headers.post['Content-Type'] = 'application/json;charset=UTF-8';
               $http({
                 method: 'POST',
                 url: 'http://vcheng.org:8080/user/addFriend',
-                data: [{'username': username}, {'username': $scope.data.username}]
+                data: request
               })
               .then(function(response) {
                 window.history.back();
@@ -172,6 +166,32 @@ App.controller('FriendsController', function($scope, $state, $http, $ionicPopup,
           }
         }
       ]
+    });
+  };
+
+  $scope.removeFriend = function(friend) {
+    var username = AuthService.username();
+    var request = [{'username': username}, {'username': friend.username}];
+    console.log(request);
+    $http.defaults.headers.post['Content-Type'] = 'application/json;charset=UTF-8';
+    $http({
+      method: 'POST',
+      url: 'http://vcheng.org:8080/user/removeFriend',
+      data: request
+    })
+    .then(function(response) {
+      window.history.back();
+      console.log(response);
+      $ionicPopup.alert({
+        title: 'Success',
+        template: response
+      });
+    }, function(response) {
+      console.log(response);
+      $ionicPopup.alert({
+        title: 'Error',
+        template: response
+      });
     });
   };
 });

@@ -1,4 +1,4 @@
-<ion-view view-title="Create a WeSync Event" name="login-view" class="start-screen">
+<ion-view view-title="Create a WeSync Event" name="login-view" class="start-screen" cache-view="false">
   <ion-nav-buttons side="left">
       <button ng-click="goBack()" class="button icon-left ion-ios-arrow-back"></button>
   </ion-nav-buttons>
@@ -31,9 +31,9 @@
           </div>
             <li ng-repeat="friend in friends" class="item item-checkbox">
              <label class="checkbox">
-               <input type="checkbox" checklist-model="data.guests" checklist-value="friend.first">
+               <input type="checkbox" checklist-model="data.guests" checklist-value="friend">
              </label>
-              {{friend.first}}
+              {{friend}}
             </li>
       </div>
       <div class="padding">

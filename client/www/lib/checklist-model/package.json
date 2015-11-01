@@ -1,0 +1,78 @@
+{
+  "name": "checklist-model",
+  "description": "AngularJS directive for list of checkboxes",
+  "license": "MIT",
+  "version": "0.6.0",
+  "homepage": "http://vitalets.github.io/checklist-model",
+  "author": {
+    "name": "Vitaliy Potapov",
+    "email": "noginsk@rambler.ru"
+  },
+  "contributors": [
+    {
+      "name": "Adrian Ber",
+      "email": "beradrian@yahoo.com"
+    }
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/vitalets/checklist-model.git"
+  },
+  "main": "checklist-model.js",
+  "engines": {
+    "node": ">= 0.8.0"
+  },
+  "devDependencies": {
+    "grunt": "~0.4.1",
+    "grunt-cli": "~0.1.9",
+    "grunt-contrib-clean": "~0.4.1",
+    "grunt-contrib-concat": "~0.3.0",
+    "grunt-contrib-compress": "~0.5.0",
+    "grunt-contrib-copy": "~0.4.1",
+    "grunt-contrib-jshint": "~0.5.3",
+    "grunt-contrib-watch": "~0.4.3",
+    "grunt-contrib-uglify": "~0.2.0",
+    "grunt-replace": "~0.4.4",
+    "grunt-contrib-connect": "~0.4.0",
+    "grunt-contrib-jade": "~0.8.0",
+    "grunt-contrib-cssmin": "~0.6.1",
+    "marked": "~0.2.9",
+    "grunt-jsdoc": "~0.4.1",
+    "grunt-shell": "~0.5.0",
+    "grunt-bump": "0.0.13"
+  },
+  "gitHead": "bc85c3d5a05874d0e2151e5dd75b64f05adff677",
+  "bugs": {
+    "url": "https://github.com/vitalets/checklist-model/issues"
+  },
+  "_id": "checklist-model@0.6.0",
+  "scripts": {},
+  "_shasum": "9969d1238c7cfa640279e4d10b2d713b4fb9d92a",
+  "_from": "checklist-model@*",
+  "_npmVersion": "2.11.3",
+  "_nodeVersion": "0.12.7",
+  "_npmUser": {
+    "name": "beradrian",
+    "email": "beradrian@yahoo.com"
+  },
+  "dist": {
+    "shasum": "9969d1238c7cfa640279e4d10b2d713b4fb9d92a",
+    "tarball": "http://registry.npmjs.org/checklist-model/-/checklist-model-0.6.0.tgz"
+  },
+  "maintainers": [
+    {
+      "name": "aaronroberson",
+      "email": "aaronaroberson@gmail.com"
+    },
+    {
+      "name": "beradrian",
+      "email": "beradrian@yahoo.com"
+    },
+    {
+      "name": "vitalets",
+      "email": "noginsk@rambler.ru"
+    }
+  ],
+  "directories": {},
+  "_resolved": "https://registry.npmjs.org/checklist-model/-/checklist-model-0.6.0.tgz"
+}

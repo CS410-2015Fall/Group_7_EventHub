@@ -85,39 +85,61 @@ App.config(function ($httpProvider) {
   $httpProvider.interceptors.push('AuthInterceptor');
 });
 
-App.factory('UserDataService', function($rootScope, $http) {
-    var service = {};
-    var _friends = [
-      {
-        'first': 'John',
-        'last': 'Doe'
-      },
-      {
-        'first': 'Alice',
-        'last': 'Cheng'
-      },
-      {
-        'first': 'Bob',
-        'last': 'Ma'
-      }
-    ];
-    var _events;
+App.factory('API', ['$http', function($http) {
+  
+  var service = {
+    getAllFriends: getAllFriends
+  };
 
-    service.setFriends = function(friends) {
-      _friends = friends;
+  return service;
+
+  function getAllFriends(username) {
+    $http.defaults.headers.post['Content-Type'] = 'application/json;charset=UTF-8';
+    return $http({
+        method: 'POST',
+        url: 'http://vcheng.org:8080/user/getAllFriends',
+        data: {'username': username}
+      })
+      .then(function(friendJSONArray) {
+        var updatedFriends = [];
+        for (var i = 0; i < friendJSONArray.data.length; i++) {
+          var friendObject = friendJSONArray.data[i];
+          updatedFriends.push(friendObject.username);
+        }
+        return updatedFriends;
+      }, function(response) {
+        console.log('error fetching friends');
+        console.log(response);
+        return [];
+      });
+    }
+}]);
+
+App.factory('UserDataService', ['API', 'AuthService', function(API, AuthService) {
+
+    var _friends = [];
+    var _username = AuthService.username();
+
+    var service = {
+      getFriends: getFriends,
+      getCurrentFriends: getCurrentFriends,
+      refresh: refresh
     };
 
-    service.setEvents = function(events) {
-      _events = events;
+    return service;
+
+    function getFriends(username) {
+      API.getAllFriends(username).then(function(data) {
+        _friends = data;
+      });
     }
 
-    service.getFriends = function() {
+    function getCurrentFriends() {
       return _friends;
     }
 
-    service.getEvents = function() {
-      return _events;
+    function refresh() {
+      getFriends(_username);
     }
 
-    return service;
-  });
+}]);
