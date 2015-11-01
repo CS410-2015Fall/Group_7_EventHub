@@ -17,6 +17,8 @@ public interface EventService {
     Event getEvent(Event event);
     
     Event updateEvent(Event event);
+
+    //Event addInvitee(Event event, User user);
     
     //List<Guest> updateEventGuest(Guest guest);
     
