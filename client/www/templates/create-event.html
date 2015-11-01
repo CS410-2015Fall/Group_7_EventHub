@@ -1,0 +1,43 @@
+<ion-view view-title="Create a WeSync Event" name="login-view" class="start-screen">
+  <ion-nav-buttons side="left">
+      <button ng-click="goBack()" class="button icon-left ion-ios-arrow-back"></button>
+  </ion-nav-buttons>
+  <ion-content class="padding">
+      <div class="list">
+          <div class="row">
+            Event Details
+          </div>
+          <label class="item item-input">
+            <input type="text" placeholder="Name" ng-model="data.eventName">
+          </label>
+          <label class="item item-input">
+            <input type="text" placeholder="Description" ng-model="data.eventDescription">
+          </label>
+          <label class="item item-input">
+            <input type="text" placeholder="Location" ng-model="data.eventLocation">
+          </label>
+      </div>
+      <div class="list">
+          <div class="row">
+            Event Date
+          </div>
+          <label class="item">
+            <input type="date" ng-model="data.eventDate">
+          </label>
+      </div>
+      <div class="list">
+          <div class="row">
+            Invite Friends!
+          </div>
+            <li ng-repeat="friend in friends" class="item item-checkbox">
+             <label class="checkbox">
+               <input type="checkbox" checklist-model="data.guests" checklist-value="friend.first">
+             </label>
+              {{friend.first}}
+            </li>
+      </div>
+      <div class="padding">
+        <button class="button button-block button-positive" ng-click="createEvent()">Create</button>
+     </div>
+  </ion-content>
+</ion-view>

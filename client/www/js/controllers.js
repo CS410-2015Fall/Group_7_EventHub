@@ -1,6 +1,6 @@
 var App = angular.module('App');
 
-App.controller('AppCtrl', function($scope, $state, $ionicPopup, AuthService, AUTH_EVENTS) {
+App.controller('AppCtrl', function($scope, $state, $ionicPopup, AuthService, AUTH_EVENTS, UserDataService) {
   $scope.username = AuthService.username();
 
   $scope.$on(AUTH_EVENTS.notAuthenticated, function(event) {
@@ -60,6 +60,47 @@ App.controller('RegisterCtrl', function($scope, $state, $http, $ionicPopup) {
   };
 });
 
+App.controller('CreateEventCtrl', function($scope, UserDataService, AuthService) {
+  $scope.friends = UserDataService.getFriends();
+  $scope.data = {};
+  $scope.goBack = function() {
+    window.history.back();
+  };
+
+  $scope.createEvent = function() {
+    var data = this.data;
+    var request = {
+      'name': data.eventName,
+      'description': data.eventDescription,
+      'location': data.eventLocation,
+      'startDate': (1900 + data.eventDate.getYear()) + '-' + data.eventDate.getMonth() + '-' + data.eventDate.getDate(),
+      'host': AuthService.username(),
+      // 'invitees': 
+    };
+    console.log(request);
+    // $http.defaults.headers.post['Content-Type'] = 'application/json;charset=UTF-8';
+    // $http({
+    //   method: 'POST',
+    //   url: 'http://vcheng.org:8080/event/createEvent',
+    //   data: request
+    // })
+    // .then(function(response) {
+    //   window.history.back();
+    //   console.log(response);
+    //   $ionicPopup.alert({
+    //     title: 'Success',
+    //     template: response
+    //   });
+    // }, function(response) {
+    //   console.log(response);
+    //   $ionicPopup.alert({
+    //     title: 'Error',
+    //     template: response
+    //   });
+    // });
+  };
+});
+
 App.controller('DashCtrl', function($scope, $state, $http, $ionicPopup, AuthService) {
   $scope.logout = function() {
     AuthService.logout();
@@ -72,23 +113,18 @@ App.controller('DashCtrl', function($scope, $state, $http, $ionicPopup, AuthServ
   		template: 'Not yet implemented! ;)'
   	});
   };
+
+  $scope.createEvent = function() {
+    $state.go('create');
+  };
 });
 
-App.controller('FriendsController', function($scope, $state, $http, $ionicPopup, AuthService) {
+App.controller('FriendsController', function($scope, $state, $http, $ionicPopup, AuthService, UserDataService) {
   
   $scope.data = {};
   $scope.username = AuthService.username();
   
-  $scope.friends = [
-    {
-      'first': 'John',
-      'last': 'Doe'
-    },
-    {
-      'first': 'Vincent',
-      'last': 'Cheng'
-    }
-  ];
+  $scope.friends = UserDataService.getFriends();
 
   $scope.deleteContact = function(item) {
     console.log('deleting a friend');

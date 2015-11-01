@@ -1,4 +1,4 @@
-<ion-view view-title="Dashboard" name="dashboard-view">
+<ion-view view-title="{{username}}'s Events" name="dashboard-view">
   <ion-nav-buttons side="left">
     <button class="button icon-left ion-refresh" ng-click="refresh()"></button>
   </ion-nav-buttons>
@@ -8,7 +8,6 @@
   
   <ion-content class="padding">
     <div class="row"><div class="col text-center">
-      <h3 class="title">Welcome {{username}}!</h3>
-      Display overview + calendar here.
+      <button class="button button-balanced" ng-click="createEvent()">Create an Event</a></button>
   </ion-content>
 </ion-view>

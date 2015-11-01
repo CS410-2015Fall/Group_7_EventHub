@@ -84,3 +84,40 @@ App.factory('AuthInterceptor', function ($rootScope, $q, AUTH_EVENTS) {
 App.config(function ($httpProvider) {
   $httpProvider.interceptors.push('AuthInterceptor');
 });
+
+App.factory('UserDataService', function($rootScope, $http) {
+    var service = {};
+    var _friends = [
+      {
+        'first': 'John',
+        'last': 'Doe'
+      },
+      {
+        'first': 'Alice',
+        'last': 'Cheng'
+      },
+      {
+        'first': 'Bob',
+        'last': 'Ma'
+      }
+    ];
+    var _events;
+
+    service.setFriends = function(friends) {
+      _friends = friends;
+    };
+
+    service.setEvents = function(events) {
+      _events = events;
+    }
+
+    service.getFriends = function() {
+      return _friends;
+    }
+
+    service.getEvents = function() {
+      return _events;
+    }
+
+    return service;
+  });

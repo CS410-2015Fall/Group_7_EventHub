@@ -12,6 +12,11 @@ App.config(function ($stateProvider, $urlRouterProvider) {
     templateUrl: 'templates/register.html',
     controller: 'RegisterCtrl'
   })
+  .state('create', {
+    url: '/create',
+    templateUrl: 'templates/create-event.html',
+    controller: 'CreateEventCtrl'
+  })
   .state('main', {
     url: '/',
     abstract: true,
