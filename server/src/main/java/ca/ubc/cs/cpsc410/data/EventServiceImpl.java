@@ -41,6 +41,8 @@ public class EventServiceImpl implements EventService {
         List<User> existingUsers = userRepository.findAll();
         for (User existingUser : existingUsers) {
             if (existingUser.getUsername().equals(event.getHost())) {
+                //existingUser.getEvents().add(event.getId());
+                //userRepository.save(existingUser);
                 return eventRepository.save(event);
             }
         }

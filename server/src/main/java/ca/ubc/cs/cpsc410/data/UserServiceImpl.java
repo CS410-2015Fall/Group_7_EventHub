@@ -100,6 +100,9 @@ public class UserServiceImpl implements UserService {
         User userToModify = users.get(0);
         User userToAddAsFriend = users.get(1);
         List<User> existingUsers = userRepository.findAll();
+        if (!existingUsers.contains(userToAddAsFriend)) {
+            throw new RuntimeException(String.format("Error: Friend %s does not exist!", userToAddAsFriend));
+        }
         for (User existingUser : existingUsers) {
             if (existingUser.getUsername().equals(userToModify.getUsername())) {
                 if (existingUser.getFriends().contains(userToAddAsFriend.getUsername())) {
@@ -122,6 +125,9 @@ public class UserServiceImpl implements UserService {
         User userToModify = users.get(0);
         User userToRemoveAsFriend = users.get(1);
         List<User> existingUsers = userRepository.findAll();
+        if (!existingUsers.contains(userToRemoveAsFriend)) {
+            throw new RuntimeException(String.format("Error: Friend %s does not exist!", userToRemoveAsFriend));
+        }
         for (User existingUser : existingUsers) {
             if (existingUser.getUsername().equals(userToModify.getUsername())) {
                 if (!existingUser.getFriends().contains(userToRemoveAsFriend.getUsername())) {
