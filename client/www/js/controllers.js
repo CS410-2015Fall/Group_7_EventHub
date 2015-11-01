@@ -28,26 +28,24 @@ App.controller('LoginCtrl', function($scope, $state, $ionicPopup, AuthService) {
   };
 });
 
-App.controller('RegisterCtrl', function($scope, $state, $http, $ionicPopup) {
+App.controller('RegisterCtrl', function($scope, $state, $http, $ionicPopup, API) {
   $scope.register = function(data) {
-    $http.defaults.headers.post['Content-Type'] = 'application/json;charset=UTF-8';
-      $http({
-        method: 'POST',
-        url: 'http://vcheng.org:8080/user/createUser',
-        data: {'username': data.username, 'password': data.password, 'email': data.email}
-      })
-      .then(function(response) {
+    var request = {'username': data.username, 'password': data.password, 'email': data.email};
+    API.post('user/createUser', request, 
+      function(response) {
         window.history.back();
         $ionicPopup.alert({
           title: 'Success',
           template: 'Please login with your username and password.'
         });
-      }, function(response) {
+      }, 
+      function(response) {
         $ionicPopup.alert({
           title: 'Error',
           template: 'Problem creating a user. Please Try again later.'
         });
-      });
+      }
+    );
   };
 
   $scope.goBack = function() {
@@ -55,7 +53,7 @@ App.controller('RegisterCtrl', function($scope, $state, $http, $ionicPopup) {
   };
 });
 
-App.controller('CreateEventCtrl', function($scope, $http, $ionicPopup, UserDataService, AuthService) {
+App.controller('CreateEventCtrl', function($scope, $http, $ionicPopup, UserDataService, AuthService, API) {
   $scope.friends = UserDataService.getCurrentFriends();
   $scope.data = {};
   $scope.goBack = function() {
@@ -73,24 +71,21 @@ App.controller('CreateEventCtrl', function($scope, $http, $ionicPopup, UserDataS
       'invitees': data.guests
     };
 
-    $http.defaults.headers.post['Content-Type'] = 'application/json;charset=UTF-8';
-    $http({
-      method: 'POST',
-      url: 'http://vcheng.org:8080/event/createEvent',
-      data: request
-    })
-    .then(function(response) {
-      window.history.back();
-      $ionicPopup.alert({
-        title: 'Success',
-        template: 'Event created!'
-      });
-    }, function(response) {
-      $ionicPopup.alert({
-        title: 'Error',
-        template: 'Please try again later.'
-      });
-    });
+    API.post('event/createEvent', request,
+      function(response) {
+        window.history.back();
+        $ionicPopup.alert({
+          title: 'Success',
+          template: 'Event created!'
+        });
+      },
+      function(response) {
+        $ionicPopup.alert({
+          title: 'Error',
+          template: 'Please try again later.'
+        });
+      }
+    );
   };
 });
 
@@ -109,7 +104,7 @@ App.controller('DashCtrl', function($scope, $state, $http, $ionicPopup, AuthServ
   };
 });
 
-App.controller('FriendsController', function($scope, UserDataService, AuthService, $state, $http, $ionicPopup) {
+App.controller('FriendsController', function($scope, UserDataService, AuthService, API, $state, $http, $ionicPopup) {
   
   $scope.data = {};
   $scope.username = AuthService.username();
@@ -123,75 +118,47 @@ App.controller('FriendsController', function($scope, UserDataService, AuthServic
     console.log(item);
   };
 
-  $scope.addFriend = function() {
+  $scope.addFriend = function(friend) {
     var username = AuthService.username();
-    $ionicPopup.show({
-      template: '<input type="text" ng-model="data.friendUsername">',
-      title: 'Add friend by username',
-      scope: $scope,
-      buttons: [
-        { text: 'Cancel' },
-        {
-          text: '<b>Add</b>',
-          type: 'button-positive',
-          onTap: function(e) {
-            if (!$scope.data.friendUsername) {
-              //don't allow the user to close unless he enters friend username
-              e.preventDefault();
-            } else {
-              var request = [{'username': username}, {'username': $scope.data.friendUsername}];
-              console.log(request);
-              $http.defaults.headers.post['Content-Type'] = 'application/json;charset=UTF-8';
-              $http({
-                method: 'POST',
-                url: 'http://vcheng.org:8080/user/addFriend',
-                data: request
-              })
-              .then(function(response) {
-                window.history.back();
-                console.log(response);
-                $ionicPopup.alert({
-                  title: 'Success',
-                  template: response
-                });
-              }, function(response) {
-                console.log(response);
-                $ionicPopup.alert({
-                  title: 'Error',
-                  template: response
-                });
-              });
-              return $scope.data.friendUsername;
-            }
-          }
-        }
-      ]
-    });
-  };
+    var request = [{'username': username}, {'username': friend}];
+    API.post('/user/addFriend', request, 
+      function(response) {
+        UserDataService.refresh();
+        $ionicPopup.alert({
+          title: 'Success',
+          template: response
+        }).then(function() {
+          $state.go($state.current, {}, {reload: true});
+        });
+      },
+      function(response) {
+        console.log(response);
+        $ionicPopup.alert({
+          title: 'Error',
+          template: response
+        });
+      }
+    );
+  }
 
   $scope.removeFriend = function(friend) {
     var username = AuthService.username();
-    var request = [{'username': username}, {'username': friend.username}];
-    console.log(request);
-    $http.defaults.headers.post['Content-Type'] = 'application/json;charset=UTF-8';
-    $http({
-      method: 'POST',
-      url: 'http://vcheng.org:8080/user/removeFriend',
-      data: request
-    })
-    .then(function(response) {
-      window.history.back();
-      console.log(response);
-      $ionicPopup.alert({
-        title: 'Success',
-        template: response
-      });
-    }, function(response) {
-      console.log(response);
-      $ionicPopup.alert({
-        title: 'Error',
-        template: response
-      });
-    });
+    var request = [{'username': username}, {'username': friend}];
+    API.post('user/removeFriend', request, 
+      function(response) {
+        UserDataService.refresh();
+        window.history.back();
+        $ionicPopup.alert({
+          title: 'Success',
+          template: response
+        });
+      },
+      function(response) {
+        $ionicPopup.alert({
+          title: 'Error',
+          template: response
+        });
+      }
+    );
   };
 });

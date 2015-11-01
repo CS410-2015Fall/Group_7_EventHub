@@ -1,8 +1,13 @@
 <ion-view view-title="Friends" name="dashboard-view" cache-view="false">
-  <ion-nav-buttons side="right">
-    <button class="button icon-right ion-android-person-add" ng-click="addFriend()"></button>
-  </ion-nav-buttons>
-  <ion-content class="padding">
+  <ion-content >
+    <div class="item item-input-inset">
+      <label class="item-input-wrapper">
+        <input type="text" placeholder="Type a username" ng-model="data.friendUsername">
+      </label>
+      <button class="button button-balanced button-small" ng-click="addFriend(data.friendUsername)">
+        Add Friend
+      </button>
+    </div>
     <ion-list>
     	<ion-item ng-repeat="friend in model.friends">
     		<h2>{{friend}}</h2>

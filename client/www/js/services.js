@@ -1,6 +1,6 @@
 var App = angular.module('App');
 
-App.service('AuthService', function($q, $http, $ionicPopup) {
+App.service('AuthService', function($q, $http, $ionicPopup, API) {
   var LOCAL_TOKEN_KEY = 'LocalTokenKey';
   var username = 'admin';
   var isAuthenticated = false;
@@ -36,21 +36,19 @@ App.service('AuthService', function($q, $http, $ionicPopup) {
 
   var login = function(name, pw) {
     return $q(function(resolve, reject) {
-      $http.defaults.headers.common['Content-Type'] = 'application/json;charset=UTF-8';
-      $http({
-        method: 'POST',
-        url: 'http://vcheng.org:8080/user/validateUser',
-        data: {'username': name, 'password': pw}
-      })
-      .then(function(response) {
-        storeUserCredentials(response.data.username);
-        resolve('Login success');
-      }, function(response) {
-        $ionicPopup.alert({
-          title: 'Problem logging in',
-          template: 'Invalid credentials.'
-        });
-      });
+      var request = {'username': name, 'password': pw};
+      API.post('user/validateUser', request, 
+        function(response) {
+          storeUserCredentials(response.data.username);
+          resolve('Login success');
+        },
+        function(response) {
+          $ionicPopup.alert({
+            title: 'Problem logging in',
+            template: 'Invalid credentials.'
+          });  
+        }
+      );
     });
   };
 
@@ -84,36 +82,6 @@ App.factory('AuthInterceptor', function ($rootScope, $q, AUTH_EVENTS) {
 App.config(function ($httpProvider) {
   $httpProvider.interceptors.push('AuthInterceptor');
 });
-
-App.factory('API', ['$http', function($http) {
-  
-  var service = {
-    getAllFriends: getAllFriends
-  };
-
-  return service;
-
-  function getAllFriends(username) {
-    $http.defaults.headers.post['Content-Type'] = 'application/json;charset=UTF-8';
-    return $http({
-        method: 'POST',
-        url: 'http://vcheng.org:8080/user/getAllFriends',
-        data: {'username': username}
-      })
-      .then(function(friendJSONArray) {
-        var updatedFriends = [];
-        for (var i = 0; i < friendJSONArray.data.length; i++) {
-          var friendObject = friendJSONArray.data[i];
-          updatedFriends.push(friendObject.username);
-        }
-        return updatedFriends;
-      }, function(response) {
-        console.log('error fetching friends');
-        console.log(response);
-        return [];
-      });
-    }
-}]);
 
 App.factory('UserDataService', ['API', 'AuthService', function(API, AuthService) {
 
