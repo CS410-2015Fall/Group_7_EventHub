@@ -86,24 +86,13 @@ App.config(function ($httpProvider) {
 App.factory('UserDataService', ['API', 'AuthService', function(API, AuthService) {
 
     var _friends = [];
-    var _events = [
-    { 'name': 'House Party'},
-    { 'name': 'Beach Party'},
-    { 'name': 'Pool Party'}
-    ];
-    var _invites = [{
-      'id': 42,
-      'name': 'Birthday Party',
-      'date': 'November 05, 1955',
-      'location': 'Stanley Park',
-      'description': 'A fun time for everyone to come and mingle dingle around the birthday boy. Free booze and food will be provided. Come dressed up in a costume! See you there!'
-    }];
+    var _events = [];
+    var _invites = [];
 
     var service = {
       getEvents: getEvents,
-      getPendingInvites: getPendingInvites,
+      getInvites: getInvites,
       getFriends: getFriends,
-      getCurrentFriends: getCurrentFriends,
       refresh: refresh
     };
 
@@ -115,31 +104,48 @@ App.factory('UserDataService', ['API', 'AuthService', function(API, AuthService)
       return _events;
     }
 
-    function getPendingInvites() {
+    function getInvites() {
       return _invites;
     }
 
     function loadAllEvents() {
+      var username = AuthService.username();
+      var request = {'username': username};
+      API.post('/user/getAllEvents', request, function(data) {
+        _events = data.data;
+      }, function (err) {
+        console.log(err);
+      });
+    }
 
+    function loadAllInvites() {
+      var username = AuthService.username();
+      var request = {'username': username};
+      API.post('/user/getPendingEvents', request, function(data) {
+        _invites = data.data;
+      }, function (err) {
+        console.log(err);
+      });
     }
 
     // Friends.
 
     function getFriends() {
+      return _friends;
+    }
+
+    function loadFriends() {
       var username = AuthService.username();
       API.getAllFriends(username).then(function(data) {
         _friends = data;
       });
     }
 
-    function getCurrentFriends() {
-      return _friends;
-    }
-
     // Re-fetches all data associated with the user.
     function refresh() {
-      getFriends();
+      loadFriends();
       loadAllEvents();
+      loadAllInvites();
     }
 
 }]);
