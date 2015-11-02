@@ -55,12 +55,12 @@ App.controller('RegisterCtrl', function($scope, $state, $http, $ionicPopup, API)
 });
 
 App.controller('CreateEventCtrl', function($scope, $http, $ionicPopup, UserDataService, AuthService, API) {
-  $scope.friends = UserDataService.getCurrentFriends();
+  $scope.friends = UserDataService.getFriends();
   $scope.data = {};
 
   (function () {
     $scope.$watch(function () {
-      return UserDataService.getCurrentFriends();
+      return UserDataService.getFriends();
     }, function (newValue, oldValue) {
       if ( newValue !== oldValue ) {
           $scope.friends = newValue;
@@ -80,7 +80,8 @@ App.controller('CreateEventCtrl', function($scope, $http, $ionicPopup, UserDataS
       'location': data.eventLocation,
       'startDate': (1900 + data.eventDate.getYear()) + '-' + data.eventDate.getMonth() + '-' + data.eventDate.getDate(),
       'host': AuthService.username(),
-      'invitees': data.guests
+      'invitees': data.guests,
+      'isFinalized': false
     };
 
     API.post('event/createEvent', request,
@@ -105,7 +106,7 @@ App.controller('DashCtrl', function($scope, $state, $http, $ionicPopup, AuthServ
 
   $scope.model = {};
   $scope.model.events = UserDataService.getEvents();
-  $scope.model.invites = UserDataService.getPendingInvites();
+  $scope.model.invites = UserDataService.getInvites();
 
   UserDataService.refresh();
 
@@ -115,6 +116,16 @@ App.controller('DashCtrl', function($scope, $state, $http, $ionicPopup, AuthServ
     }, function (newValue, oldValue) {
       if ( newValue !== oldValue ) {
           $scope.model.events = newValue;
+      }
+    });
+  }());
+
+  (function () {
+    $scope.$watch(function () {
+      return UserDataService.getInvites();
+    }, function (newValue, oldValue) {
+      if ( newValue !== oldValue ) {
+          $scope.model.invites = newValue;
       }
     });
   }());
@@ -148,22 +159,17 @@ App.controller('FriendsController', function($scope, UserDataService, AuthServic
   $scope.userService = UserDataService;
 
   $scope.model = {};
-  $scope.model.friends = UserDataService.getCurrentFriends();
+  $scope.model.friends = UserDataService.getFriends();
 
   (function () {
     $scope.$watch(function () {
-      return UserDataService.getCurrentFriends();
+      return UserDataService.getFriends();
     }, function (newValue, oldValue) {
       if ( newValue !== oldValue ) {
         $scope.model.friends = newValue;
       }
     });
   }());
-
-  $scope.deleteContact = function(item) {
-    console.log('deleting a friend');
-    console.log(item);
-  };
 
   $scope.addFriend = function(friend) {
     var username = AuthService.username();
@@ -177,7 +183,6 @@ App.controller('FriendsController', function($scope, UserDataService, AuthServic
         });
       },
       function(response) {
-        console.log(response);
         $ionicPopup.alert({
           title: 'Error',
           template: response
