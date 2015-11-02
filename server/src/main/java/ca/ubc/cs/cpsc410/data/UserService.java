@@ -38,5 +38,11 @@ public interface UserService {
     //List<Event> sendEvents(List<Event> events);
 
     List<Event> getAllEvents(User user);
+    
+    List<Event> getPendingEvents(User user);
+    
+    void acceptPendingEvent(Guest guest);
+    
+    void rejectPendingEvent(Guest guest);
 
 }
