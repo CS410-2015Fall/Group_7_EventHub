@@ -13,11 +13,12 @@ App.controller('AppCtrl', function($scope, $state, $ionicPopup, AuthService, AUT
   });
 });
 
-App.controller('LoginCtrl', function($scope, $state, $ionicPopup, AuthService) {
+App.controller('LoginCtrl', function($scope, $state, $ionicPopup, AuthService, UserDataService) {
   $scope.data = {};
 
   $scope.login = function(data) {
     AuthService.login(data.username, data.password).then(function(authenticated) {
+      UserDataService.refresh();
       $state.go('main.dash', {}, {reload: true});
     }, function(err) {
       var alertPopup = $ionicPopup.alert({
@@ -56,6 +57,17 @@ App.controller('RegisterCtrl', function($scope, $state, $http, $ionicPopup, API)
 App.controller('CreateEventCtrl', function($scope, $http, $ionicPopup, UserDataService, AuthService, API) {
   $scope.friends = UserDataService.getCurrentFriends();
   $scope.data = {};
+
+  (function () {
+    $scope.$watch(function () {
+      return UserDataService.getCurrentFriends();
+    }, function (newValue, oldValue) {
+      if ( newValue !== oldValue ) {
+          $scope.friends = newValue;
+      }
+    });
+  }());
+
   $scope.goBack = function() {
     window.history.back();
   };
@@ -90,6 +102,23 @@ App.controller('CreateEventCtrl', function($scope, $http, $ionicPopup, UserDataS
 });
 
 App.controller('DashCtrl', function($scope, $state, $http, $ionicPopup, AuthService, UserDataService) {
+
+  $scope.model = {};
+  $scope.model.events = UserDataService.getEvents();
+  $scope.model.invites = UserDataService.getPendingInvites();
+
+  UserDataService.refresh();
+  
+  (function () {
+    $scope.$watch(function () {
+      return UserDataService.getEvents();
+    }, function (newValue, oldValue) {
+      if ( newValue !== oldValue ) {
+          $scope.model.events = newValue;
+      }
+    });
+  }());
+
   $scope.logout = function() {
     AuthService.logout();
     $state.go('login');
@@ -102,6 +131,14 @@ App.controller('DashCtrl', function($scope, $state, $http, $ionicPopup, AuthServ
   $scope.createEvent = function() {
     $state.go('create');
   };
+
+  $scope.acceptInvite = function(eventId) {
+    console.log('accepted invite ' + eventId);
+  };
+
+  $scope.declineInvite = function(eventId) {
+    console.log('declined invite ' + eventId);
+  };
 });
 
 App.controller('FriendsController', function($scope, UserDataService, AuthService, API, $state, $http, $ionicPopup) {
@@ -112,6 +149,16 @@ App.controller('FriendsController', function($scope, UserDataService, AuthServic
 
   $scope.model = {};
   $scope.model.friends = UserDataService.getCurrentFriends();
+
+  (function () {
+    $scope.$watch(function () {
+      return UserDataService.getCurrentFriends();
+    }, function (newValue, oldValue) {
+      if ( newValue !== oldValue ) {
+        $scope.model.friends = newValue;
+      }
+    });
+  }());
 
   $scope.deleteContact = function(item) {
     console.log('deleting a friend');
@@ -147,7 +194,6 @@ App.controller('FriendsController', function($scope, UserDataService, AuthServic
     API.post('user/removeFriend', request, 
       function(response) {
         UserDataService.refresh();
-        window.history.back();
         $ionicPopup.alert({
           title: 'Success',
           template: response

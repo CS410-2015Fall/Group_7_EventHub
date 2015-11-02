@@ -86,9 +86,22 @@ App.config(function ($httpProvider) {
 App.factory('UserDataService', ['API', 'AuthService', function(API, AuthService) {
 
     var _friends = [];
-    var _username = AuthService.username();
+    var _events = [
+    { 'name': 'House Party'},
+    { 'name': 'Beach Party'},
+    { 'name': 'Pool Party'}
+    ];
+    var _invites = [{
+      'id': 42,
+      'name': 'Birthday Party',
+      'date': 'November 05, 1955',
+      'location': 'Stanley Park',
+      'description': 'A fun time for everyone to come and mingle dingle around the birthday boy. Free booze and food will be provided. Come dressed up in a costume! See you there!'
+    }];
 
     var service = {
+      getEvents: getEvents,
+      getPendingInvites: getPendingInvites,
       getFriends: getFriends,
       getCurrentFriends: getCurrentFriends,
       refresh: refresh
@@ -96,7 +109,24 @@ App.factory('UserDataService', ['API', 'AuthService', function(API, AuthService)
 
     return service;
 
-    function getFriends(username) {
+    // Events.
+
+    function getEvents() {
+      return _events;
+    }
+
+    function getPendingInvites() {
+      return _invites;
+    }
+
+    function loadAllEvents() {
+
+    }
+
+    // Friends.
+
+    function getFriends() {
+      var username = AuthService.username();
       API.getAllFriends(username).then(function(data) {
         _friends = data;
       });
@@ -106,8 +136,10 @@ App.factory('UserDataService', ['API', 'AuthService', function(API, AuthService)
       return _friends;
     }
 
+    // Re-fetches all data associated with the user.
     function refresh() {
-      getFriends(_username);
+      getFriends();
+      loadAllEvents();
     }
 
 }]);

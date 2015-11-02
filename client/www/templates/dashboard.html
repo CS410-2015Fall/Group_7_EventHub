@@ -7,7 +7,39 @@
   </ion-nav-buttons>
   
   <ion-content class="padding">
-    <div class="row"><div class="col text-center">
-      <button class="button button-balanced" ng-click="createEvent()">Create an Event</a></button>
+    <div class="row">
+      <div class="col text-center">
+        <button class="button button-balanced" ng-click="createEvent()">Create an Event</a></button>
+      </div>
+    </div>
+    <div class="list">
+      
+      <div class="list card" ng-repeat="item in model.invites">
+        <div class="item item-divider">{{item.name}}</div>
+        <div class="item item-body">
+          <h2>Date and Location</h2>
+          <p>{{item.date}}<br>{{item.location}}</p>
+
+          <h2>Description</h2>
+          <p>{{item.description}}</p>
+        </div>
+
+        <div class="item tabs tabs-secondary tabs-icon-left">
+          <a ng-click="acceptInvite(item.id)" href="" class="tab-item">
+            <i class="icon ion-android-done"></i>
+            Accept
+          </a>
+          <a ng-click="declineInvite(item.id)" href="" class="tab-item">
+            <i class="icon ion-android-close"></i>
+            Decline
+          </a>
+        </div>
+      </div>
+
+      <div class="item item-divider">My Events</div>
+        <a class="item" ng-repeat="item in model.events">
+          {{item.name}}
+        </a>
+    </div>
   </ion-content>
 </ion-view>
