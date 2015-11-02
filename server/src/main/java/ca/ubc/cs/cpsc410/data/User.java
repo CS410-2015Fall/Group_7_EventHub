@@ -33,6 +33,10 @@ public class User {
     @Column(name = "events")
     private List<Integer> events;
 
+    @ElementCollection(targetClass = Integer.class)
+    @Column(name = "pendingEvents")
+    private List<Integer> pendingEvents; 
+
     public int getId() {
         return id;
     }
@@ -55,6 +59,10 @@ public class User {
 
     public List<Integer> getEvents() {
         return events;
+    }
+    
+    public List<Integer> getPendingEvents() {
+        return pendingEvents;
     }
 
     @Override

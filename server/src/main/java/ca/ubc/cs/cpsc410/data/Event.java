@@ -1,6 +1,7 @@
 package ca.ubc.cs.cpsc410.data;
 
 import javax.persistence.*;
+
 import java.util.Date;
 import java.util.List;
 
@@ -12,7 +13,7 @@ import java.util.List;
 
 @Entity
 public class Event {
-
+    
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Column(name = "id", unique = true, nullable = false, updatable = false)
@@ -29,6 +30,9 @@ public class Event {
 
     @Column(name = "type")
     private String type;
+    
+    @Column(name = "isFinalized")
+    private boolean isFinalized;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "startDate")
@@ -65,6 +69,10 @@ public class Event {
         return type;
     }
 
+    public boolean getIsFinalized() {
+        return isFinalized;
+    }
+    
     public Date getStartDate() {
         return startDate;
     }
@@ -81,4 +89,31 @@ public class Event {
         return invitees;
     }
 
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + id;
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        Event other = (Event) obj;
+        if (id != other.id)
+            return false;
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return "Event [id=" + id + ", host=" + host + ", name=" + name + "]";
+    }
+    
 }

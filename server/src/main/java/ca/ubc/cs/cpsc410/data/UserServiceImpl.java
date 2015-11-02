@@ -189,4 +189,56 @@ public class UserServiceImpl implements UserService {
                 "Error: User %s does not exist!", user.getUsername()));
     }
 
+    @Override
+    public List<Event> getPendingEvents(User user) {
+        List<User> existingUsers = userRepository.findAll();
+        List<Event> existingEvents = eventRepository.findAll();
+        List<Event> returnedEvents = new ArrayList<>();
+        // TODO: check that event exists
+        for (User existingUser : existingUsers) {
+            if (existingUser.getUsername().equals(user.getUsername())) {
+                List<Integer> pendingEvents = existingUser.getPendingEvents();
+                for (Event existingEvent : existingEvents) {
+                    if (pendingEvents.contains(existingEvent.getId())) {
+                        returnedEvents.add(existingEvent);
+                    }
+                }
+                return returnedEvents;
+            }
+        }
+        throw new RuntimeException(String.format(
+                "Error: User %s does not exist!", user.getUsername()));
+    }
+
+    @Override
+    public void acceptPendingEvent(Guest guest) {
+        List<User> existingUsers = userRepository.findAll();
+        List<Event> existingEvents = eventRepository.findAll();
+        // TODO: check that event exists
+        for (User existingUser : existingUsers) {
+            if (existingUser.getUsername().equals(guest.getUsername())) {
+                existingUser.getEvents().add(guest.getEventId());
+                removeAndSaveEventId(existingUser, guest);
+            }
+        }
+    }
+
+    @Override
+    public void rejectPendingEvent(Guest guest) {
+        List<User> existingUsers = userRepository.findAll();
+        List<Event> existingEvents = eventRepository.findAll();
+        // TODO: check that event exists
+        for (User existingUser : existingUsers) {
+            if (existingUser.getUsername().equals(guest.getUsername())) {
+                removeAndSaveEventId(existingUser, guest);
+            }
+        }    
+    }
+    
+    private void removeAndSaveEventId(User existingUser, Guest guest) {
+        int indexToRemove = existingUser.getPendingEvents().indexOf(guest.getEventId());
+        existingUser.getPendingEvents().remove(indexToRemove);
+        userRepository.save(existingUser);
+    }
+
 }
