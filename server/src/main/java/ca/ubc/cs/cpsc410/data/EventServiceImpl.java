@@ -6,7 +6,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -41,17 +40,26 @@ public class EventServiceImpl implements EventService {
         if (event.getEndDate() == 0 || new Date(event.getEndDate()).before(new Date(event.getStartDate()))) {
             throw new RuntimeException("Error creating event: The event ends before it starts or doesn't exist!");
         }*/
+        Event newEvent = null;
         event.setType("wesync");
         List<User> existingUsers = userRepository.findAll();
         for (User existingUser : existingUsers) {
             if (existingUser.getUsername().equals(event.getHost())) {
-                Event newEvent = eventRepository.save(event);
+                newEvent = eventRepository.save(event);
                 existingUser.getEvents().add(newEvent.getId());
                 userRepository.save(existingUser);
-                return newEvent;
+                break;
             }
         }
-        throw new RuntimeException(String.format("Error creating event: Host %s does not match an existing user!", event.getHost()));
+        if (newEvent == null) {
+            throw new RuntimeException(String.format("Error creating event: Host %s does not match an existing user!", event.getHost()));
+        }
+        for (User existingUser : existingUsers) {
+            if (event.getInvitees().contains(existingUser.getUsername())) {
+                existingUser.getPendingEvents().add(newEvent.getId());
+            }
+        }
+        return newEvent;
     }
 
     @Override
@@ -94,14 +102,14 @@ public class EventServiceImpl implements EventService {
                         userRepository.save(existingUser);
                     }
                 }
-                existingEvent.setInvitees(null);            
+                existingEvent.setInvitees(null);
                 existingEvent.setIsFinalized(true);
                 return eventRepository.save(existingEvent);
             }
         }
         throw new RuntimeException(String.format(
                 "Error: Event %d could not be found!", event.getId()));
-        
+
     }
 
     @Override
@@ -134,16 +142,16 @@ public class EventServiceImpl implements EventService {
                     "Error: Event %d does not exist!", eventId));
         }
         for (Guest guest : guests) {
-           for (User existingUser : existingUsers) {
-               if (!eventToModify.getInvitees().contains(guest.getUsername())) {
-                   if (existingUser.getUsername().equals(guest.getUsername())) {
-                       existingUser.getPendingEvents().add(guest.getEventId());
-                       userRepository.save(existingUser);
-                       eventToModify.getInvitees().add(guest.getUsername());
-                   }
-               }
-           }
-        }      
+            for (User existingUser : existingUsers) {
+                if (!eventToModify.getInvitees().contains(guest.getUsername())) {
+                    if (existingUser.getUsername().equals(guest.getUsername())) {
+                        existingUser.getPendingEvents().add(guest.getEventId());
+                        userRepository.save(existingUser);
+                        eventToModify.getInvitees().add(guest.getUsername());
+                    }
+                }
+            }
+        }
         return eventRepository.save(eventToModify);
     }
 
@@ -165,7 +173,7 @@ public class EventServiceImpl implements EventService {
         }
         throw new RuntimeException(String.format(
                 "Error: Event %d could not be found!", event.getId()));
-        
+
     }
 
 }

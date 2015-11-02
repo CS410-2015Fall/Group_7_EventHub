@@ -99,6 +99,9 @@ public class UserServiceImpl implements UserService {
         }
         User userToModify = users.get(0);
         User userToAddAsFriend = users.get(1);
+        if (userToModify.getUsername().equals(userToAddAsFriend.getUsername())) {
+            throw new RuntimeException("Error: Cannot add yourself as a friend!");
+        }
         List<User> existingUsers = userRepository.findAll();
         if (!existingUsers.contains(userToAddAsFriend)) {
             throw new RuntimeException(String.format("Error: Friend %s does not exist!", userToAddAsFriend));
@@ -232,9 +235,9 @@ public class UserServiceImpl implements UserService {
             if (existingUser.getUsername().equals(guest.getUsername())) {
                 removeAndSaveEventId(existingUser, guest);
             }
-        }    
+        }
     }
-    
+
     private void removeAndSaveEventId(User existingUser, Guest guest) {
         int indexToRemove = existingUser.getPendingEvents().indexOf(guest.getEventId());
         existingUser.getPendingEvents().remove(indexToRemove);
