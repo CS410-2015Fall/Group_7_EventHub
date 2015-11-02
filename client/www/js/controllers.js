@@ -108,7 +108,7 @@ App.controller('DashCtrl', function($scope, $state, $http, $ionicPopup, AuthServ
   $scope.model.invites = UserDataService.getPendingInvites();
 
   UserDataService.refresh();
-  
+
   (function () {
     $scope.$watch(function () {
       return UserDataService.getEvents();
@@ -174,8 +174,6 @@ App.controller('FriendsController', function($scope, UserDataService, AuthServic
         $ionicPopup.alert({
           title: 'Success',
           template: response
-        }).then(function() {
-          $state.go($state.current, {}, {reload: true});
         });
       },
       function(response) {
