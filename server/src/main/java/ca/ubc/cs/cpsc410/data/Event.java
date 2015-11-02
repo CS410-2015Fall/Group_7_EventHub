@@ -73,6 +73,46 @@ public class Event {
         return isFinalized;
     }
     
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public void setHost(String host) {
+        this.host = host;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public void setIsFinalized(boolean isFinalized) {
+        this.isFinalized = isFinalized;
+    }
+
+    public void setStartDate(Date startDate) {
+        this.startDate = startDate;
+    }
+
+    public void setEndDate(Date endDate) {
+        this.endDate = endDate;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
+    }
+
+    public void setInvitees(List<String> invitees) {
+        this.invitees = invitees;
+    }
+
     public Date getStartDate() {
         return startDate;
     }

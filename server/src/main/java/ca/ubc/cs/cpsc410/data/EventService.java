@@ -1,5 +1,7 @@
 package ca.ubc.cs.cpsc410.data;
 
+import java.util.List;
+
 /**
  * Created by ryan on 28/10/15.
  * <p>
@@ -10,15 +12,15 @@ public interface EventService {
     
     Event createEvent(Event event);
     
-    Event cancelEvent(Event event);
+    void cancelEvent(Event event);
     
     Event finalizeEvent(Event event);
     
     Event getEvent(Event event);
     
-    Event updateEvent(Event event);
-
-    //Event addInvitee(Event event, User user);
+    Event addInvitees(List<Guest> guests);
+    
+    Event findTime(Event event);
     
     //List<Guest> updateEventGuest(Guest guest);
     

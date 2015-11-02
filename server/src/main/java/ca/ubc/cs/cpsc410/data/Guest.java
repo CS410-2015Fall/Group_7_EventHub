@@ -26,6 +26,22 @@ public class Guest {
         return id;
     }
 
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public void setEventId(int eventId) {
+        this.eventId = eventId;
+    }
+
+    public void setResponse(String response) {
+        this.response = response;
+    }
+
     public String getUsername() {
         return username;
     }

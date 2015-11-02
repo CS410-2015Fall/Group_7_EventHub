@@ -1,8 +1,12 @@
 package ca.ubc.cs.cpsc410.controllers;
 
 
+import java.util.List;
+
 import ca.ubc.cs.cpsc410.data.Event;
 import ca.ubc.cs.cpsc410.data.EventService;
+import ca.ubc.cs.cpsc410.data.Guest;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -32,8 +36,8 @@ public class EventController {
     }
 
     @RequestMapping(value = "/event/cancelEvent", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public Event cancelEvent(@RequestBody @Valid final Event event) {
-        return eventService.cancelEvent(event);
+    public void cancelEvent(@RequestBody @Valid final Event event) {
+        eventService.cancelEvent(event);
     }
 
     @RequestMapping(value = "/event/finalizeEvent", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -46,11 +50,16 @@ public class EventController {
         return eventService.getEvent(event);
     }
 
-    @RequestMapping(value = "/event/updateEvent", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public Event updateEvent(@RequestBody @Valid final Event event) {
-        return eventService.updateEvent(event);
+    @RequestMapping(value = "/event/addInvitees", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
+    public Event addInvitees(@RequestBody @Valid final List<Guest> guests) {
+        return eventService.addInvitees(guests);
     }
-
+    
+    @RequestMapping(value = "/event/findTime", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
+    public Event findTime(@RequestBody @Valid final Event event) {
+        return eventService.findTime(event);
+    }
+    
     @ExceptionHandler
     @ResponseStatus(HttpStatus.CONFLICT)
     public String handleException(Exception e) {

@@ -188,8 +188,11 @@ Output:
     
 ### Get all (accepted) events of an user
 
-    $ curl -X
+    $ curl -X POST -d '{"username":"vincent"}' -H 'Content-Type:application/json' http://localhost:8080/user/getAllEvents
     
+Output:
+    [
+
 ### Updating user data
 
 This example changes user id 10's password; all other data remains the same.
@@ -207,6 +210,7 @@ The server guarantees that:
 * All date fields will be represented as milliseconds since the Unix epoch.
 
 Event "type" should be one of: "wesync", "facebook", or "google".
+When creating events using this API, the event type will always be "wesync".
 
 ### Creating an event
 

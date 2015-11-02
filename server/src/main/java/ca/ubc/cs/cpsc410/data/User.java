@@ -53,6 +53,34 @@ public class User {
         return email;
     }
 
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public void setFriends(List<String> friends) {
+        this.friends = friends;
+    }
+
+    public void setEvents(List<Integer> events) {
+        this.events = events;
+    }
+
+    public void setPendingEvents(List<Integer> pendingEvents) {
+        this.pendingEvents = pendingEvents;
+    }
+
     public List<String> getFriends() {
         return friends;
     }
