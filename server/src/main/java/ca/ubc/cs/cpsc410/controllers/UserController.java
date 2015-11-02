@@ -4,14 +4,12 @@ import ca.ubc.cs.cpsc410.data.Event;
 import ca.ubc.cs.cpsc410.data.Guest;
 import ca.ubc.cs.cpsc410.data.User;
 import ca.ubc.cs.cpsc410.data.UserService;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-
 import java.util.List;
 
 /**
@@ -74,6 +72,11 @@ public class UserController {
         return userService.getAllUsers();
     }
 
+    @RequestMapping(value = "/user/getAllEvents", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
+    public List<Event> getAllEvents(@RequestBody @Valid final User user) {
+        return userService.getAllEvents(user);
+    }
+
     @RequestMapping(value = "/user/getPendingEvents", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
     public List<Event> getPendingEvents(@RequestBody @Valid final User user) {
         return userService.getPendingEvents(user);
@@ -83,12 +86,12 @@ public class UserController {
     public void acceptPendingEvent(@RequestBody @Valid final Guest guest) {
         userService.acceptPendingEvent(guest);
     }
-    
+
     @RequestMapping(value = "/user/rejectPendingEvent", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
     public void rejectPendingEvent(@RequestBody @Valid final Guest guest) {
         userService.rejectPendingEvent(guest);
     }
-    
+
     @ExceptionHandler
     @ResponseStatus(HttpStatus.CONFLICT)
     public String handleException(Exception e) {

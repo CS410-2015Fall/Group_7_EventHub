@@ -186,6 +186,10 @@ Output:
 
     [{"id":10,"username":"vincent","password":"foobar","email":"foo@bar.com","friends":[]},{"id":11,"username":"vincent2","password":"foobar","email":"foo2@bar.com","friends":["vincent","vincent3"]},{"id":12,"username":"vincent3","password":"foobar","email":"foo3@bar.com","friends":[]}]
     
+### Get all (accepted) events of an user
+
+    $ curl -X
+    
 ### Updating user data
 
 This example changes user id 10's password; all other data remains the same.
@@ -195,7 +199,18 @@ Intended for use to change fields that don't have an explicit endpoint.
 
 ## Event data
 
-TODO
+You can explore the API from http://localhost:8080/events.
+
+The server guarantees that:
+
+* All events will have an unique, non-null, non-updateable, auto-generated ID (integer).
+* All date fields will be represented as milliseconds since the Unix epoch.
+
+Event "type" should be one of: "wesync", "facebook", or "google".
+
+### Creating an event
+
+    $ curl -X
 
 ## Guest data
 
