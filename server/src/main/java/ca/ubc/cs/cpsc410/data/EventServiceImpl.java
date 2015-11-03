@@ -71,11 +71,15 @@ public class EventServiceImpl implements EventService {
                 for (User existingUser : existingUsers) {
                     if (existingEvent.getInvitees().contains(existingUser.getUsername())) {
                         int indexToRemove = existingUser.getPendingEvents().indexOf(existingEvent.getId());
-                        existingUser.getPendingEvents().remove(indexToRemove);
+                        if (indexToRemove != -1) { // -1: index does not exist, will throw ArrayIndexOutOfBoundsException
+                            existingUser.getPendingEvents().remove(indexToRemove);
+                        }
                     }
                     if (existingUser.getEvents().contains(existingEvent.getId())) {
                         int indexToRemove = existingUser.getEvents().indexOf(existingEvent.getId());
-                        existingUser.getEvents().remove(indexToRemove);
+                        if (indexToRemove != -1) { // -1: index does not exist, will throw ArrayIndexOutOfBoundsException
+                            existingUser.getEvents().remove(indexToRemove);
+                        }
                     }
                     userRepository.save(existingUser);
                 }
@@ -98,7 +102,9 @@ public class EventServiceImpl implements EventService {
                 for (User existingUser : existingUsers) {
                     if (existingEvent.getInvitees().contains(existingUser.getUsername())) {
                         int indexToRemove = existingUser.getPendingEvents().indexOf(existingEvent.getId());
-                        existingUser.getPendingEvents().remove(indexToRemove);
+                        if (indexToRemove != -1) { // -1: index does not exist, will throw ArrayIndexOutOfBoundsException
+                            existingUser.getPendingEvents().remove(indexToRemove);
+                        }
                         userRepository.save(existingUser);
                     }
                 }
