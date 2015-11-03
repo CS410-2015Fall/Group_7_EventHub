@@ -191,7 +191,28 @@ Output:
     $ curl -X POST -d '{"username":"vincent"}' -H 'Content-Type:application/json' http://localhost:8080/user/getAllEvents
     
 Output:
-    [
+
+    [{"id":20,"host":"vincent","name":"event1","description":"this event is awesome","type":"wesync","isFinalized":false,"startDate":1467590400000,"endDate":1499126400000,"location":"somewhere on Earth","invitees":["vincent2","vincent3"]}]
+    
+### Get all (pending, i.e. invited but not yet accepted/rejected) events of an user
+
+    $ curl -X POST -d '{"username":"vincent2"}' -H 'Content-Type: application/json' http://localhost:8080/user/getPendingEvents
+    
+Output:
+    
+    [{"id":20,"host":"vincent","name":"event1","description":"this event is awesome","type":"wesync","isFinalized":false,"startDate":1467590400000,"endDate":1499126400000,"location":"somewhere on Earth","invitees":["vincent2","vincent3"]}]
+    
+### Accept pending event
+
+    $ curl -X POST -d '{"username":"vincent3","eventId":20}' -H 'Content-Type: application/json' http://localhost:8080/user/acceptPendingEvent
+    
+(No output.)
+
+### Reject pending event
+
+    $ curl -X POST -d '{"username":"vincent2","eventId":20}' -H 'Content-Type: application/json' http://localhost:8080/user/rejectPendingEvent
+    
+(No output.)
 
 ### Updating user data
 
@@ -222,21 +243,44 @@ Output:
     
 ### Cancelling an event
 
-TODO
+    $ curl -X POST -d '{"id":20}' -H 'Content-Type: application/json' http://localhost:8080/event/cancelEvent
+    
+(No output.)
 
 ### Finalizing an event
 
-TODO
+    $ curl -X POST -d '{"id":21}' -H 'Content-Type: application/json' http://localhost:8080/event/finalizeEvent
+
+Output:
+
+    {"id":21,"host":"vincent","name":"event1","description":"this event is awesome","type":"wesync","isFinalized":true,"startDate":1467590400000,"endDate":1499126400000,"location":"somewhere on Earth","invitees":null}
 
 ### Getting an event
 
-    $ 
+    $ curl -X POST -d '{"id":21}' -H 'Content-Type: application/json' http://localhost:8080/event/getEvent
+    
+Output:
 
-### Updating an event
+    {"id":21,"host":"vincent","name":"event1","description":"this event is awesome","type":"wesync","isFinalized":true,"startDate":1467590400000,"endDate":1499126400000,"location":"somewhere on Earth","invitees":[]}
 
-## Guest data
+### Adding invitees
 
-TODO
+    $ curl -X POST -d '[{"username":"vincent","eventId":21}]' -H 'Content-Type: application/json' http://localhost:8080/event/addInvitees
+    
+Output:
+    
+    {"id":21,"host":"vincent","name":"event1","description":"this event is awesome","type":"wesync","isFinalized":true,"startDate":1467590400000,"endDate":1499126400000,"location":"somewhere on Earth","invitees":["vincent"]}
+
+### Finding time
+
+Currently MOCKED: sets event's value of startDate and endDate to 10-11 am and returns the event
+
+    $ curl -X POST -d '{"id":21}' -H 'Content-Type: application/json' http://localhost:8080/event/findTime
+    
+Output:
+    
+    {"id":21,"host":"vincent","name":"event1","description":"this event is awesome","type":"wesync","isFinalized":true,"startDate":1446746400000,"endDate":1446750000000,"location":"somewhere on Earth","invitees":["vincent"]}
+
 
 ## Facebook/Google calendar event upload endpoints
 
