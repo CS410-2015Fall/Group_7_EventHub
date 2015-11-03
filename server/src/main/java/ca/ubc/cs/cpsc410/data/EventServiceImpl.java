@@ -163,12 +163,12 @@ public class EventServiceImpl implements EventService {
             if (existingEvent.getId() == event.getId()) {
                 SimpleDateFormat format = new SimpleDateFormat("yyyy/MM/dd/HH/mm/ss");
                 try {
-                    event.setStartDate(format.parse("2015/11/05/10/00/00"));
-                    event.setEndDate(format.parse("2015/11/05/11/00/00"));
+                    existingEvent.setStartDate(format.parse("2015/11/05/10/00/00"));
+                    existingEvent.setEndDate(format.parse("2015/11/05/11/00/00"));
                 } catch (ParseException e) {
                     e.printStackTrace();
                 }
-                return eventRepository.save(event);
+                return eventRepository.save(existingEvent);
             }
         }
         throw new RuntimeException(String.format(
