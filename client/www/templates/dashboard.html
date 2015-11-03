@@ -37,8 +37,13 @@
       </div>
 
       <div class="item item-divider">My Events</div>
-        <a class="item" ng-repeat="item in model.events">
-          {{item.name}}
+        <a class="item item-button-right" ng-repeat="item in model.events">
+          <button ng-hide="item.isFinalized || username!==item.host "class="button button-balanced" ng-click="findTime(item.id)">
+            find time
+          </button>
+          <h2>{{item.name}}</h2>
+          <p>Location: {{item.location}}</p>
+          <p>Description: {{item.description}}</p>
         </a>
     </div>
   </ion-content>

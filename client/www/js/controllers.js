@@ -80,8 +80,7 @@ App.controller('CreateEventCtrl', function($scope, $http, $ionicPopup, UserDataS
       'location': data.eventLocation,
       'startDate': (1900 + data.eventDate.getYear()) + '-' + data.eventDate.getMonth() + '-' + data.eventDate.getDate(),
       'host': AuthService.username(),
-      'invitees': data.guests,
-      'isFinalized': false
+      'invitees': data.guests
     };
 
     API.post('event/createEvent', request,
@@ -102,12 +101,13 @@ App.controller('CreateEventCtrl', function($scope, $http, $ionicPopup, UserDataS
   };
 });
 
-App.controller('DashCtrl', function($scope, $state, $http, $ionicPopup, AuthService, UserDataService) {
+App.controller('DashCtrl', function($scope, $state, AuthService, UserDataService, $ionicPopup, $ionicLoading, API) {
 
   $scope.model = {};
   $scope.model.events = UserDataService.getEvents();
   $scope.model.invites = UserDataService.getInvites();
 
+  $scope.username = AuthService.username();
   UserDataService.refresh();
 
   (function () {
@@ -144,15 +144,50 @@ App.controller('DashCtrl', function($scope, $state, $http, $ionicPopup, AuthServ
   };
 
   $scope.acceptInvite = function(eventId) {
-    console.log('accepted invite ' + eventId);
+    UserDataService.acceptInvite(eventId);
   };
 
   $scope.declineInvite = function(eventId) {
-    console.log('declined invite ' + eventId);
+    UserDataService.declineInvite(eventId);
+  };
+
+  $scope.findTime = function(eventId) {
+    $ionicLoading.show({
+      content: 'Loading',
+      animation: 'fade-in',
+      showBackdrop: true,
+      maxWidth: 200,
+      showDelay: 0
+    });
+
+    var request = {'id': eventId};
+    API.post('event/findTime', request, 
+      function (response) {
+        $ionicLoading.hide();
+        $scope.presentOption(response.data);
+      }, function (response) {
+        console.log(response);
+      }
+    );
+  };
+
+  $scope.presentOption = function(tempEvent) {
+    var eventStart = new Date(tempEvent.startDate);
+    var eventEnd = new Date(tempEvent.endDate);
+    var time = '' + eventStart.toDateString() + ' from ' + eventStart.getHours() + ':' + eventStart.getMinutes() + ' to ' + eventEnd.getHours() + ':' + eventEnd.getMinutes();
+
+    $ionicPopup.confirm({
+      title: 'Free time found!',
+      template: 'Everyone is free on ' + time + '.<br>Finalize this event? This will remove any pending invitations.'
+    }).then(function (agree) {
+      if (agree) { 
+        UserDataService.finalizeEvent(tempEvent.id);
+      }
+    });
   };
 });
 
-App.controller('FriendsController', function($scope, UserDataService, AuthService, API, $state, $http, $ionicPopup) {
+App.controller('FriendsController', function($scope, UserDataService, AuthService, API, $state, $http, $ionicPopup, $cordovaCalendar) {
   
   $scope.data = {};
   $scope.username = AuthService.username();
@@ -170,6 +205,23 @@ App.controller('FriendsController', function($scope, UserDataService, AuthServic
       }
     });
   }());
+
+  // Ignore this.
+  $scope.testCalendar = function() {
+    var x;
+    var y;
+    var from = new Date();
+    var to = new Date();
+    to.setDate(from + 31);
+    $cordovaCalendar.listEventsInRange(
+      from,
+      to
+    ).then(function (result) {
+      x = result;
+    }, function (err) {
+      y = err;
+    });
+  };
 
   $scope.addFriend = function(friend) {
     var username = AuthService.username();

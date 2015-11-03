@@ -90,6 +90,9 @@ App.factory('UserDataService', ['API', 'AuthService', function(API, AuthService)
     var _invites = [];
 
     var service = {
+      acceptInvite: acceptInvite,
+      declineInvite: declineInvite,
+      finalizeEvent: finalizeEvent,
       getEvents: getEvents,
       getInvites: getInvites,
       getFriends: getFriends,
@@ -104,8 +107,43 @@ App.factory('UserDataService', ['API', 'AuthService', function(API, AuthService)
       return _events;
     }
 
+    function finalizeEvent(eventId) {
+      var request = {'id': eventId};
+      API.post('event/finalizeEvent', request, 
+        function (response) {
+          loadAllEvents();
+        }, function (response) {
+          console.log(response);
+        }
+      );
+    }
+
     function getInvites() {
       return _invites;
+    }
+
+    function acceptInvite(eventId) {
+      var request = {'eventId': eventId, 'username': AuthService.username()};
+      API.post('/user/acceptPendingEvent', request, 
+        function (response) {
+          refresh();
+        },
+        function (response) {
+          console.log(response);
+        }
+      );
+    }
+
+    function declineInvite(eventId) {
+      var request = {'eventId': eventId, 'username': AuthService.username()};
+      API.post('/user/rejectPendingEvent', request, 
+        function (response) {
+          refresh();
+        },
+        function (response) {
+          console.log(response);
+        }
+      );
     }
 
     function loadAllEvents() {
@@ -121,8 +159,18 @@ App.factory('UserDataService', ['API', 'AuthService', function(API, AuthService)
     function loadAllInvites() {
       var username = AuthService.username();
       var request = {'username': username};
+      var inviteArray = [];
       API.post('/user/getPendingEvents', request, function(data) {
-        _invites = data.data;
+        var eventIds = data.data;
+        for (var i = 0; i < eventIds.length; i++) {
+          var id = eventIds[i];
+          API.post('/event/getEvent', id, function(response){
+            inviteArray.push(response.data);
+          }, function(err) {
+            console.log(err);
+          });
+        }
+        _invites = inviteArray;
       }, function (err) {
         console.log(err);
       });
