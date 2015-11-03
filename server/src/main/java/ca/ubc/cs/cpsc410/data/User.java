@@ -1,6 +1,9 @@
 package ca.ubc.cs.cpsc410.data;
 
 import javax.persistence.*;
+
+import org.hibernate.annotations.IndexColumn;
+
 import java.util.List;
 
 /**
@@ -25,8 +28,9 @@ public class User {
     @Column(name = "email", unique = true, nullable = false)
     private String email;
 
-    @ElementCollection(targetClass = String.class)
+
     @Column(name = "friends")
+    @ElementCollection(fetch = FetchType.EAGER, targetClass = String.class)
     private List<String> friends;
 
     @ElementCollection(targetClass = Integer.class)
@@ -51,34 +55,6 @@ public class User {
 
     public String getEmail() {
         return email;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public void setFriends(List<String> friends) {
-        this.friends = friends;
-    }
-
-    public void setEvents(List<Integer> events) {
-        this.events = events;
-    }
-
-    public void setPendingEvents(List<Integer> pendingEvents) {
-        this.pendingEvents = pendingEvents;
     }
 
     public List<String> getFriends() {
@@ -115,4 +91,34 @@ public class User {
                 "username='" + username + '\'' +
                 '}';
     }
+    
+    // Setters for testing purposes
+    public void setId(int id) {
+    	this.id = id;
+    }
+    
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public void setFriends(List<String> friends) {
+        this.friends = friends;
+    }
+    
+    public void setEvents(List<Integer> events) {
+        this.events = events;
+    }
+
+    public void setPendingEvents(List<Integer> pendingEvents) {
+        this.pendingEvents = pendingEvents;
+    }
+
 }
