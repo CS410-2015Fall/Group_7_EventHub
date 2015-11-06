@@ -113,7 +113,14 @@ public class UserServiceImpl implements UserService {
                             "Error: User %s is already a friend of user %s!", userToAddAsFriend, userToModify));
                 }
                 existingUser.getFriends().add(userToAddAsFriend.getUsername());
-                return userRepository.save(existingUser);
+                User userToReturn = userRepository.save(existingUser);
+                for (User existingUserFriend : existingUsers) {
+                    if (existingUserFriend.getUsername().equals(userToAddAsFriend.getUsername())) {
+                        existingUserFriend.getFriends().add(userToModify.getUsername());
+                        userRepository.save(existingUserFriend);
+                    }
+                }
+                return userToReturn;
             }
         }
         throw new RuntimeException(String.format(
@@ -138,7 +145,14 @@ public class UserServiceImpl implements UserService {
                             "Error: User %s is not a friend of user %s!", userToRemoveAsFriend, userToModify));
                 }
                 existingUser.getFriends().remove(userToRemoveAsFriend.getUsername());
-                return userRepository.save(existingUser);
+                User userToReturn = userRepository.save(existingUser);
+                for (User existingUserFriend : existingUsers) {
+                    if (existingUserFriend.getUsername().equals(userToRemoveAsFriend.getUsername())) {
+                        existingUserFriend.getFriends().remove(userToModify.getUsername());
+                        userRepository.save(existingUserFriend);
+                    }
+                }
+                return userToReturn;
             }
         }
         throw new RuntimeException(String.format(
