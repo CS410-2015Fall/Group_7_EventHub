@@ -65,30 +65,27 @@ public class EventServiceImpl implements EventService {
     @Override
     public void cancelEvent(Event event) {
         List<User> existingUsers = userRepository.findAll();
-        List<Event> existingEvents = eventRepository.findAll();
-        for (Event existingEvent : existingEvents) {
-            if (existingEvent.getId() == event.getId()) {
-                for (User existingUser : existingUsers) {
-                    if (existingEvent.getInvitees().contains(existingUser.getUsername())) {
-                        int indexToRemove = existingUser.getPendingEvents().indexOf(existingEvent.getId());
-                        if (indexToRemove != -1) { // -1: index does not exist, will throw ArrayIndexOutOfBoundsException
-                            existingUser.getPendingEvents().remove(indexToRemove);
-                        }
+        Event existingEvent = eventRepository.getOne(event.getId());
+        if (existingEvent != null) {
+            for (User existingUser : existingUsers) {
+                if (existingEvent.getInvitees().contains(existingUser.getUsername())) {
+                    int indexToRemove = existingUser.getPendingEvents().indexOf(existingEvent.getId());
+                    if (indexToRemove != -1) { // -1: index does not exist, will throw ArrayIndexOutOfBoundsException
+                        existingUser.getPendingEvents().remove(indexToRemove);
                     }
-                    if (existingUser.getEvents().contains(existingEvent.getId())) {
-                        int indexToRemove = existingUser.getEvents().indexOf(existingEvent.getId());
-                        if (indexToRemove != -1) { // -1: index does not exist, will throw ArrayIndexOutOfBoundsException
-                            existingUser.getEvents().remove(indexToRemove);
-                        }
-                    }
-                    userRepository.save(existingUser);
                 }
-                existingEvent.setInvitees(null);
-                eventRepository.delete(existingEvent);
-                return;
+                if (existingUser.getEvents().contains(existingEvent.getId())) {
+                    int indexToRemove = existingUser.getEvents().indexOf(existingEvent.getId());
+                    if (indexToRemove != -1) { // -1: index does not exist, will throw ArrayIndexOutOfBoundsException
+                        existingUser.getEvents().remove(indexToRemove);
+                    }
+                }
+                userRepository.save(existingUser);
             }
+            existingEvent.setInvitees(null);
+            eventRepository.delete(existingEvent);
+            return;
         }
-
         throw new RuntimeException(String.format(
                 "Error: Event %d could not be found!", event.getId()));
     }
@@ -96,22 +93,20 @@ public class EventServiceImpl implements EventService {
     @Override
     public Event finalizeEvent(Event event) {
         List<User> existingUsers = userRepository.findAll();
-        List<Event> existingEvents = eventRepository.findAll();
-        for (Event existingEvent : existingEvents) {
-            if (existingEvent.getId() == event.getId()) {
-                for (User existingUser : existingUsers) {
-                    if (existingEvent.getInvitees().contains(existingUser.getUsername())) {
-                        int indexToRemove = existingUser.getPendingEvents().indexOf(existingEvent.getId());
-                        if (indexToRemove != -1) { // -1: index does not exist, will throw ArrayIndexOutOfBoundsException
-                            existingUser.getPendingEvents().remove(indexToRemove);
-                        }
-                        userRepository.save(existingUser);
+        Event existingEvent = eventRepository.findOne(event.getId());
+        if (existingEvent != null) {
+            for (User existingUser : existingUsers) {
+                if (existingEvent.getInvitees().contains(existingUser.getUsername())) {
+                    int indexToRemove = existingUser.getPendingEvents().indexOf(existingEvent.getId());
+                    if (indexToRemove != -1) { // -1: index does not exist, will throw ArrayIndexOutOfBoundsException
+                        existingUser.getPendingEvents().remove(indexToRemove);
                     }
+                    userRepository.save(existingUser);
                 }
-                existingEvent.setInvitees(null);
-                existingEvent.setIsFinalized(true);
-                return eventRepository.save(existingEvent);
             }
+            existingEvent.setInvitees(null);
+            existingEvent.setIsFinalized(true);
+            return eventRepository.save(existingEvent);
         }
         throw new RuntimeException(String.format(
                 "Error: Event %d could not be found!", event.getId()));
@@ -120,12 +115,17 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public Event getEvent(Event event) {
-        List<Event> existingEvents = eventRepository.findAll();
+        Event existingEvent = eventRepository.findOne(event.getId());
+        if (existingEvent != null) {
+            return existingEvent;
+        }
+        /*
         for (Event existingEvent : existingEvents) {
             if (existingEvent.getId() == event.getId()) {
                 return existingEvent;
             }
         }
+        */
         throw new RuntimeException(String.format("Error getting event: Event %s does not exist!", event.getId()));
     }
 
@@ -133,32 +133,25 @@ public class EventServiceImpl implements EventService {
     public Event addInvitees(List<Guest> guests) {
         // TODO: security check!!
         List<User> existingUsers = userRepository.findAll();
-        List<Event> existingEvents = eventRepository.findAll();
         int eventId = guests.get(0).getEventId();
         // TODO: Fail if the eventsIds aren't the same
-        Event eventToModify = null;
-        for (Event existingEvent : existingEvents) {
-            if (existingEvent.getId() == eventId) {
-                eventToModify = existingEvent;
-                break;
-            }
-        }
-        if (eventToModify == null) {
-            throw new RuntimeException(String.format(
-                    "Error: Event %d does not exist!", eventId));
-        }
-        for (Guest guest : guests) {
-            for (User existingUser : existingUsers) {
-                if (!eventToModify.getInvitees().contains(guest.getUsername())) {
-                    if (existingUser.getUsername().equals(guest.getUsername())) {
-                        existingUser.getPendingEvents().add(guest.getEventId());
-                        userRepository.save(existingUser);
-                        eventToModify.getInvitees().add(guest.getUsername());
+        Event eventToModify = eventRepository.findOne(eventId);
+        if (eventToModify != null) {
+            for (Guest guest : guests) {
+                for (User existingUser : existingUsers) {
+                    if (!eventToModify.getInvitees().contains(guest.getUsername())) {
+                        if (existingUser.getUsername().equals(guest.getUsername())) {
+                            existingUser.getPendingEvents().add(guest.getEventId());
+                            userRepository.save(existingUser);
+                            eventToModify.getInvitees().add(guest.getUsername());
+                        }
                     }
                 }
             }
+            return eventRepository.save(eventToModify);
         }
-        return eventRepository.save(eventToModify);
+        throw new RuntimeException(String.format(
+                "Error: Event %d does not exist!", eventId));
     }
 
     @Override

@@ -58,11 +58,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User findById(User user) {
-        List<User> existingUsers = userRepository.findAll();
-        for (User existingUser : existingUsers) {
-            if (existingUser.getId() == user.getId()) {
-                return existingUser;
-            }
+        User existingUser = userRepository.findOne(user.getId());
+        if (existingUser != null) {
+            return existingUser;
         }
         throw new RuntimeException(String.format(
                 "Error: User ID %d does not exist!", user.getId()));
@@ -187,16 +185,14 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<Event> getAllEvents(User user) {
         List<User> existingUsers = userRepository.findAll();
-        List<Event> existingEvents = eventRepository.findAll();
+        List<Event> eventsToReturn = new ArrayList<>();
         for (User existingUser : existingUsers) {
             if (existingUser.getUsername().equals(user.getUsername())) {
                 List<Integer> eventsAsInts = existingUser.getEvents();
-                List<Event> eventsToReturn = new ArrayList<>();
-                for (Event event : existingEvents) {
-                    for (int eventAsInt : eventsAsInts) {
-                        if (event.getId() == eventAsInt) {
-                            eventsToReturn.add(event);
-                        }
+                for (int eventAsInt : eventsAsInts) {
+                    Event existingEvent = eventRepository.findOne(eventAsInt);
+                    if (existingEvent != null) {
+                        eventsToReturn.add(existingEvent);
                     }
                 }
                 return eventsToReturn;
@@ -209,18 +205,19 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<Event> getPendingEvents(User user) {
         List<User> existingUsers = userRepository.findAll();
-        List<Event> existingEvents = eventRepository.findAll();
-        List<Event> returnedEvents = new ArrayList<>();
+        List<Event> eventsToReturn = new ArrayList<>();
         // TODO: check that event exists
         for (User existingUser : existingUsers) {
             if (existingUser.getUsername().equals(user.getUsername())) {
                 List<Integer> pendingEvents = existingUser.getPendingEvents();
-                for (Event existingEvent : existingEvents) {
-                    if (pendingEvents.contains(existingEvent.getId())) {
-                        returnedEvents.add(existingEvent);
+                for (int eventAsInt : pendingEvents) {
+                    Event existingEvent = eventRepository.findOne(eventAsInt);
+                    if (existingEvent != null) {
+                        eventsToReturn.add(existingEvent);
                     }
                 }
-                return returnedEvents;
+
+                return eventsToReturn;
             }
         }
         throw new RuntimeException(String.format(
@@ -230,7 +227,6 @@ public class UserServiceImpl implements UserService {
     @Override
     public void acceptPendingEvent(Guest guest) {
         List<User> existingUsers = userRepository.findAll();
-        List<Event> existingEvents = eventRepository.findAll();
         // TODO: check that event exists
         for (User existingUser : existingUsers) {
             if (existingUser.getUsername().equals(guest.getUsername())) {
@@ -243,7 +239,6 @@ public class UserServiceImpl implements UserService {
     @Override
     public void rejectPendingEvent(Guest guest) {
         List<User> existingUsers = userRepository.findAll();
-        List<Event> existingEvents = eventRepository.findAll();
         // TODO: check that event exists
         for (User existingUser : existingUsers) {
             if (existingUser.getUsername().equals(guest.getUsername())) {
