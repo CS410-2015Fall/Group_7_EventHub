@@ -44,7 +44,8 @@ App.config(function ($stateProvider, $urlRouterProvider) {
     url: 'main/settings',
     views: {
         'settings-tab': {
-          templateUrl: 'templates/settings.html'
+          templateUrl: 'templates/settings.html',
+          controller: 'SettingsController'
         }
     }
   });
