@@ -187,7 +187,7 @@ App.controller('DashCtrl', function($scope, $state, AuthService, UserDataService
   };
 });
 
-App.controller('FriendsController', function($scope, UserDataService, AuthService, API, $state, $http, $ionicPopup, $cordovaCalendar) {
+App.controller('FriendsController', function($scope, UserDataService, AuthService, API, $state, $http, $ionicPopup) {
   
   $scope.data = {};
   $scope.username = AuthService.username();
@@ -205,23 +205,6 @@ App.controller('FriendsController', function($scope, UserDataService, AuthServic
       }
     });
   }());
-
-  // Ignore this.
-  $scope.testCalendar = function() {
-    var x;
-    var y;
-    var from = new Date();
-    var to = new Date();
-    to.setDate(from + 31);
-    $cordovaCalendar.listEventsInRange(
-      from,
-      to
-    ).then(function (result) {
-      x = result;
-    }, function (err) {
-      y = err;
-    });
-  };
 
   $scope.addFriend = function(friend) {
     var username = AuthService.username();
@@ -264,7 +247,7 @@ App.controller('FriendsController', function($scope, UserDataService, AuthServic
   };
 });
 
-App.controller('SettingsController', function($scope, $cordovaFacebook, UserDataService) {
+App.controller('SettingsController', function($scope, $cordovaFacebook, $cordovaCalendar) {
   $scope.linkFB = function() {
     $cordovaFacebook.login(['user_events']).then( function (user) {
       console.log(user);
@@ -295,4 +278,24 @@ App.controller('SettingsController', function($scope, $cordovaFacebook, UserData
       }
     );
   };
+
+  $scope.linkNative = function() {
+    var from = new Date();
+    var to = new Date();
+    to.setMonth(from.getMonth() + 1);
+    $cordovaCalendar.listCalendars().then(function (result) {
+      console.log('here are my calendars');
+      console.log(result);
+      $cordovaCalendar.listEventsInRange(from, to)
+      .then(function (result) {
+        console.log('fetched native events successfully');
+        console.log(result);
+      }, function (err) {
+        console.log('error!');
+        console.log(err);
+      });
+    }, function (err) {
+      console.log(err);
+    });
+  }
 });
