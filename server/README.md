@@ -235,11 +235,11 @@ When creating events using this API, the event type will always be "wesync".
 
 ### Creating an event
 
-    $ curl -X POST -d '{"name":"event1","type":"wesync","description":"this event is awesome","location":"somewhere on Earth","isFinalized":false,"startDate":"2016-07-04","endDate":"2017-07-04","host":"vincent","invitees":["vincent2","vincent3"]}' -H 'Content-Type: application/json' http://localhost:8080/event/createEvent
+    $ curl -X POST -d '{"name":"event1","type":"wesync","description":"this event is awesome","location":"somewhere on Earth","isFinalized":false,"startDate":"2016-07-04","endDate":"2017-07-04","host":"vincent","confirmedInvitees":[],"invitees":["vincent2","vincent3"]}' -H 'Content-Type: application/json' http://localhost:8080/event/createEvent
 
 Output:
 
-    {"id":21,"host":"vincent","name":"event1","description":"this event is awesome","type":"wesync","isFinalized":false,"startDate":1467590400000,"endDate":1499126400000,"location":"somewhere on Earth","invitees":["vincent2","vincent3"]}
+    {"id":21,"host":"vincent","name":"event1","description":"this event is awesome","type":"wesync","isFinalized":false,"startDate":1467590400000,"endDate":1499126400000,"location":"somewhere on Earth","confirmedInvitees":[],"invitees":["vincent2","vincent3"]}
     
 ### Cancelling an event
 
@@ -270,6 +270,22 @@ Output:
 Output:
     
     {"id":21,"host":"vincent","name":"event1","description":"this event is awesome","type":"wesync","isFinalized":true,"startDate":1467590400000,"endDate":1499126400000,"location":"somewhere on Earth","invitees":["vincent"]}
+    
+### Getting invitees
+
+    $ curl -X POST -d '{"id":20}' -H 'Content-Type: application/json' http://localhost:8080/event/getInvitees
+    
+Output: 
+
+    [{"id":11,"username":"vincent2","password":"foobar","email":"foo2@bar.com","friends":["vincent","vincent3"],"events":[],"pendingEvents":[]},{"id":12,"username":"vincent3","password":"foobar","email":"foo3@bar.com","friends":["vincent2"],"events":[20],"pendingEvents":[]}]
+    
+### Getting confirmed invitees (i.e. users who have accepted an invite to the event)
+
+    $ curl -X POST -d '{"id":20}' -H 'Content-Type: application/json' http://localhost:8080/event/getConfirmedInvitees
+    
+Output:
+
+    [{"id":12,"username":"vincent3","password":"foobar","email":"foo3@bar.com","friends":["vincent2"],"events":[20],"pendingEvents":[]}]
 
 ### Finding time
 

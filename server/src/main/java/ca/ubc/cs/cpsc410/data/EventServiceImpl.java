@@ -6,6 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -57,6 +58,9 @@ public class EventServiceImpl implements EventService {
         for (User existingUser : existingUsers) {
             if (event.getInvitees().contains(existingUser.getUsername())) {
                 existingUser.getPendingEvents().add(newEvent.getId());
+            }
+            if (event.getConfirmedInvitees().contains(existingUser.getUsername())) {
+                existingUser.getEvents().add(newEvent.getId());
             }
         }
         return newEvent;
@@ -134,8 +138,15 @@ public class EventServiceImpl implements EventService {
         // TODO: security check!!
         List<User> existingUsers = userRepository.findAll();
         int eventId = guests.get(0).getEventId();
-        // TODO: Fail if the eventsIds aren't the same
         Event eventToModify = eventRepository.findOne(eventId);
+        for (Guest guest : guests) {
+            if (eventToModify.getHost().equals(guest.getUsername())) {
+                throw new RuntimeException(String.format("Error: Username %s is the host of the event and so cannot accept or reject an invite to this event", guest.getUsername()));
+            }
+            if (guest.getEventId() != eventId) {
+                throw new RuntimeException("Error: Guests must have the same event ID!");
+            }
+        }
         if (eventToModify != null) {
             for (Guest guest : guests) {
                 for (User existingUser : existingUsers) {
@@ -152,6 +163,42 @@ public class EventServiceImpl implements EventService {
         }
         throw new RuntimeException(String.format(
                 "Error: Event %d does not exist!", eventId));
+    }
+
+    @Override
+    public List<User> getInvitees(Event event) {
+        List<User> existingUsers = userRepository.findAll();
+        Event existingEvent = eventRepository.findOne(event.getId());
+        if (existingEvent == null) {
+            throw new RuntimeException(String.format("Error: Event id %d cannot be found!", event.getId()));
+        }
+        List<User> usersToReturn = new ArrayList<>();
+        for (String invitee : existingEvent.getInvitees()) {
+            for (User user : existingUsers) {
+                if (user.getUsername().equals(invitee)) {
+                    usersToReturn.add(user);
+                }
+            }
+        }
+        return usersToReturn;
+    }
+
+    @Override
+    public List<User> getConfirmedInvitees(Event event) {
+        List<User> existingUsers = userRepository.findAll();
+        Event existingEvent = eventRepository.findOne(event.getId());
+        if (existingEvent == null) {
+            throw new RuntimeException(String.format("Error: Event id %d cannot be found!", event.getId()));
+        }
+        List<User> usersToReturn = new ArrayList<>();
+        for (String confirmedInvitee : existingEvent.getConfirmedInvitees()) {
+            for (User user : existingUsers) {
+                if (user.getUsername().equals(confirmedInvitee)) {
+                    usersToReturn.add(user);
+                }
+            }
+        }
+        return usersToReturn;
     }
 
     @Override

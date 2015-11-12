@@ -19,7 +19,11 @@ public interface EventService {
     Event getEvent(Event event);
     
     Event addInvitees(List<Guest> guests);
-    
+
+    List<User> getInvitees(Event event);
+
+    List<User> getConfirmedInvitees(Event event);
+
     Event findTime(Event event);
     
     //List<Guest> updateEventGuest(Guest guest);
