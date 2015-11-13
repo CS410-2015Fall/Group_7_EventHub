@@ -1,18 +1,17 @@
 package ca.ubc.cs.cpsc410.controllers;
 
 
-import java.util.List;
-
 import ca.ubc.cs.cpsc410.data.Event;
 import ca.ubc.cs.cpsc410.data.EventService;
 import ca.ubc.cs.cpsc410.data.Guest;
-
+import ca.ubc.cs.cpsc410.data.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
 
 
 /**
@@ -54,12 +53,22 @@ public class EventController {
     public Event addInvitees(@RequestBody @Valid final List<Guest> guests) {
         return eventService.addInvitees(guests);
     }
-    
+
+    @RequestMapping(value = "/event/getInvitees", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
+    public List<User> getInvitees(@RequestBody @Valid final Event event) {
+        return eventService.getInvitees(event);
+    }
+
+    @RequestMapping(value = "/event/getConfirmedInvitees", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
+    public List<User> getConfirmedInvitees(@RequestBody @Valid final Event event) {
+        return eventService.getConfirmedInvitees(event);
+    }
+
     @RequestMapping(value = "/event/findTime", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
     public Event findTime(@RequestBody @Valid final Event event) {
         return eventService.findTime(event);
     }
-    
+
     @ExceptionHandler
     @ResponseStatus(HttpStatus.CONFLICT)
     public String handleException(Exception e) {

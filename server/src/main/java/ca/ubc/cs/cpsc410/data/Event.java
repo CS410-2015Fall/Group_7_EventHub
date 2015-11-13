@@ -1,7 +1,6 @@
 package ca.ubc.cs.cpsc410.data;
 
 import javax.persistence.*;
-
 import java.util.Date;
 import java.util.List;
 
@@ -13,7 +12,7 @@ import java.util.List;
 
 @Entity
 public class Event {
-    
+
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Column(name = "id", unique = true, nullable = false, updatable = false)
@@ -30,7 +29,7 @@ public class Event {
 
     @Column(name = "type")
     private String type;
-    
+
     @Column(name = "isFinalized")
     private boolean isFinalized;
 
@@ -46,6 +45,10 @@ public class Event {
     private String location;
 
     @ElementCollection(targetClass = String.class)
+    @Column(name = "confirmedInvitees")
+    private List<String> confirmedInvitees;
+
+    @ElementCollection(targetClass = String.class)
     @Column(name = "invitees")
     private List<String> invitees;
 
@@ -53,80 +56,88 @@ public class Event {
         return id;
     }
 
-    public String getHost() {
-        return host;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public boolean getIsFinalized() {
-        return isFinalized;
-    }
-    
     public void setId(int id) {
         this.id = id;
+    }
+
+    public String getHost() {
+        return host;
     }
 
     public void setHost(String host) {
         this.host = host;
     }
 
+    public String getName() {
+        return name;
+    }
+
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getDescription() {
+        return description;
     }
 
     public void setDescription(String description) {
         this.description = description;
     }
 
+    public String getType() {
+        return type;
+    }
+
     public void setType(String type) {
         this.type = type;
+    }
+
+    public boolean getIsFinalized() {
+        return isFinalized;
     }
 
     public void setIsFinalized(boolean isFinalized) {
         this.isFinalized = isFinalized;
     }
 
-    public void setStartDate(Date startDate) {
-        this.startDate = startDate;
-    }
-
-    public void setEndDate(Date endDate) {
-        this.endDate = endDate;
-    }
-
-    public void setLocation(String location) {
-        this.location = location;
-    }
-
-    public void setInvitees(List<String> invitees) {
-        this.invitees = invitees;
-    }
-
     public Date getStartDate() {
         return startDate;
+    }
+
+    public void setStartDate(Date startDate) {
+        this.startDate = startDate;
     }
 
     public Date getEndDate() {
         return endDate;
     }
 
+    public void setEndDate(Date endDate) {
+        this.endDate = endDate;
+    }
+
     public String getLocation() {
         return location;
     }
 
+    public void setLocation(String location) {
+        this.location = location;
+    }
+
     public List<String> getInvitees() {
         return invitees;
+    }
+
+    public void setInvitees(List<String> invitees) {
+        this.invitees = invitees;
+    }
+
+    public List<String> getConfirmedInvitees() {
+        return confirmedInvitees;
+    }
+
+    public void setConfirmedInvitees(List<String> confirmedInvitees) {
+        this.confirmedInvitees = confirmedInvitees;
     }
 
     @Override
@@ -155,5 +166,5 @@ public class Event {
     public String toString() {
         return "Event [id=" + id + ", host=" + host + ", name=" + name + "]";
     }
-    
+
 }

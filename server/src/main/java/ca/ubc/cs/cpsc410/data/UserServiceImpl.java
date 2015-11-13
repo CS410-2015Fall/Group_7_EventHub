@@ -227,19 +227,35 @@ public class UserServiceImpl implements UserService {
     @Override
     public void acceptPendingEvent(Guest guest) {
         List<User> existingUsers = userRepository.findAll();
-        // TODO: check that event exists
+        Event existingEvent = eventRepository.findOne(guest.getEventId());
+        if (existingEvent == null) {
+            throw new RuntimeException(String.format("Error: Event id %d does not exist!", guest.getEventId()));
+        }
+        if (guest.getUsername().equals(existingEvent.getHost())) {
+            throw new RuntimeException(String.format("Error: Username %s is the host of the event and so cannot accept or reject an invite to this event", existingEvent.getHost()));
+        }
         for (User existingUser : existingUsers) {
             if (existingUser.getUsername().equals(guest.getUsername())) {
                 existingUser.getEvents().add(guest.getEventId());
                 removeAndSaveEventId(existingUser, guest);
             }
         }
+        if (existingEvent.getId() == guest.getEventId()) {
+            existingEvent.getConfirmedInvitees().add(guest.getUsername());
+            eventRepository.save(existingEvent);
+        }
     }
 
     @Override
     public void rejectPendingEvent(Guest guest) {
         List<User> existingUsers = userRepository.findAll();
-        // TODO: check that event exists
+        Event existingEvent = eventRepository.findOne(guest.getEventId());
+        if (existingEvent == null) {
+            throw new RuntimeException(String.format("Error: Event id %d does not exist!", guest.getEventId()));
+        }
+        if (guest.getUsername().equals(existingEvent.getHost())) {
+            throw new RuntimeException(String.format("Error: Username %s is the host of the event and so cannot accept or reject an invite to this event", existingEvent.getHost()));
+        }
         for (User existingUser : existingUsers) {
             if (existingUser.getUsername().equals(guest.getUsername())) {
                 removeAndSaveEventId(existingUser, guest);
@@ -249,8 +265,10 @@ public class UserServiceImpl implements UserService {
 
     private void removeAndSaveEventId(User existingUser, Guest guest) {
         int indexToRemove = existingUser.getPendingEvents().indexOf(guest.getEventId());
-        existingUser.getPendingEvents().remove(indexToRemove);
-        userRepository.save(existingUser);
+        if (indexToRemove != -1) { // -1: index does not exist, will throw ArrayIndexOutOfBoundsException
+            existingUser.getPendingEvents().remove(indexToRemove);
+            userRepository.save(existingUser);
+        }
     }
 
 }
