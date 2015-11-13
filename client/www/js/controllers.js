@@ -54,8 +54,9 @@ App.controller('RegisterCtrl', function($scope, $state, $http, $ionicPopup, API)
   };
 });
 
-App.controller('CreateEventCtrl', function($scope, $http, $ionicPopup, UserDataService, AuthService, API) {
+App.controller('CreateEventCtrl', function($scope, $http, $ionicPopup, $ionicModal, UserDataService, AuthService, API) {
   $scope.friends = UserDataService.getFriends();
+  $scope.formLocation = "Pick a Location";
   $scope.data = {};
 
   (function () {
@@ -67,6 +68,54 @@ App.controller('CreateEventCtrl', function($scope, $http, $ionicPopup, UserDataS
       }
     });
   }());
+
+  $ionicModal.fromTemplateUrl('map-picker-modal.html', {
+    scope: $scope,
+    animation: 'slide-in-up'
+  }).then(function(modal) {
+    $scope.modal = modal;
+  })
+
+  $scope.$on('modal.shown', function() {
+    var vancouver = new google.maps.LatLng(49.2827, -123.1207);
+
+    var mapOptions = {
+        center: vancouver,
+        zoom: 16,
+        mapTypeId: google.maps.MapTypeId.ROADMAP
+    };
+
+    var map = new google.maps.Map(document.getElementById("map"), mapOptions);
+
+    $scope.data.marker = new google.maps.Marker({
+        position: vancouver,
+        map: map,
+        title: "Event Location"
+    });
+
+    // Add a click event handler to the map
+    google.maps.event.addListener(map, "click", function(event) {
+      console.log('yo');
+        $scope.data.marker.setMap(null);
+        $scope.data.marker = new google.maps.Marker({
+            position: event.latLng,
+            map: map,
+            title: "Event Location"
+        });
+
+        $scope.lat = event.latLng.lat();
+        $scope.lon = event.latLng.lng();
+    });
+  });  
+
+  $scope.loadMapPicker = function() {
+    $scope.modal.show();
+  };
+
+  $scope.closeModal = function() {
+    $scope.formLocation = $scope.lat + ', ' + $scope.lon;
+    $scope.modal.hide();
+  };
 
   $scope.goBack = function() {
     window.history.back();
