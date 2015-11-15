@@ -1,9 +1,6 @@
 package ca.ubc.cs.cpsc410.controllers;
 
-import ca.ubc.cs.cpsc410.data.Event;
-import ca.ubc.cs.cpsc410.data.Guest;
-import ca.ubc.cs.cpsc410.data.User;
-import ca.ubc.cs.cpsc410.data.UserService;
+import ca.ubc.cs.cpsc410.data.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -95,6 +92,11 @@ public class UserController {
     @RequestMapping(value = "/user/addFacebookToken", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
     public User addFacebookToken(@RequestBody @Valid final User user) {
         return userService.addFacebookToken(user);
+    }
+
+    @RequestMapping(value = "/user/addGoogleEvents", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
+    public User addGoogleEvents(@RequestBody @Valid final List<GoogleEvent> googleEvents) {
+        return userService.addGoogleEvents(googleEvents);
     }
 
     @ExceptionHandler

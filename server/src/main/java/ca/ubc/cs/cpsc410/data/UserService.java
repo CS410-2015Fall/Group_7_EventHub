@@ -47,4 +47,6 @@ public interface UserService {
 
     User addFacebookToken(User user);
 
+    User addGoogleEvents(List<GoogleEvent> googleEvents);
+
 }
