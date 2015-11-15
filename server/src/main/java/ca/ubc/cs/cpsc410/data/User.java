@@ -1,9 +1,6 @@
 package ca.ubc.cs.cpsc410.data;
 
 import javax.persistence.*;
-
-import org.hibernate.annotations.IndexColumn;
-
 import java.util.List;
 
 /**
@@ -28,6 +25,8 @@ public class User {
     @Column(name = "email", unique = true, nullable = false)
     private String email;
 
+    @Column(name = "facebookToken")
+    private String facebookToken;
 
     @Column(name = "friends")
     @ElementCollection(fetch = FetchType.EAGER, targetClass = String.class)
@@ -39,34 +38,70 @@ public class User {
 
     @ElementCollection(targetClass = Integer.class)
     @Column(name = "pendingEvents")
-    private List<Integer> pendingEvents; 
+    private List<Integer> pendingEvents;
 
     public int getId() {
         return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getUsername() {
         return username;
     }
 
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
     public String getPassword() {
         return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public String getEmail() {
         return email;
     }
 
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getFacebookToken() {
+        return facebookToken;
+    }
+
+    public void setFacebookToken(String facebookToken) {
+        this.facebookToken = facebookToken;
+    }
+
     public List<String> getFriends() {
         return friends;
+    }
+
+    public void setFriends(List<String> friends) {
+        this.friends = friends;
     }
 
     public List<Integer> getEvents() {
         return events;
     }
-    
+
+    public void setEvents(List<Integer> events) {
+        this.events = events;
+    }
+
     public List<Integer> getPendingEvents() {
         return pendingEvents;
+    }
+
+    public void setPendingEvents(List<Integer> pendingEvents) {
+        this.pendingEvents = pendingEvents;
     }
 
     @Override
@@ -90,35 +125,6 @@ public class User {
         return "User{" +
                 "username='" + username + '\'' +
                 '}';
-    }
-    
-    // Setters for testing purposes
-    public void setId(int id) {
-    	this.id = id;
-    }
-    
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public void setFriends(List<String> friends) {
-        this.friends = friends;
-    }
-    
-    public void setEvents(List<Integer> events) {
-        this.events = events;
-    }
-
-    public void setPendingEvents(List<Integer> pendingEvents) {
-        this.pendingEvents = pendingEvents;
     }
 
 }

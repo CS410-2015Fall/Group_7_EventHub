@@ -92,6 +92,11 @@ public class UserController {
         userService.rejectPendingEvent(guest);
     }
 
+    @RequestMapping(value = "/user/addFacebookToken", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
+    public User addFacebookToken(@RequestBody @Valid final User user) {
+        return userService.addFacebookToken(user);
+    }
+
     @ExceptionHandler
     @ResponseStatus(HttpStatus.CONFLICT)
     public String handleException(Exception e) {

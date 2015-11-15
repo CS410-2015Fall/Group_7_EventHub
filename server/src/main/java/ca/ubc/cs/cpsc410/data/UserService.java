@@ -45,4 +45,6 @@ public interface UserService {
 
     void rejectPendingEvent(Guest guest);
 
+    User addFacebookToken(User user);
+
 }

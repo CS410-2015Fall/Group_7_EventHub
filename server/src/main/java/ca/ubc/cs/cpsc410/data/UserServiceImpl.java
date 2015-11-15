@@ -263,6 +263,22 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+    @Override
+    public User addFacebookToken(User user) {
+        if (user.getFacebookToken() == null || user.getFacebookToken().isEmpty()) {
+            throw new RuntimeException(String.format("User %s has a null or empty Facebook Token!", user.getUsername()));
+        }
+        List<User> existingUsers = userRepository.findAll();
+        for (User existingUser : existingUsers) {
+            if (user.getUsername().equals(existingUser.getUsername())) {
+                existingUser.setFacebookToken(user.getFacebookToken());
+                return userRepository.save(existingUser);
+            }
+        }
+        throw new RuntimeException(String.format(
+                "Error: User %s does not exist!", user.getUsername()));
+    }
+
     private void removeAndSaveEventId(User existingUser, Guest guest) {
         int indexToRemove = existingUser.getPendingEvents().indexOf(guest.getEventId());
         if (indexToRemove != -1) { // -1: index does not exist, will throw ArrayIndexOutOfBoundsException

@@ -214,6 +214,14 @@ Output:
     
 (No output.)
 
+### Add a Facebook authentication token to an user
+
+    $ curl -X POST -d '{"username":"vincent","facebookToken":"45asad65465as113"}' -H 'Content-Type: application/json' http://localhost:8080/user/addFacebookToken
+    
+Output:
+    
+    {"id":10,"username":"vincent","password":"foobar","email":"foo@bar.com","facebookToken":"45asad65465as113","friends":[],"events":[],"pendingEvents":[]}
+
 ### Updating user data
 
 This example changes user id 10's password; all other data remains the same.
