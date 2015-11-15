@@ -4,6 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.mail.internet.AddressException;
+import javax.mail.internet.InternetAddress;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,6 +29,18 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User createUser(final User user) {
+        if (user.getUsername() == null || user.getUsername().isEmpty()) {
+            throw new RuntimeException("Error: User has an empty username!");
+        }
+        if (user.getEmail() == null || user.getEmail().isEmpty()) {
+            throw new RuntimeException("Error: User has an empty email!");
+        }
+        try {
+            InternetAddress emailAddr = new InternetAddress(user.getEmail());
+            emailAddr.validate();
+        } catch (AddressException e) {
+            throw new RuntimeException("Error: Email invalid!");
+        }
         List<User> existingUsers = userRepository.findAll();
         for (User existingUser : existingUsers) {
             if (existingUser.getUsername().equals(user.getUsername())) {

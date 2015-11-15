@@ -97,6 +97,10 @@ Output:
 
     {"id":10,"username":"vincent","password":"foobar","email":"foo@bar.com","friends":[]}
     
+Output if email is not valid as per RFC 822 (we use the [JavaMail API](http://www.oracle.com/technetwork/java/javamail/index.html) to validate it):
+
+    Error: Email invalid!
+    
 ### Validating an user:
 
     $ curl -X POST -d '{"username":"vincent","password":"foobar"}' -H 'Content-Type: application/json' http://localhost:8080/user/validateUser
