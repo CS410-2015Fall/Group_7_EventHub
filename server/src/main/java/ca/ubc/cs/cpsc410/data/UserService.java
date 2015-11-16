@@ -45,4 +45,8 @@ public interface UserService {
 
     void rejectPendingEvent(Guest guest);
 
+    User addFacebookToken(User user);
+
+    User addGoogleEvents(List<GoogleEvent> googleEvents);
+
 }
