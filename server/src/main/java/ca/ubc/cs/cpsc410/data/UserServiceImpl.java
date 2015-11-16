@@ -296,9 +296,8 @@ public class UserServiceImpl implements UserService {
     @Override
     public User addGoogleEvents(List<GoogleEvent> googleEvents) {
         List<User> existingUsers = userRepository.findAll();
-        List<Event> existingEvents = eventRepository.findAll();
         if (googleEvents.isEmpty()) {
-            throw new RuntimeException("Error: Empty list of events as input!");
+            throw new RuntimeException("Error: Empty list of google events as input!");
         }
         String username = googleEvents.get(0).getUsername();
         for (GoogleEvent googleEvent : googleEvents) {
@@ -318,7 +317,7 @@ public class UserServiceImpl implements UserService {
         }
         if (userToModify == null) {
             throw new RuntimeException(String.format(
-                    "Error: User %s does not exist!", userToModify.getUsername()));
+                    "Error: User %s does not exist!", username));
         }
         for (GoogleEvent googleEvent : googleEvents) {
             Event newlyCreatedEvent = new Event();
