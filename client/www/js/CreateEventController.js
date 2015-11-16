@@ -1,6 +1,6 @@
 var App = angular.module('App');
 
-App.controller('CreateEventCtrl', function($scope, $http, $ionicPopup, $ionicModal, UserDataService, AuthService, API) {
+App.controller('CreateEventCtrl', function($scope, $ionicPopup, $ionicModal, UserDataService, API) {
   $scope.friends = UserDataService.getFriends();
   $scope.formLocation = "Pick a Location";
   $scope.data = {};
@@ -23,7 +23,9 @@ App.controller('CreateEventCtrl', function($scope, $http, $ionicPopup, $ionicMod
   })
 
   $scope.$on('modal.shown', function() {
-    var vancouver = new google.maps.LatLng(49.2827, -123.1207);
+    $scope.lat = 49.2827;
+    $scope.lon = -123.1207;
+    var vancouver = new google.maps.LatLng($scope.lat, $scope.lon);
 
     var mapOptions = {
         center: vancouver,
@@ -40,7 +42,7 @@ App.controller('CreateEventCtrl', function($scope, $http, $ionicPopup, $ionicMod
     });
 
     // Add a click event handler to the map
-    google.maps.event.addListener(map, "click", function(event) {
+    google.maps.event.addListener(map, "mousedown", function(event) {
       console.log('yo');
         $scope.data.marker.setMap(null);
         $scope.data.marker = new google.maps.Marker({
@@ -74,7 +76,7 @@ App.controller('CreateEventCtrl', function($scope, $http, $ionicPopup, $ionicMod
       'description': data.eventDescription,
       'location': data.eventLocation,
       'startDate': (1900 + data.eventDate.getYear()) + '-' + data.eventDate.getMonth() + '-' + data.eventDate.getDate(),
-      'host': AuthService.username(),
+      'host': UserDataService.getUsername(),
       'invitees': data.guests,
       'confirmedInvitees': []
     };

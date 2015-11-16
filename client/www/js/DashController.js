@@ -6,9 +6,6 @@ App.controller('DashCtrl', function($scope, $state, AuthService, UserDataService
   $scope.model.events = UserDataService.getEvents();
   $scope.model.invites = UserDataService.getInvites();
 
-  $scope.username = AuthService.username();
-  UserDataService.refresh();
-
   (function () {
     $scope.$watch(function () {
       return UserDataService.getEvents();

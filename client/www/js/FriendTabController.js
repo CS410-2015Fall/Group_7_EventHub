@@ -1,9 +1,8 @@
 var App = angular.module('App');
 
-App.controller('FriendsController', function($scope, UserDataService, AuthService, API, $state, $http, $ionicPopup) {
+App.controller('FriendsController', function($scope, UserDataService, API, $ionicPopup) {
   
   $scope.data = {};
-  $scope.username = AuthService.username();
   $scope.userService = UserDataService;
 
   $scope.model = {};
@@ -20,7 +19,7 @@ App.controller('FriendsController', function($scope, UserDataService, AuthServic
   }());
 
   $scope.addFriend = function(friend) {
-    var username = AuthService.username();
+    var username = UserDataService.getUsername();
     var request = [{'username': username}, {'username': friend}];
     API.post('/user/addFriend', request, 
       function(response) {
@@ -40,7 +39,7 @@ App.controller('FriendsController', function($scope, UserDataService, AuthServic
   }
 
   $scope.removeFriend = function(friend) {
-    var username = AuthService.username();
+    var username = UserDataService.getUsername();
     var request = [{'username': username}, {'username': friend}];
     API.post('user/removeFriend', request, 
       function(response) {

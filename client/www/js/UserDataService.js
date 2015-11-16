@@ -7,6 +7,7 @@ App.factory('UserDataService', ['API', 'AuthService', function(API, AuthService)
     var _invites = [];
 
     var service = {
+      getUsername: getUsername,
       acceptInvite: acceptInvite,
       declineInvite: declineInvite,
       finalizeEvent: finalizeEvent,
@@ -17,6 +18,12 @@ App.factory('UserDataService', ['API', 'AuthService', function(API, AuthService)
     };
 
     return service;
+
+    // Username.
+
+    function getUsername() {
+      return AuthService.username();
+    }
 
     // Events.
 
@@ -76,18 +83,8 @@ App.factory('UserDataService', ['API', 'AuthService', function(API, AuthService)
     function loadAllInvites() {
       var username = AuthService.username();
       var request = {'username': username};
-      var inviteArray = [];
       API.post('/user/getPendingEvents', request, function(data) {
-        var eventIds = data.data;
-        for (var i = 0; i < eventIds.length; i++) {
-          var id = eventIds[i];
-          API.post('/event/getEvent', id, function(response){
-            inviteArray.push(response.data);
-          }, function(err) {
-            console.log(err);
-          });
-        }
-        _invites = inviteArray;
+      _invites = data.data;
       }, function (err) {
         console.log(err);
       });
