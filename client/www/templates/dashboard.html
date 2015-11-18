@@ -37,14 +37,19 @@
       </div>
 
       <div class="item item-divider">My Events</div>
-        <a class="item item-button-right" ng-repeat="item in model.events">
-          <button ng-hide="item.isFinalized || username!==item.host "class="button button-balanced" ng-click="findTime(item.id)">
-            find time
-          </button>
-          <h2>{{item.name}}</h2>
-          <p>Location: {{item.location}}</p>
-          <p>Description: {{item.description}}</p>
-        </a>
+      <a class="item item-button-right item-avatar" ng-repeat="item in model.events | orderBy: 'startDate'">
+        <img ng-src="{{item.avatar}}" ng-click="loadMapPicker(item.location)">
+        <button ng-hide="item.isFinalized || username!==item.host || item.type!=='wesync'"class="button button-balanced" ng-click="findTime(item.id)">
+          find time
+        </button>
+        <h2>{{item.name}}</h2>
+        <p ng-show="item.description">Description: {{item.description}}</p>
+        <p ng-hide="item.type==='wesync' || !item.location">Location: {{item.location}}</p>
+        <p ng-hide="item.type==='wesync' && !item.isFinalized">Date: {{item.startDate | date:'short'}}</p>
+        <p ng-show="item.type==='wesync'">Guests: <b>{{item.confirmedInvitees.join(', ')}}</b> {{item.invitees.join(', ')}}</p>
+      </a>
+
     </div>
+
   </ion-content>
 </ion-view>

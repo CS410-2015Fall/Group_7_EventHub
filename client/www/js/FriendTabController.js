@@ -8,6 +8,8 @@ App.controller('FriendsController', function($scope, UserDataService, API, $ioni
   $scope.model = {};
   $scope.model.friends = UserDataService.getFriends();
 
+  UserDataService.refresh();
+
   (function () {
     $scope.$watch(function () {
       return UserDataService.getFriends();

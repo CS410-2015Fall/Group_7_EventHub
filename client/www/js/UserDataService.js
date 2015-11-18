@@ -1,6 +1,6 @@
 var App = angular.module('App');
 
-App.factory('UserDataService', ['API', 'AuthService', function(API, AuthService) {
+App.factory('UserDataService', ['API', 'AuthService', 'IMG', function(API, AuthService, IMG) {
 
     var _friends = [];
     var _events = [];
@@ -74,7 +74,17 @@ App.factory('UserDataService', ['API', 'AuthService', function(API, AuthService)
       var username = AuthService.username();
       var request = {'username': username};
       API.post('/user/getAllEvents', request, function(data) {
-        _events = data.data;
+        var events = data.data;
+        for (var i = 0; i < events.length; i++) {
+          var current = events[i];
+          if (current.type === 'wesync')
+            current.avatar = IMG.wesync;
+          else if (current.type === 'facebook')
+            current.avatar = IMG.facebook;
+          else if (current.type === 'google') 
+            current.avatar = IMG.google;
+        }
+        _events = events;
       }, function (err) {
         console.log(err);
       });

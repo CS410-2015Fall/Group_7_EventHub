@@ -5,6 +5,8 @@ App.controller('CreateEventCtrl', function($scope, $ionicPopup, $ionicModal, Use
   $scope.formLocation = "Pick a Location";
   $scope.data = {};
 
+  UserDataService.refresh();
+
   (function () {
     $scope.$watch(function () {
       return UserDataService.getFriends();
@@ -15,16 +17,10 @@ App.controller('CreateEventCtrl', function($scope, $ionicPopup, $ionicModal, Use
     });
   }());
 
-  $ionicModal.fromTemplateUrl('map-picker-modal.html', {
-    scope: $scope,
-    animation: 'slide-in-up'
-  }).then(function(modal) {
-    $scope.modal = modal;
-  })
-
   $scope.$on('modal.shown', function() {
-    $scope.lat = 49.2827;
-    $scope.lon = -123.1207;
+    if (!$scope.lat) $scope.lat = 49.2827;
+    if (!$scope.lon) $scope.lon = -123.1207;
+
     var vancouver = new google.maps.LatLng($scope.lat, $scope.lon);
 
     var mapOptions = {
@@ -43,7 +39,6 @@ App.controller('CreateEventCtrl', function($scope, $ionicPopup, $ionicModal, Use
 
     // Add a click event handler to the map
     google.maps.event.addListener(map, "mousedown", function(event) {
-      console.log('yo');
         $scope.data.marker.setMap(null);
         $scope.data.marker = new google.maps.Marker({
             position: event.latLng,
@@ -57,12 +52,20 @@ App.controller('CreateEventCtrl', function($scope, $ionicPopup, $ionicModal, Use
   });  
 
   $scope.loadMapPicker = function() {
-    $scope.modal.show();
+    $ionicModal.fromTemplateUrl('templates/map-picker-modal.html', {
+      scope: $scope,
+      animation: 'slide-in-up',
+      backdropClickToClose: false,
+      hardwareBackButtonClose: false
+    }).then(function(modal) {
+      $scope.modal = modal;
+      $scope.modal.show();
+    });
   };
 
   $scope.closeModal = function() {
     $scope.formLocation = $scope.lat + ', ' + $scope.lon;
-    $scope.modal.hide();
+    $scope.modal.remove();
   };
 
   $scope.goBack = function() {
@@ -74,7 +77,7 @@ App.controller('CreateEventCtrl', function($scope, $ionicPopup, $ionicModal, Use
     var request = {
       'name': data.eventName,
       'description': data.eventDescription,
-      'location': data.eventLocation,
+      'location': $scope.formLocation,
       'startDate': (1900 + data.eventDate.getYear()) + '-' + data.eventDate.getMonth() + '-' + data.eventDate.getDate(),
       'host': UserDataService.getUsername(),
       'invitees': data.guests,

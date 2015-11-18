@@ -1,13 +1,21 @@
 var App = angular.module('App');
 
-App.controller('SettingsController', function($scope, $cordovaFacebook, $cordovaCalendar) {
+App.controller('SettingsController', function($scope, AuthService, API, $cordovaFacebook, $cordovaCalendar) {
   $scope.linkFB = function() {
     $cordovaFacebook.login(['user_events']).then( function (user) {
-      console.log(user);
+      if (user.status === "connected") {
+        API.commitFBAccessToken(AuthService.username(), user.authResponse.accessToken, 
+          function (success) {
+            console.log(success);
+          }, function (fail) {
+            console.log(fail);
+          }
+        );
+        console.log('linked with fb!');
+      }
     }, function (error) {
       console.log(error);
     });
-    console.log('linked with fb!');
   };
 
   $scope.getStatus = function() {
@@ -50,5 +58,26 @@ App.controller('SettingsController', function($scope, $cordovaFacebook, $cordova
     }, function (err) {
       console.log(err);
     });
-  }
+  };
+
+  $scope.linkGoogle = function() {
+    var from = new Date();
+    var to = new Date();
+    to.setMonth(from.getMonth() + 1);
+    $cordovaCalendar.listCalendars().then(function (result) {
+      $cordovaCalendar.listEventsInRange(from, to)
+      .then(function (result) {
+        API.uploadGoogleCalendarEvents(AuthService.username(), result,
+          function (success) {
+            console.log(success);
+          }, function (fail) {
+            console.log(fail);
+          });
+      }, function (err) {
+        console.log(err);
+      });
+    }, function (err) {
+      console.log(err);
+    });
+  };
 });

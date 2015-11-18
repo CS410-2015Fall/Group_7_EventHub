@@ -1,10 +1,14 @@
 var App = angular.module('App');
 
-App.controller('DashCtrl', function($scope, $state, AuthService, UserDataService, $ionicPopup, $ionicLoading, API) {
+App.controller('DashCtrl', function($scope, $state, AuthService, UserDataService, $ionicPopup, $ionicLoading, API, $ionicModal) {
 
   $scope.model = {};
   $scope.model.events = UserDataService.getEvents();
   $scope.model.invites = UserDataService.getInvites();
+
+  $scope.data = {};
+
+  UserDataService.refresh();
 
   (function () {
     $scope.$watch(function () {
@@ -80,5 +84,47 @@ App.controller('DashCtrl', function($scope, $state, AuthService, UserDataService
         UserDataService.finalizeEvent(tempEvent.id);
       }
     });
+  };
+
+  $scope.$on('modal.shown', function() {
+    var location = new google.maps.LatLng($scope.lat, $scope.lon);
+
+    var mapOptions = {
+        center: location,
+        zoom: 16,
+        mapTypeId: google.maps.MapTypeId.ROADMAP
+    };
+
+    $scope.data.map = new google.maps.Map(document.getElementById("map"), mapOptions);
+
+    $scope.data.marker = new google.maps.Marker({
+        position: location,
+        map: $scope.data.map,
+        title: "Event Location"
+    });
+  });  
+
+  $scope.loadMapPicker = function(location) {
+    if (!location) return;
+    var latlng = location.split(', ');
+
+    $scope.lat = parseFloat(latlng[0]);
+    $scope.lon = parseFloat(latlng[1]);
+
+    if (!$scope.lat || !$scope.lon) return;
+
+    $ionicModal.fromTemplateUrl('templates/map-picker-modal.html', {
+      scope: $scope,
+      animation: 'slide-in-up',
+      backdropClickToClose: false,
+      hardwareBackButtonClose: false
+    }).then(function(modal) {
+      $scope.modal = modal;
+      $scope.modal.show();
+    });
+  };
+
+  $scope.closeModal = function() {
+    $scope.modal.remove();
   };
 });
