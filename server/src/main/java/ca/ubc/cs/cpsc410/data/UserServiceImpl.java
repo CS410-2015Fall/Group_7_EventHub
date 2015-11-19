@@ -294,6 +294,22 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public User addGoogleToken(User user) {
+        if (user.getGoogleToken() == null || user.getGoogleToken().isEmpty()) {
+            throw new RuntimeException(String.format("Error: User %s has a null or empty Google Token!", user.getUsername()));
+        }
+        List<User> existingUsers = userRepository.findAll();
+        for (User existingUser : existingUsers) {
+            if (user.getUsername().equals(existingUser.getUsername())) {
+                existingUser.setGoogleToken(user.getGoogleToken());
+                return userRepository.save(existingUser);
+            }
+        }
+        throw new RuntimeException(String.format(
+                "Error: User %s does not exist!", user.getUsername()));
+    }
+
+    @Override
     public User addGoogleEvents(List<GoogleEvent> googleEvents) {
         List<User> existingUsers = userRepository.findAll();
         if (googleEvents.isEmpty()) {
