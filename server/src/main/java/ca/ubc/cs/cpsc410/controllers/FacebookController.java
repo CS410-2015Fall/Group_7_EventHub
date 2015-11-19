@@ -12,8 +12,6 @@ import org.springframework.social.facebook.api.Facebook;
 import org.springframework.social.facebook.api.Invitation;
 import org.springframework.social.facebook.api.PagedList;
 import org.springframework.social.facebook.api.impl.FacebookTemplate;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -37,31 +35,6 @@ public class FacebookController {
         this.userRepository = userRepository;
         this.eventRepository = eventRepository;
     }
-
-/*    @RequestMapping(method = RequestMethod.GET)
-    public String getFeed(Model model) {
-        try {
-            if (!facebook.isAuthorized()) {
-                return "redirect:/connect/facebook";
-            }
-        } catch (NullPointerException npe) {
-            return "redirect:/connect/facebook";
-        }
-        
-
-        model.addAttribute("facebookProfile",
-                facebook.userOperations().getUserProfile());
-        PagedList<Post> homeFeed = facebook.feedOperations().getHomeFeed();
-        model.addAttribute("feed", homeFeed);
-
-        
-        model.addAttribute("facebookProfile", facebook.userOperations().getUserProfile());
-        model.addAttribute("friends", facebook.friendOperations().getFriendProfiles());
-        model.addAttribute("events", facebook.eventOperations().getAttending());
-
-        return "feed";
-        
-    }*/
     
     @RequestMapping(value = "/facebook/getFacebookEvents", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
     public List<Event> getFacebookEvents(@RequestBody @Valid final User user) {
@@ -76,7 +49,6 @@ public class FacebookController {
         if (userToModify == null) {
             throw new RuntimeException(String.format("Error: User %s does not exist!", user.getUsername()));
         }
-        
         String accessToken = userToModify.getFacebookToken();
         if (accessToken.isEmpty()) {
             throw new RuntimeException(String.format("Error: User %s does not have a Facebook access token!", userToModify.getUsername()));
@@ -85,7 +57,6 @@ public class FacebookController {
         if (!facebook.isAuthorized()) {
             throw new RuntimeException(String.format("Error: User %s does not have a valid Facebook access token!", userToModify.getUsername()));
         }
-        
         PagedList<Invitation> facebookEvents = facebook.eventOperations().getAttending();
         if (facebookEvents.isEmpty()) {
             return null;

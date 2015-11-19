@@ -320,6 +320,14 @@ Output:
 
     {"id":10,"username":"vincent","password":"foobar","email":"foo@bar.com","googleToken":"45asad65465as113","friends":[],"events":[],"pendingEvents":[]}
 
+### Get Facebook Events
+
+    $ curl -X POST -d '{"username":"vincent"}' -H 'Content-Type: application/json' http://localhost:8080/facebook/getFacebookEvents
+
+Output:
+    
+
+    [{"id":20,"host":"vincent","name":"Wesync Test Event","description":null,"type":"facebook","isFinalized":true,"startDate":1448953200000,"endDate":1449050400000,"location":null,"confirmedInvitees":null,"invitees":null},{"id":21,"host":"vincent","name":"CPSC 410 Wesync test event 2","description":null,"type":"facebook","isFinalized":true,"startDate":1448524800000,"endDate":1448622000000,"location":null,"confirmedInvitees":null,"invitees":null}]
 
 ### Upload a Google calendar event
 
