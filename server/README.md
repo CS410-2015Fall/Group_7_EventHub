@@ -312,6 +312,15 @@ Output:
     
     {"id":10,"username":"vincent","password":"foobar","email":"foo@bar.com","facebookToken":"45asad65465as113","friends":[],"events":[],"pendingEvents":[]}
 
+### Add a Google authentication token to an user
+
+    $ curl -X POST -d '{"username":"vincent","googleToken":"asf21afs6af5acfr"}' -H 'Content-Type: application/json' http://localhost:8080/user/addGoogleToken
+
+Output:
+
+    {"id":10,"username":"vincent","password":"foobar","email":"foo@bar.com","googleToken":"45asad65465as113","friends":[],"events":[],"pendingEvents":[]}
+
+
 ### Upload a Google calendar event
 
 Events will be added to the given user's list of confirmed events, with a type
