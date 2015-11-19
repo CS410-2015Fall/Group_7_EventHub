@@ -22,7 +22,7 @@ public class UserServiceImpl implements UserService {
     private final EventRepository eventRepository;
 
     @Autowired
-    public UserServiceImpl(final UserRepository userRepository, EventRepository eventRepository) {
+    public UserServiceImpl(final UserRepository userRepository, final EventRepository eventRepository) {
         this.userRepository = userRepository;
         this.eventRepository = eventRepository;
     }
