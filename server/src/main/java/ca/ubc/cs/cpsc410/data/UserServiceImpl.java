@@ -320,10 +320,12 @@ public class UserServiceImpl implements UserService {
                     "Error: User %s does not exist!", username));
         }
         // Delete all current google events from the event repository (we'll add them back later)
-        for (int existingEventId : userToModify.getEvents()) {
-            if (eventRepository.findOne(existingEventId).getType().equals("google")) {
+        List<Integer> userToModifyEvents = new ArrayList<>(userToModify.getEvents());
+        for (int existingEventId : userToModifyEvents) {
+            Event existingEvent = eventRepository.findOne(existingEventId);
+            if (existingEvent != null && existingEvent.getType().equals("google")) {
                 eventRepository.delete(existingEventId);
-                userToModify.getEvents().remove(existingEventId);
+                userToModify.getEvents().remove(userToModify.getEvents().indexOf(existingEventId));
             }
         }
         for (GoogleEvent googleEvent : googleEvents) {
