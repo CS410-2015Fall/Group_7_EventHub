@@ -1,23 +1,23 @@
 package ca.ubc.cs.cpsc410.controllers;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
-import javax.validation.Valid;
-
+import ca.ubc.cs.cpsc410.data.Event;
+import ca.ubc.cs.cpsc410.data.EventRepository;
+import ca.ubc.cs.cpsc410.data.User;
+import ca.ubc.cs.cpsc410.data.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.social.facebook.api.Facebook;
 import org.springframework.social.facebook.api.Invitation;
 import org.springframework.social.facebook.api.PagedList;
 import org.springframework.social.facebook.api.impl.FacebookTemplate;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import ca.ubc.cs.cpsc410.data.*;
+import javax.validation.Valid;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created by vincent on 20/10/15.
@@ -35,7 +35,7 @@ public class FacebookController {
         this.userRepository = userRepository;
         this.eventRepository = eventRepository;
     }
-    
+
     @RequestMapping(value = "/facebook/getFacebookEvents", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
     public List<Event> getFacebookEvents(@RequestBody @Valid final User user) {
         List<User> existingUsers = userRepository.findAll();
@@ -66,7 +66,7 @@ public class FacebookController {
             Event eventToRemove = eventRepository.findOne(eventIDToRemove);
             if (eventToRemove != null && eventToRemove.getType().equals("facebook")) {
                 eventRepository.delete(eventIDToRemove);
-                userToModify.getEvents().remove(userToModify.getEvents().indexOf(eventIDToRemove));  
+                userToModify.getEvents().remove(userToModify.getEvents().indexOf(eventIDToRemove));
             }
         }
         List<Event> returnEvents = new ArrayList<>();
@@ -79,7 +79,8 @@ public class FacebookController {
                 wesyncEvent.setIsFinalized(true);
                 wesyncEvent.setStartDate(facebookEvent.getStartTime());
                 wesyncEvent.setEndDate(facebookEvent.getEndTime());
-                wesyncEvent.setLocation(facebookEvent.getLocation());
+                wesyncEvent.setLocation(((Map<String, String>) facebookEvent.getExtraData().get("place")).get("name"));
+                wesyncEvent.setDescription(facebookEvent.getExtraData().get("description").toString());
                 Event savedWesyncEvent = eventRepository.save(wesyncEvent);
                 userToModify.getEvents().add(savedWesyncEvent.getId());
                 returnEvents.add(savedWesyncEvent);
@@ -87,6 +88,12 @@ public class FacebookController {
         }
         userRepository.save(userToModify);
         return returnEvents;
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public String handleException(Exception e) {
+        return e.getMessage();
     }
 
 }
