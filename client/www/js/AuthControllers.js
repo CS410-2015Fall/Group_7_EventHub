@@ -17,15 +17,21 @@ App.controller('LoginCtrl', function($scope, $state, $ionicPopup, AuthService, U
   $scope.data = {};
 
   $scope.login = function(data) {
-    AuthService.login(data.username, data.password).then(function(authenticated) {
-      UserDataService.refresh();
-      $state.go('main.dash', {}, {reload: true});
-    }, function(err) {
-      var alertPopup = $ionicPopup.alert({
-        title: 'Login failed!',
-        template: 'Please check your credentials!'
-      });
-    });
+    AuthService.login(data.username, data.password).then(
+      function(authenticated) {
+        UserDataService.setUser(authenticated.data);
+        UserDataService.refresh();
+        if (ionic.Platform.isAndroid()) {
+          UserDataService.syncExternalCalendars(authenticated);
+        }
+        $state.go('main.dash', {}, {reload: true});
+      }, function(err) {
+        var alertPopup = $ionicPopup.alert({
+          title: 'Login failed!',
+          template: 'Please check your credentials!'
+        });
+      }
+    );
   };
 });
 

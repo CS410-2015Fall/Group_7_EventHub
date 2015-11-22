@@ -1,6 +1,6 @@
 var App = angular.module('App');
 
-App.controller('CreateEventCtrl', function($scope, $ionicPopup, $ionicModal, UserDataService, API) {
+App.controller('CreateEventCtrl', function($scope, $ionicPopup, $ionicModal, UserDataService, API, CalendarSync) {
   $scope.friends = UserDataService.getFriends();
   $scope.formLocation = "Pick a Location";
   $scope.data = {};

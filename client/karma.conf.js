@@ -1,5 +1,5 @@
 // Karma configuration
-// Generated on Tue Nov 10 2015 13:08:44 GMT-0800 (PST)
+// Generated on Wed Nov 18 2015 16:21:53 GMT-0800 (PST)
 
 module.exports = function(config) {
   config.set({
@@ -10,20 +10,36 @@ module.exports = function(config) {
 
     // frameworks to use
     // available frameworks: https://npmjs.org/browse/keyword/karma-adapter
-    frameworks: ['mocha'],
+    frameworks: ['jasmine'],
 
 
     // list of files / patterns to load in the browser
     files: [
-      'www/lib/angular/angular.js',
-      'www/js/*.js',
+      'www/lib/ionic/js/ionic.bundle.js',
       'www/lib/angular-mocks/angular-mocks.js',
-      'tests/*.js'
+      'www/lib/ngCordova/dist/ng-cordova.js',
+      'www/lib/ionic/js/angular-ui/angular-ui-router.js',
+      'www/lib/angular-animate/angular-animate.js',
+      'www/lib/angular-sanitize/angular-sanitize.js',
+      'www/lib/checklist-model/checklist-model.js',
+      'www/js/app.js',
+      'www/js/API.js',
+      'www/js/AuthController.js',
+      'www/js/DashController.js',
+      'www/js/FriendTabController.js',
+      'www/js/CreateEventController.js',
+      'www/js/SettingsController.js',
+      'www/js/AuthService.js',
+      'www/js/UserDataService.js',
+      'www/js/constants.js',
+      'www/js/CalendarSync.js',
+      'www/tests/*.js',
     ],
 
 
     // list of files to exclude
     exclude: [
+      'karma.conf.js'
     ],
 
 
@@ -53,7 +69,7 @@ module.exports = function(config) {
 
 
     // enable / disable watching file and executing tests whenever any file changes
-    autoWatch: false,
+    autoWatch: true,
 
 
     // start these browsers

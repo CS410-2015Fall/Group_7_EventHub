@@ -1,37 +1,19 @@
-<ion-view view-title="Settings" name="dashboard-view">
+<ion-view view-title="Settings" name="dashboard-view" cache-view="false">
   <ion-content class="padding">
-      <div class="row">
-      	<div class="col text-center">
-      		<h3 class="title">Settings</h3>
-      	</div>
-      </div>
-      <div class="row">
-      	<div class="col text-center">
-          <button class="button button-positive" ng-click="linkFB()">
-			  Link my Facebook Events
-			    </button>
-		    </div>
-      </div>
-      <div class="row">
-        <div class="col text-center">
-          <button class="button button-balanced" ng-click="getStatus()">
-        Get my facebook status
-          </button>
-        </div>
-      </div>
-      <div class="row">
-        <div class="col text-center">
-          <button class="button button-dark" ng-click="linkNative()">
-            See Native Calendar Events
-          </button>
-        </div>
-      </div>
-  	  <div class="row">
-        <div class="col text-center">
-    			<button class="button button-assertive" ng-click="linkGoogle()">
-    			  Link my Google Calendar Events
-    			</button>
-  		  </div>
-      </div>
+    <div class="col text-center">
+      <h3 class="title">Settings</h3>
+    </div>
+    <div class="item item-button-right">
+      Google Calendar
+      <button class="button button-balanced">
+        <i class="icon ion-android-done"></i>
+      </button>
+    </div>  
+    <div class="item item-button-right">
+      Facebook Events
+      <button class="button button-balanced">
+        <i class="icon ion-android-done"></i>
+      </button>
+    </div>  
   </ion-content>
 </ion-view>

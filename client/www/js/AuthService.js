@@ -40,7 +40,7 @@ App.service('AuthService', function($q, $http, $ionicPopup, API) {
       API.post('user/validateUser', request, 
         function(response) {
           storeUserCredentials(response.data.username);
-          resolve('Login success');
+          resolve(response);
         },
         function(response) {
           $ionicPopup.alert({

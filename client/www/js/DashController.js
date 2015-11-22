@@ -1,6 +1,6 @@
 var App = angular.module('App');
 
-App.controller('DashCtrl', function($scope, $state, AuthService, UserDataService, $ionicPopup, $ionicLoading, API, $ionicModal) {
+App.controller('DashCtrl', function($scope, $state, AuthService, UserDataService, $ionicPopup, $ionicLoading, API, $ionicModal, CalendarSync) {
 
   $scope.model = {};
   $scope.model.events = UserDataService.getEvents();
@@ -43,12 +43,12 @@ App.controller('DashCtrl', function($scope, $state, AuthService, UserDataService
     $state.go('create');
   };
 
-  $scope.acceptInvite = function(eventId) {
-    UserDataService.acceptInvite(eventId);
+  $scope.acceptInvite = function(wEvent) {
+    UserDataService.acceptInvite(wEvent.id);
   };
 
-  $scope.declineInvite = function(eventId) {
-    UserDataService.declineInvite(eventId);
+  $scope.declineInvite = function(wEvent) {
+    UserDataService.declineInvite(wEvent.id);
   };
 
   $scope.findTime = function(eventId) {

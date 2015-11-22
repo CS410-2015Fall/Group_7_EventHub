@@ -1,10 +1,11 @@
 var App = angular.module('App');
 
-App.factory('UserDataService', ['API', 'AuthService', 'IMG', function(API, AuthService, IMG) {
+App.factory('UserDataService', ['API', 'IMG', 'CalendarSync', function(API, IMG, CalendarSync) {
 
     var _friends = [];
     var _events = [];
     var _invites = [];
+    var _user = {};
 
     var service = {
       getUsername: getUsername,
@@ -14,7 +15,12 @@ App.factory('UserDataService', ['API', 'AuthService', 'IMG', function(API, AuthS
       getEvents: getEvents,
       getInvites: getInvites,
       getFriends: getFriends,
-      refresh: refresh
+      refresh: refresh,
+      syncExternalCalendars: syncExternalCalendars,
+      syncFacebook: syncFacebook,
+      setUser: setUser,
+      isFacebookLinked: isFacebookLinked,
+      isGoogleLinked: isGoogleLinked,
     };
 
     return service;
@@ -22,13 +28,25 @@ App.factory('UserDataService', ['API', 'AuthService', 'IMG', function(API, AuthS
     // Username.
 
     function getUsername() {
-      return AuthService.username();
+      return _user.username;
+    }
+
+    function isFacebookLinked() {
+      return _user.facebookToken != null;
+    }
+
+    function isGoogleLinked() {
+      return true;
     }
 
     // Events.
 
     function getEvents() {
       return _events;
+    }
+
+    function setUser(user) {
+      _user = user;
     }
 
     function finalizeEvent(eventId) {
@@ -47,7 +65,7 @@ App.factory('UserDataService', ['API', 'AuthService', 'IMG', function(API, AuthS
     }
 
     function acceptInvite(eventId) {
-      var request = {'eventId': eventId, 'username': AuthService.username()};
+      var request = {'eventId': eventId, 'username': _user.username};
       API.post('/user/acceptPendingEvent', request, 
         function (response) {
           refresh();
@@ -59,7 +77,7 @@ App.factory('UserDataService', ['API', 'AuthService', 'IMG', function(API, AuthS
     }
 
     function declineInvite(eventId) {
-      var request = {'eventId': eventId, 'username': AuthService.username()};
+      var request = {'eventId': eventId, 'username': _user.username};
       API.post('/user/rejectPendingEvent', request, 
         function (response) {
           refresh();
@@ -71,7 +89,7 @@ App.factory('UserDataService', ['API', 'AuthService', 'IMG', function(API, AuthS
     }
 
     function loadAllEvents() {
-      var username = AuthService.username();
+      var username = _user.username;
       var request = {'username': username};
       API.post('/user/getAllEvents', request, function(data) {
         var events = data.data;
@@ -91,7 +109,7 @@ App.factory('UserDataService', ['API', 'AuthService', 'IMG', function(API, AuthS
     }
 
     function loadAllInvites() {
-      var username = AuthService.username();
+      var username = _user.username;
       var request = {'username': username};
       API.post('/user/getPendingEvents', request, function(data) {
       _invites = data.data;
@@ -107,7 +125,7 @@ App.factory('UserDataService', ['API', 'AuthService', 'IMG', function(API, AuthS
     }
 
     function loadFriends() {
-      var username = AuthService.username();
+      var username = _user.username;
       API.getAllFriends(username).then(function(data) {
         _friends = data;
       });
@@ -118,6 +136,47 @@ App.factory('UserDataService', ['API', 'AuthService', 'IMG', function(API, AuthS
       loadFriends();
       loadAllEvents();
       loadAllInvites();
+    }
+
+    function refreshUserSettings() {
+      var request = {'username': _user.username};
+      var scope = this;
+      API.post('/user/findByUsername', request, function(s) {
+        scope.setUser(s.data); 
+      }, function(e) {
+        console.log(e);
+      });
+    }
+
+    function syncFacebook() {
+      CalendarSync.fetchFacebookToken(
+        function (token) {
+          API.commitFBAccessToken(_user.username, token, function(s){}, function(e) {});
+        }, function (err) {
+          console.log(err);
+        }
+      );  
+    }
+
+    function syncExternalCalendars() {
+      // If user has FB linked.
+      if (isFacebookLinked()) {
+        syncFacebook();
+      }
+      // If user has Google linked.
+      if (isGoogleLinked()) {
+        CalendarSync.fetchGoogleEvents(
+          function (gEvents) {
+            API.uploadGoogleCalendarEvents(_user.username, gEvents, function(s) {}, function(e) {});
+          }, function (err) {
+            console.log(err);
+          }
+        );
+      }
+    }
+
+    function removeFacebookToken() {
+      API.commitFBAccessToken(_user.username, null, function(s){}, function(e) {});
     }
 
 }]);
