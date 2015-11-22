@@ -9,8 +9,8 @@ components can be found in the corresponding README.md file in each directory.
 
 - Napon Taratan (napon)
 
-­- Li­-Yi (Vincent) Cheng (Vincent-­C)
+- Li-Yi (Vincent) Cheng (Vincent-C)
 
-­- Chi Un Wong (jwongc)
+- Chi Un Wong (jwongc)
 
-­- Ryan Yip (ryanyip)
+- Ryan Yip (ryanyip)

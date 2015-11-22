@@ -22,7 +22,7 @@ public class UserServiceImpl implements UserService {
     private final EventRepository eventRepository;
 
     @Autowired
-    public UserServiceImpl(final UserRepository userRepository, EventRepository eventRepository) {
+    public UserServiceImpl(final UserRepository userRepository, final EventRepository eventRepository) {
         this.userRepository = userRepository;
         this.eventRepository = eventRepository;
     }
@@ -294,6 +294,22 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public User addGoogleToken(User user) {
+        if (user.getGoogleToken() == null || user.getGoogleToken().isEmpty()) {
+            throw new RuntimeException(String.format("Error: User %s has a null or empty Google Token!", user.getUsername()));
+        }
+        List<User> existingUsers = userRepository.findAll();
+        for (User existingUser : existingUsers) {
+            if (user.getUsername().equals(existingUser.getUsername())) {
+                existingUser.setGoogleToken(user.getGoogleToken());
+                return userRepository.save(existingUser);
+            }
+        }
+        throw new RuntimeException(String.format(
+                "Error: User %s does not exist!", user.getUsername()));
+    }
+
+    @Override
     public User addGoogleEvents(List<GoogleEvent> googleEvents) {
         List<User> existingUsers = userRepository.findAll();
         if (googleEvents.isEmpty()) {
@@ -320,10 +336,12 @@ public class UserServiceImpl implements UserService {
                     "Error: User %s does not exist!", username));
         }
         // Delete all current google events from the event repository (we'll add them back later)
-        for (int existingEventId : userToModify.getEvents()) {
-            if (eventRepository.findOne(existingEventId).getType().equals("google")) {
+        List<Integer> userToModifyEvents = new ArrayList<>(userToModify.getEvents());
+        for (int existingEventId : userToModifyEvents) {
+            Event existingEvent = eventRepository.findOne(existingEventId);
+            if (existingEvent != null && existingEvent.getType().equals("google")) {
                 eventRepository.delete(existingEventId);
-                userToModify.getEvents().remove(existingEventId);
+                userToModify.getEvents().remove(userToModify.getEvents().indexOf(existingEventId));
             }
         }
         for (GoogleEvent googleEvent : googleEvents) {

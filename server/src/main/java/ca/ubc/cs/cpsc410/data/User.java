@@ -28,6 +28,9 @@ public class User {
     @Column(name = "facebookToken")
     private String facebookToken;
 
+    @Column(name = "googleToken")
+    private String googleToken;
+
     @Column(name = "friends")
     @ElementCollection(fetch = FetchType.EAGER, targetClass = String.class)
     private List<String> friends;
@@ -78,6 +81,14 @@ public class User {
 
     public void setFacebookToken(String facebookToken) {
         this.facebookToken = facebookToken;
+    }
+
+    public String getGoogleToken() {
+        return googleToken;
+    }
+
+    public void setGoogleToken(String googleToken) {
+        this.googleToken = googleToken;
     }
 
     public List<String> getFriends() {

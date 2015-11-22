@@ -94,6 +94,11 @@ public class UserController {
         return userService.addFacebookToken(user);
     }
 
+    @RequestMapping(value = "/user/addGoogleToken", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
+    public User addGoogleToken(@RequestBody @Valid final User user) {
+        return userService.addGoogleToken(user);
+    }
+
     @RequestMapping(value = "/user/addGoogleEvents", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
     public User addGoogleEvents(@RequestBody @Valid final List<GoogleEvent> googleEvents) {
         return userService.addGoogleEvents(googleEvents);
