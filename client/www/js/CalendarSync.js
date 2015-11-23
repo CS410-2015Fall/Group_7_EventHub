@@ -28,8 +28,13 @@ App.service('CalendarSync', function($cordovaFacebook, $cordovaCalendar) {
       });
   }
 
+  function createCalendarEntry(name, location, description, start, end, success, fail) {
+    $cordovaCalendar.createEvent(name, location, description, start, end, success, fail);
+  }
+
   return {
     fetchFacebookToken: fetchFacebookToken,
-    fetchGoogleEvents: fetchGoogleEvents
+    fetchGoogleEvents: fetchGoogleEvents,
+    createCalendarEntry: createCalendarEntry
   };
 });

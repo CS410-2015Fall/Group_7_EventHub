@@ -5,7 +5,7 @@ App.controller('CreateEventCtrl', function($scope, $ionicPopup, $ionicModal, Use
   $scope.formLocation = "Pick a Location";
   $scope.data = {};
 
-  UserDataService.refresh();
+  UserDataService.loadFriends();
 
   (function () {
     $scope.$watch(function () {

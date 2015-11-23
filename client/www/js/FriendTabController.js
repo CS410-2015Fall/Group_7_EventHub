@@ -8,7 +8,7 @@ App.controller('FriendsController', function($scope, UserDataService, API, $ioni
   $scope.model = {};
   $scope.model.friends = UserDataService.getFriends();
 
-  UserDataService.refresh();
+  UserDataService.loadFriends();
 
   (function () {
     $scope.$watch(function () {
@@ -23,7 +23,7 @@ App.controller('FriendsController', function($scope, UserDataService, API, $ioni
   $scope.addFriend = function(friend) {
     var username = UserDataService.getUsername();
     var request = [{'username': username}, {'username': friend}];
-    API.post('/user/addFriend', request, 
+    API.post('user/addFriend', request, 
       function(response) {
         UserDataService.refresh();
         $ionicPopup.alert({

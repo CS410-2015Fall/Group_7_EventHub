@@ -6,7 +6,7 @@ App.factory('UserDataService', ['API', 'IMG', 'CalendarSync', function(API, IMG,
     var _events = [];
     var _invites = [];
     var _user = {};
-
+ 
     var service = {
       getUsername: getUsername,
       acceptInvite: acceptInvite,
@@ -21,6 +21,7 @@ App.factory('UserDataService', ['API', 'IMG', 'CalendarSync', function(API, IMG,
       setUser: setUser,
       isFacebookLinked: isFacebookLinked,
       isGoogleLinked: isGoogleLinked,
+      loadFriends: loadFriends
     };
 
     return service;
@@ -53,6 +54,9 @@ App.factory('UserDataService', ['API', 'IMG', 'CalendarSync', function(API, IMG,
       var request = {'id': eventId};
       API.post('event/finalizeEvent', request, 
         function (response) {
+          // On success, create a calendar entry on the device and refresh.
+          var data = response.data;
+          CalendarSync.createCalendarEntry(data.name, data.location, data.description, data.startDate, data.endDate, function(s) {}, function(f) {});
           loadAllEvents();
         }, function (response) {
           console.log(response);
