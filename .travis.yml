@@ -6,7 +6,7 @@ before_install:
   - export DISPLAY=:99.0
   - sh -e /etc/init.d/xvfb start
 before_script:
-  - npm install karma karma-jasmine jasmine-core karma-chrome-launcher
+  - cd client && npm install karma karma-jasmine jasmine-core karma-chrome-launcher
 script:
   - cd client && ./node_modules/karma/bin/karma start karma.conf.js --single-run
   - cd server && mvn install -DskipTests=true && mvn test
