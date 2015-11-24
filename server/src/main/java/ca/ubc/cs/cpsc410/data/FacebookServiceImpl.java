@@ -56,6 +56,11 @@ public class FacebookServiceImpl implements FacebookService {
         if (facebookEvents.isEmpty()) {
             return null;
         }
+        for (Invitation invitation : facebookEvents) {
+            if (invitation.getStartTime() == null) {
+                throw new RuntimeException(String.format("Error: One or more Facebook events retrieved for user %s does not have a start date!", userToModify.getUsername()));
+            }
+        }
         List<Integer> userEventsCopy = new ArrayList<>(userToModify.getEvents());
         for (int eventIDToRemove : userEventsCopy) {
             Event eventToRemove = eventRepository.findOne(eventIDToRemove);

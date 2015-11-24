@@ -323,6 +323,9 @@ public class UserServiceImpl implements UserService {
             if (!googleEvent.getUsername().equals(username)) {
                 throw new RuntimeException("Error: One or more events do not have the same username!");
             }
+            if (googleEvent.getDtstart() == null) {
+                throw new RuntimeException("Error: One or more events are missing a start date!");
+            }
         }
         User userToModify = null;
         for (User existingUser : existingUsers) {

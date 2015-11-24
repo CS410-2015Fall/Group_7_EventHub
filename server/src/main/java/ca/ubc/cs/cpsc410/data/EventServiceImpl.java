@@ -4,9 +4,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -33,14 +33,9 @@ public class EventServiceImpl implements EventService {
         if (event.getName() == null) {
             throw new RuntimeException("Error creating event: There is no event name specified!");
         }
-        // These checks are unnecessary
-        /*Date currentDate = new Date();
-        if (event.getStartDate() == 0 || new Date(event.getStartDate()).before(currentDate)) {
-            throw new RuntimeException("Error creating event: The start date has already passed or doesn't exist!");
+        if (event.getStartDate() == null) {
+            throw new RuntimeException(String.format("Error: Event %s does not have a start date!", event.getName()));
         }
-        if (event.getEndDate() == 0 || new Date(event.getEndDate()).before(new Date(event.getStartDate()))) {
-            throw new RuntimeException("Error creating event: The event ends before it starts or doesn't exist!");
-        }*/
         Event newEvent = null;
         event.setType("wesync");
         List<User> existingUsers = userRepository.findAll();
@@ -201,10 +196,46 @@ public class EventServiceImpl implements EventService {
         return usersToReturn;
     }
 
+    /**
+     * Finds a free time in between 8 am - 8 pm on any given day. These values are hardcoded in the implementation.
+     *
+     * @param event the event to find time for
+     * @return an event object with the start and end dates modified with a suggested time duration
+     */
     @Override
     public Event findTime(Event event) {
-        // TODO: THIS IS MOCKED!! Write algorithm to find dates.
-        List<Event> existingEvents = eventRepository.findAll();
+        List<User> existingUsers = userRepository.findAll();
+        Event existingEvent = eventRepository.findOne(event.getId());
+        if (existingEvent == null) {
+            throw new RuntimeException(String.format(
+                    "Error: Event %d could not be found!", event.getId()));
+        }
+        Date startTime = existingEvent.getStartDate();
+        //TODO existingEvent.getDuration();
+        int duration = 60;
+        if (startTime == null) {
+            startTime = new Date();
+        }
+        User host = null;
+        for (User existingUser : existingUsers) {
+            if (existingUser.getUsername().equals(existingEvent.getHost())) {
+                host = existingUser;
+            }
+        }
+        if (host == null) {
+            throw new RuntimeException(String.format(
+                    "Error: User %s does not exist!", existingEvent.getHost()));
+        }
+        List<Event> eventsOfHost = getAllSortedUserEvents(host);
+        // now we have a sorted event list and we need to find a time slot
+        // 1. find a time past 8am on the startTime date and ensure the host doesn't have an event in from 8am - 8am + duration
+        // 2. run the same check with all of the guests if the host doesn't conflict
+        // 3. if it fails, we need to define where it conflicted so we can begin searching from there and then repeat 1 and 2
+        // 4. if it passes then we update the event's start and end date and return it
+
+
+        // TODO because Ryan wants me to - old code below
+        /*List<Event> existingEvents = eventRepository.findAll();
         for (Event existingEvent : existingEvents) {
             if (existingEvent.getId() == event.getId()) {
                 SimpleDateFormat format = new SimpleDateFormat("yyyy/MM/dd/HH/mm/ss");
@@ -216,10 +247,29 @@ public class EventServiceImpl implements EventService {
                 }
                 return eventRepository.save(existingEvent);
             }
-        }
-        throw new RuntimeException(String.format(
-                "Error: Event %d could not be found!", event.getId()));
+        }*/
 
+        return existingEvent;
+    }
+
+    private List<Event> getAllSortedUserEvents(User user) {
+        List<Integer> eventIdsOfUser = user.getEvents();
+        eventIdsOfUser.addAll(user.getPendingEvents());
+        List<Event> eventsOfUser = new ArrayList<>();
+        for (int eventId : eventIdsOfUser) {
+            Event event = eventRepository.findOne(eventId);
+            if (event != null) {
+                eventsOfUser.add(event);
+            }
+        }
+        eventsOfUser.sort(new Comparator<Event>() {
+            @Override
+            public int compare(Event o1, Event o2) {
+                // We can assume that events do not have null start times
+                return o1.getStartDate().compareTo(o2.getStartDate());
+            }
+        });
+        return eventsOfUser;
     }
 
 }
