@@ -35,11 +35,11 @@ public class User {
     @ElementCollection(fetch = FetchType.EAGER, targetClass = String.class)
     private List<String> friends;
 
-    @ElementCollection(targetClass = Integer.class)
+    @ElementCollection(fetch = FetchType.EAGER, targetClass = Integer.class)
     @Column(name = "events")
     private List<Integer> events;
 
-    @ElementCollection(targetClass = Integer.class)
+    @ElementCollection(fetch = FetchType.EAGER, targetClass = Integer.class)
     @Column(name = "pendingEvents")
     private List<Integer> pendingEvents;
 
