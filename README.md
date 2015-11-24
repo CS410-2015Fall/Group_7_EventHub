@@ -11,6 +11,6 @@ components can be found in the corresponding README.md file in each directory.
 
 - Li-Yi (Vincent) Cheng (Vincent-C)
 
-- Chi Un Wong (jwongc)
+- Chi Un (Jeffrey) Wong (jwongc)
 
 - Ryan Yip (ryanyip)
