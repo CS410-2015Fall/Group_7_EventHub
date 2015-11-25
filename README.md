@@ -1,4 +1,5 @@
-# Group 7: WeSync (formally known as EventHub)
+[![Build Status](https://travis-ci.com/CS410-2015Fall/Group_7_EventHub.svg?token=jHFLy3PpiTCH6SuWxyNX&branch=master)](https://travis-ci.com/CS410-2015Fall/Group_7_EventHub)
+# Group 7: WeSync (formally known as EventHub) 
 
 This repository contains the source code for WeSync; all client-side components
 can be found in the "client" directory, and all server-side components can be
