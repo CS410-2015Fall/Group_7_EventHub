@@ -40,6 +40,9 @@ public class Event {
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "endDate")
     private Date endDate;
+    
+    @Column(name = "duration")
+    private int duration;
 
     @Column(name = "location")
     private String location;
@@ -114,6 +117,14 @@ public class Event {
 
     public void setEndDate(Date endDate) {
         this.endDate = endDate;
+    }
+    
+    public int getDuration() {
+        return duration;
+    }
+    
+    public void setDuration(int duration) {
+        this.duration = duration;
     }
 
     public String getLocation() {

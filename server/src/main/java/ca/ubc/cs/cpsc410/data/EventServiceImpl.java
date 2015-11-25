@@ -36,6 +36,9 @@ public class EventServiceImpl implements EventService {
         if (event.getStartDate() == null) {
             throw new RuntimeException(String.format("Error: Event %s does not have a start date!", event.getName()));
         }
+        if (event.getDuration() == 0) {
+            throw new RuntimeException(String.format("Error: Event %s does not have a duration!", event.getName()));
+        }
         Event newEvent = null;
         event.setType("wesync");
         List<User> existingUsers = userRepository.findAll();
@@ -118,13 +121,6 @@ public class EventServiceImpl implements EventService {
         if (existingEvent != null) {
             return existingEvent;
         }
-        /*
-        for (Event existingEvent : existingEvents) {
-            if (existingEvent.getId() == event.getId()) {
-                return existingEvent;
-            }
-        }
-        */
         throw new RuntimeException(String.format("Error getting event: Event %s does not exist!", event.getId()));
     }
 
@@ -211,7 +207,7 @@ public class EventServiceImpl implements EventService {
                     "Error: Event %d could not be found!", event.getId()));
         }
         Date startTime = existingEvent.getStartDate();
-        //TODO existingEvent.getDuration();
+        //TODO int duration = existingEvent.getDuration();
         int duration = 60;
         if (startTime == null) {
             startTime = new Date();
