@@ -39,6 +39,7 @@ public class EventServiceImpl implements EventService {
         if (event.getDuration() == 0) {
             throw new RuntimeException(String.format("Error: Event %s does not have a duration!", event.getName()));
         }
+        event.setEndDate(calculateEndTime(event.getStartDate(), event.getDuration()));
         Event newEvent = null;
         event.setType("wesync");
         List<User> existingUsers = userRepository.findAll();
@@ -206,12 +207,15 @@ public class EventServiceImpl implements EventService {
             throw new RuntimeException(String.format(
                     "Error: Event %d could not be found!", event.getId()));
         }
-        Date startTime = existingEvent.getStartDate();
-        //TODO int duration = existingEvent.getDuration();
+        // TODO int duration = existingEvent.getDuration();
         int duration = 60;
+        Date startTime = existingEvent.getStartDate();
         if (startTime == null) {
             startTime = new Date();
         }
+        // endTime is startTime + duration in milliseconds
+        Date endTime = calculateEndTime(startTime, duration);
+        
         User host = null;
         for (User existingUser : existingUsers) {
             if (existingUser.getUsername().equals(existingEvent.getHost())) {
@@ -223,27 +227,39 @@ public class EventServiceImpl implements EventService {
                     "Error: User %s does not exist!", existingEvent.getHost()));
         }
         List<Event> eventsOfHost = getAllSortedUserEvents(host);
+        // TODO: verify all events have an start and end date in google and facebook
+
         // now we have a sorted event list and we need to find a time slot
         // 1. find a time past 8am on the startTime date and ensure the host doesn't have an event in from 8am - 8am + duration
         // 2. run the same check with all of the guests if the host doesn't conflict
         // 3. if it fails, we need to define where it conflicted so we can begin searching from there and then repeat 1 and 2
         // 4. if it passes then we update the event's start and end date and return it
-
-
-        // TODO because Ryan wants me to - old code below
-        /*List<Event> existingEvents = eventRepository.findAll();
-        for (Event existingEvent : existingEvents) {
-            if (existingEvent.getId() == event.getId()) {
-                SimpleDateFormat format = new SimpleDateFormat("yyyy/MM/dd/HH/mm/ss");
-                try {
-                    existingEvent.setStartDate(format.parse("2015/11/05/10/00/00"));
-                    existingEvent.setEndDate(format.parse("2015/11/05/11/00/00"));
-                } catch (ParseException e) {
-                    e.printStackTrace();
-                }
-                return eventRepository.save(existingEvent);
+        for (Event hostEvent : eventsOfHost) {
+            // if startTime is after both the event's start and end time
+            // we continue to the check the next event since our timeslot is past this event
+            if (startTime.after(hostEvent.getStartDate()) && startTime.after(hostEvent.getEndDate())) {
+                continue;
             }
-        }*/
+            // if startTime is in the middle of an event
+            // we have to adjust the startTime to the end of the current event and then continue to check the next event
+            if (startTime.after(hostEvent.getStartDate()) && startTime.before(hostEvent.getEndDate())) {
+                startTime = hostEvent.getEndDate();
+                continue;
+            }
+            // we now know that AT LEAST startTime is before the current event, what about endTime?
+            endTime = calculateEndTime(startTime, duration);
+            // if endTime is after the event's start time, we know the event starts in the middle of our timeslot
+            // we have to adjust the startTime to the end of the current event and then continue to check the next event
+            if (endTime.after(hostEvent.getStartDate()) ) {
+                startTime = hostEvent.getEndDate();
+                continue;
+            }
+            // we now know we have a valid timeslot for the host!!
+            // our timeslot starts after all the previous events
+            // our timeslot ends before the current event
+            
+            //TODO: check all the guests, step 2 in algorithm
+        }
 
         return existingEvent;
     }
@@ -268,4 +284,8 @@ public class EventServiceImpl implements EventService {
         return eventsOfUser;
     }
 
+    private Date calculateEndTime(Date startTime, int duration) {
+        Date endTime = new Date(startTime.getTime() + (duration * 60000));
+        return endTime;
+    }
 }
