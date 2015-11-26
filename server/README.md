@@ -239,7 +239,7 @@ When creating events using this API, the event type will always be "wesync".
 
 ### Creating an event
 
-    $ curl -X POST -d '{"name":"event1","type":"wesync","description":"this event is awesome","location":"somewhere on Earth","isFinalized":false,"startDate":"2016-07-04","endDate":"2017-07-04","host":"vincent","confirmedInvitees":[],"invitees":["vincent2","vincent3"]}' -H 'Content-Type: application/json' http://localhost:8080/event/createEvent
+    $ curl -X POST -d '{"name":"event1","type":"wesync","description":"this event is awesome","location":"somewhere on Earth","isFinalized":false,"startDate":"2016-07-04","endDate":"2017-07-04","duration":60,"host":"vincent","confirmedInvitees":[],"invitees":["vincent2","vincent3"]}' -H 'Content-Type: application/json' http://localhost:8080/event/createEvent
 
 Output:
 
