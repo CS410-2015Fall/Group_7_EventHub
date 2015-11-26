@@ -4,10 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by ryan on 28/10/15.
@@ -201,21 +198,21 @@ public class EventServiceImpl implements EventService {
      */
     @Override
     public Event findTime(Event event) {
+        // TODO push existingEvent startTime field forward by x amount (duration?) to ensure subsequent calls don't find the same time
         List<User> existingUsers = userRepository.findAll();
         Event existingEvent = eventRepository.findOne(event.getId());
         if (existingEvent == null) {
             throw new RuntimeException(String.format(
                     "Error: Event %d could not be found!", event.getId()));
         }
-        // TODO int duration = existingEvent.getDuration();
-        int duration = 60;
+        int duration = existingEvent.getDuration();
         Date startTime = existingEvent.getStartDate();
         if (startTime == null) {
             startTime = new Date();
         }
         // endTime is startTime + duration in milliseconds
         Date endTime = calculateEndTime(startTime, duration);
-        
+
         User host = null;
         for (User existingUser : existingUsers) {
             if (existingUser.getUsername().equals(existingEvent.getHost())) {
@@ -229,12 +226,34 @@ public class EventServiceImpl implements EventService {
         List<Event> eventsOfHost = getAllSortedUserEvents(host);
         // TODO: verify all events have an start and end date in google and facebook
 
+        List<User> confirmedInvitees = new ArrayList<>();
+        for (String confirmedInvitee : existingEvent.getConfirmedInvitees()) {
+            for (User existingUser : existingUsers) {
+                if (existingUser.getUsername().equals(confirmedInvitee)) {
+                    confirmedInvitees.add(existingUser);
+                }
+            }
+        }
+
+        // Populate map of all of the confirmed invitee's list of confirmed and pending events
+        // Avoid doing this in the for loop below because this is static and we need to use this multiple times
+        Map<User, List<Event>> eventsToUserMap = new HashMap<>();
+        for (User confirmedInvitee : confirmedInvitees) {
+            eventsToUserMap.put(confirmedInvitee, getAllSortedUserEvents(confirmedInvitee));
+        }
+
         // now we have a sorted event list and we need to find a time slot
         // 1. find a time past 8am on the startTime date and ensure the host doesn't have an event in from 8am - 8am + duration
         // 2. run the same check with all of the guests if the host doesn't conflict
         // 3. if it fails, we need to define where it conflicted so we can begin searching from there and then repeat 1 and 2
         // 4. if it passes then we update the event's start and end date and return it
+        hostLoop:
         for (Event hostEvent : eventsOfHost) {
+            // we don't want to look at the same event in the host's list of events
+            if (hostEvent.getId() == existingEvent.getId()) {
+                continue;
+            }
+
             // if startTime is after both the event's start and end time
             // we continue to the check the next event since our timeslot is past this event
             if (startTime.after(hostEvent.getStartDate()) && startTime.after(hostEvent.getEndDate())) {
@@ -250,18 +269,49 @@ public class EventServiceImpl implements EventService {
             endTime = calculateEndTime(startTime, duration);
             // if endTime is after the event's start time, we know the event starts in the middle of our timeslot
             // we have to adjust the startTime to the end of the current event and then continue to check the next event
-            if (endTime.after(hostEvent.getStartDate()) ) {
+            if (endTime.after(hostEvent.getStartDate())) {
                 startTime = hostEvent.getEndDate();
                 continue;
             }
             // we now know we have a valid timeslot for the host!!
             // our timeslot starts after all the previous events
             // our timeslot ends before the current event
-            
+
+
             //TODO: check all the guests, step 2 in algorithm
+            for (Map.Entry<User, List<Event>> entry : eventsToUserMap.entrySet()) {
+                User invitee = entry.getKey();
+                List<Event> eventsOfInvitee = entry.getValue();
+                for (Event inviteeEvent : eventsOfInvitee) {
+                    // if startTime is after both the event's start and end time
+                    // we continue to the check the next event since our timeslot is past this event
+                    if (startTime.after(inviteeEvent.getStartDate()) && startTime.after(inviteeEvent.getEndDate())) {
+                        continue hostLoop;
+                    }
+                    // if startTime is in the middle of an event
+                    // we have to adjust the startTime to the end of the current event and then continue to check the next event
+                    if (startTime.after(inviteeEvent.getStartDate()) && startTime.before(inviteeEvent.getEndDate())) {
+                        startTime = inviteeEvent.getEndDate();
+                        continue hostLoop;
+                    }
+                    // if endTime is after the event's start time, we know the event starts in the middle of our timeslot
+                    // we have to adjust the startTime to the end of the current event and then continue to check the next event
+                    if (endTime.after(inviteeEvent.getStartDate())) {
+                        startTime = inviteeEvent.getEndDate();
+                        continue hostLoop;
+                    }
+
+                }
+
+            }
+
+            break;
+
         }
 
-        return existingEvent;
+        existingEvent.setStartDate(startTime);
+        existingEvent.setEndDate(calculateEndTime(startTime, duration));
+        return eventRepository.save(existingEvent);
     }
 
     private List<Event> getAllSortedUserEvents(User user) {
