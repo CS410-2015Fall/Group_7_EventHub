@@ -295,7 +295,7 @@ Output:
 
 ### Finding time
 
-Currently MOCKED: sets event's value of startDate and endDate to 10-11 am and returns the event
+Hardcoded: Valid time interval is from 8 am to 10 pm and the offset every subsequent findTime call is 30 minutes
 
     $ curl -X POST -d '{"id":21}' -H 'Content-Type: application/json' http://localhost:8080/event/findTime
     

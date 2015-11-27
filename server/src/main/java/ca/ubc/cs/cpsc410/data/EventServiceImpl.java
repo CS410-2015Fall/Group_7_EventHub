@@ -198,20 +198,22 @@ public class EventServiceImpl implements EventService {
      */
     @Override
     public Event findTime(Event event) {
-        // TODO push existingEvent startTime field forward by x amount (duration?) to ensure subsequent calls don't find the same time
         List<User> existingUsers = userRepository.findAll();
         Event existingEvent = eventRepository.findOne(event.getId());
         if (existingEvent == null) {
             throw new RuntimeException(String.format(
                     "Error: Event %d could not be found!", event.getId()));
         }
+        if (existingEvent.getIsFinalized()) {
+            return existingEvent;
+        }
         int duration = existingEvent.getDuration();
         Date startTime = existingEvent.getStartDate();
         if (startTime == null) {
             startTime = new Date();
         }
-        startTime = checkBoundaryTimes(startTime, duration);
-        // endTime is startTime + duration in milliseconds
+        // Every time findTime is called we will push the event's start time 30 minutes forward to ensure a new time is sent back
+        startTime = setNewStartTime(new Date(startTime.getTime() + 30 * 60000), duration);
         User host = null;
         for (User existingUser : existingUsers) {
             if (existingUser.getUsername().equals(existingEvent.getHost())) {
@@ -246,7 +248,7 @@ public class EventServiceImpl implements EventService {
             }
         });
 
-        // now we have a map of all the users and their sorted event list and we need to find a time slot
+        // now we a list of the host's and confirmed guests sorted event lists in one list and we need to find a time slot
         // 1. find a time past the startTime date and ensure the host or guests don't have an event from conflicting
         // 2. if it fails, we need to define where it conflicted so we can begin searching from there and then repeat 1 and 2
         // 3. if it passes then we update the event's start and end date and return it
@@ -263,16 +265,14 @@ public class EventServiceImpl implements EventService {
             // if startTime is in the middle of an event
             // we have to adjust the startTime to the end of the current event and then continue to check the next event
             if (startTime.after(userEvent.getStartDate()) && startTime.before(userEvent.getEndDate())) {
-                startTime = userEvent.getEndDate();
-                startTime = checkBoundaryTimes(startTime, duration);
+                startTime = setNewStartTime(userEvent.getEndDate(), duration);
                 continue;
             }
             // we now know that AT LEAST startTime is before the current event, what about endTime?
             // if endTime is after the event's start time, we know the event starts in the middle of our timeslot
             // we have to adjust the startTime to the end of the current event and then continue to check the next event
             if (calculateEndTime(startTime, duration).after(userEvent.getStartDate())) {
-                startTime = userEvent.getEndDate();
-                startTime = checkBoundaryTimes(startTime, duration);
+                startTime = setNewStartTime(userEvent.getEndDate(), duration);
                 continue;
             }
             // we now know we have a valid timeslot for the host!!
@@ -298,27 +298,35 @@ public class EventServiceImpl implements EventService {
         return eventsOfUser;
     }
 
+    /**
+     * Calculates the end time given a startTime date object and a duration in minutes
+     */
     private Date calculateEndTime(Date startTime, int duration) {
         Date endTime = new Date(startTime.getTime() + (duration * 60000));
         return endTime;
     }
     
-    @SuppressWarnings("deprecation")
-    private Date checkBoundaryTimes(Date startTime, int duration) {
-        // Using deprecated methods so we don't have to deal with math of epoch time or import other libraries
+    private Date setNewStartTime(Date startTime, int duration) {
         // if the startTime is before 8am we set the time to 8:00 am
-        if (startTime.getHours() < 8) {
-            startTime.setHours(8);
-            startTime.setMinutes(0);
-            startTime.setSeconds(0);
+        Calendar startTimeCal = Calendar.getInstance();
+        startTimeCal.setTime(startTime);
+        startTimeCal.setTimeZone(TimeZone.getTimeZone("UTC"));
+        if (startTimeCal.get(Calendar.HOUR_OF_DAY) < 8) {
+            startTimeCal.set(Calendar.HOUR_OF_DAY, 8);
+            startTimeCal.set(Calendar.MINUTE, 0);
+            startTimeCal.set(Calendar.SECOND, 0);
         }
+        Calendar endTimeCal = Calendar.getInstance();
+        endTimeCal.setTime(calculateEndTime(startTime, duration));
+        endTimeCal.setTimeZone(TimeZone.getTimeZone("UTC"));
         // if the endTime is after 10pm we set the day to the next day and set the time to 8:00 am
-        if (calculateEndTime(startTime, duration).getHours() > 22) {
-            startTime.setDate(startTime.getDate()+1);
-            startTime.setHours(8);
-            startTime.setMinutes(0);
-            startTime.setSeconds(0);
+        if (endTimeCal.get(Calendar.HOUR_OF_DAY) > 22) {
+            startTimeCal.add(Calendar.DATE, 1);
+            startTimeCal.set(Calendar.HOUR_OF_DAY, 8);
+            startTimeCal.set(Calendar.MINUTE, 0);
+            startTimeCal.set(Calendar.SECOND, 0);
         }
-        return startTime;
+        Date returnTime = startTimeCal.getTime();
+        return returnTime;
     }
 }
