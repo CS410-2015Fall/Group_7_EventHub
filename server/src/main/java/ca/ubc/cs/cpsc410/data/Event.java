@@ -24,7 +24,7 @@ public class Event {
     @Column(name = "name")
     private String name;
 
-    @Column(name = "description")
+    @Column(name = "description", length = 65535)
     private String description;
 
     @Column(name = "type")
@@ -40,7 +40,7 @@ public class Event {
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "endDate")
     private Date endDate;
-    
+
     @Column(name = "duration")
     private int duration;
 
@@ -118,11 +118,11 @@ public class Event {
     public void setEndDate(Date endDate) {
         this.endDate = endDate;
     }
-    
+
     public int getDuration() {
         return duration;
     }
-    
+
     public void setDuration(int duration) {
         this.duration = duration;
     }
