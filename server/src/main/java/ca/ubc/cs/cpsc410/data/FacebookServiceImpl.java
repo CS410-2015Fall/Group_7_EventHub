@@ -79,8 +79,18 @@ public class FacebookServiceImpl implements FacebookService {
                 wesyncEvent.setIsFinalized(true);
                 wesyncEvent.setStartDate(facebookEvent.getStartTime());
                 wesyncEvent.setEndDate(facebookEvent.getEndTime());
-                wesyncEvent.setLocation(((Map<String, String>) facebookEvent.getExtraData().get("place")).get("name"));
-                wesyncEvent.setDescription(facebookEvent.getExtraData().get("description").toString());
+                Map<String, Object> extraData = facebookEvent.getExtraData();
+                // null checks for fields that can be potentially empty/null
+                if (extraData != null && !extraData.isEmpty()) {
+                    Object place = extraData.get("place");
+                    if (place != null) {
+                        wesyncEvent.setLocation(((Map<String, String>) place).get("name"));
+                    }
+                    Object description = extraData.get("description");
+                    if (description != null) {
+                        wesyncEvent.setDescription(description.toString());
+                    }
+                }
                 Event savedWesyncEvent = eventRepository.save(wesyncEvent);
                 userToModify.getEvents().add(savedWesyncEvent.getId());
                 returnEvents.add(savedWesyncEvent);
