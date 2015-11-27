@@ -191,11 +191,12 @@ public class EventServiceImpl implements EventService {
     }
 
     /**
-     * Finds a free time in between 8 am - 8 pm on any given day. These values are hardcoded in the implementation.
+     * Finds a free time in between 8 am - 10 pm on any given day. These values are hardcoded in the implementation.
      *
      * @param event the event to find time for
      * @return an event object with the start and end dates modified with a suggested time duration
      */
+    @SuppressWarnings("deprecation")
     @Override
     public Event findTime(Event event) {
         // TODO push existingEvent startTime field forward by x amount (duration?) to ensure subsequent calls don't find the same time
@@ -223,7 +224,6 @@ public class EventServiceImpl implements EventService {
             throw new RuntimeException(String.format(
                     "Error: User %s does not exist!", existingEvent.getHost()));
         }
-        List<Event> eventsOfHost = getAllSortedUserEvents(host);
         // TODO: verify all events have an start and end date in google and facebook
 
         List<User> confirmedInvitees = new ArrayList<>();
@@ -234,87 +234,74 @@ public class EventServiceImpl implements EventService {
                 }
             }
         }
-
-        // Populate map of all of the confirmed invitee's list of confirmed and pending events
-        // Avoid doing this in the for loop below because this is static and we need to use this multiple times
-        Map<User, List<Event>> eventsToUserMap = new HashMap<>();
+        // Populate list of all confirmed and pending events of the host and all guests
+        List<Event> allUserEvents = new ArrayList<>();
         for (User confirmedInvitee : confirmedInvitees) {
-            eventsToUserMap.put(confirmedInvitee, getAllSortedUserEvents(confirmedInvitee));
+            allUserEvents.addAll(getAllUserEvents(confirmedInvitee));
         }
+        allUserEvents.addAll(getAllUserEvents(host));
+        allUserEvents.sort(new Comparator<Event>() {
+            @Override
+            public int compare(Event o1, Event o2) {
+                // We can assume that events do not have null start times
+                return o1.getStartDate().compareTo(o2.getStartDate());
+            }
+        });
 
-        // now we have a sorted event list and we need to find a time slot
-        // 1. find a time past 8am on the startTime date and ensure the host doesn't have an event in from 8am - 8am + duration
-        // 2. run the same check with all of the guests if the host doesn't conflict
-        // 3. if it fails, we need to define where it conflicted so we can begin searching from there and then repeat 1 and 2
-        // 4. if it passes then we update the event's start and end date and return it
-        hostLoop:
-        for (Event hostEvent : eventsOfHost) {
+        // now we have a map of all the users and their sorted event list and we need to find a time slot
+        // 1. find a time past the startTime date and ensure the host or guests don't have an event from conflicting
+        // 2. if it fails, we need to define where it conflicted so we can begin searching from there and then repeat 1 and 2
+        // 3. if it passes then we update the event's start and end date and return it
+        for (Event userEvent : allUserEvents) {
             // we don't want to look at the same event in the host's list of events
-            if (hostEvent.getId() == existingEvent.getId()) {
+            if (userEvent.getId() == existingEvent.getId()) {
                 continue;
             }
-
+            // Using deprecated methods so we don't have to deal with math of epoch time or import other libraries
+            // if the startTime is before 8am we set the time to 8:00 am
+            if (startTime.getHours() < 8) {
+                startTime.setHours(8);
+                startTime.setMinutes(0);
+                startTime.setSeconds(0);
+            }
+            // if the endTime is after 10pm we set the day to the next day and set the time to 8:00 am
+            if (calculateEndTime(startTime, duration).getHours() > 22) {
+                startTime.setDate(startTime.getDate()+1);
+                startTime.setHours(8);
+                startTime.setMinutes(0);
+                startTime.setSeconds(0);
+            }
             // if startTime is after both the event's start and end time
             // we continue to the check the next event since our timeslot is past this event
-            if (startTime.after(hostEvent.getStartDate()) && startTime.after(hostEvent.getEndDate())) {
+            if (startTime.after(userEvent.getStartDate()) && startTime.after(userEvent.getEndDate())) {
                 continue;
             }
             // if startTime is in the middle of an event
             // we have to adjust the startTime to the end of the current event and then continue to check the next event
-            if (startTime.after(hostEvent.getStartDate()) && startTime.before(hostEvent.getEndDate())) {
-                startTime = hostEvent.getEndDate();
+            if (startTime.after(userEvent.getStartDate()) && startTime.before(userEvent.getEndDate())) {
+                startTime = userEvent.getEndDate();
                 continue;
             }
             // we now know that AT LEAST startTime is before the current event, what about endTime?
             endTime = calculateEndTime(startTime, duration);
             // if endTime is after the event's start time, we know the event starts in the middle of our timeslot
             // we have to adjust the startTime to the end of the current event and then continue to check the next event
-            if (endTime.after(hostEvent.getStartDate())) {
-                startTime = hostEvent.getEndDate();
+            if (endTime.after(userEvent.getStartDate())) {
+                startTime = userEvent.getEndDate();
                 continue;
             }
             // we now know we have a valid timeslot for the host!!
             // our timeslot starts after all the previous events
             // our timeslot ends before the current event
-
-
-            //TODO: check all the guests, step 2 in algorithm
-            for (Map.Entry<User, List<Event>> entry : eventsToUserMap.entrySet()) {
-                User invitee = entry.getKey();
-                List<Event> eventsOfInvitee = entry.getValue();
-                for (Event inviteeEvent : eventsOfInvitee) {
-                    // if startTime is after both the event's start and end time
-                    // we continue to the check the next event since our timeslot is past this event
-                    if (startTime.after(inviteeEvent.getStartDate()) && startTime.after(inviteeEvent.getEndDate())) {
-                        continue hostLoop;
-                    }
-                    // if startTime is in the middle of an event
-                    // we have to adjust the startTime to the end of the current event and then continue to check the next event
-                    if (startTime.after(inviteeEvent.getStartDate()) && startTime.before(inviteeEvent.getEndDate())) {
-                        startTime = inviteeEvent.getEndDate();
-                        continue hostLoop;
-                    }
-                    // if endTime is after the event's start time, we know the event starts in the middle of our timeslot
-                    // we have to adjust the startTime to the end of the current event and then continue to check the next event
-                    if (endTime.after(inviteeEvent.getStartDate())) {
-                        startTime = inviteeEvent.getEndDate();
-                        continue hostLoop;
-                    }
-
-                }
-
-            }
-
             break;
 
         }
-
         existingEvent.setStartDate(startTime);
         existingEvent.setEndDate(calculateEndTime(startTime, duration));
         return eventRepository.save(existingEvent);
     }
 
-    private List<Event> getAllSortedUserEvents(User user) {
+    private List<Event> getAllUserEvents(User user) {
         List<Integer> eventIdsOfUser = user.getEvents();
         eventIdsOfUser.addAll(user.getPendingEvents());
         List<Event> eventsOfUser = new ArrayList<>();
@@ -324,13 +311,6 @@ public class EventServiceImpl implements EventService {
                 eventsOfUser.add(event);
             }
         }
-        eventsOfUser.sort(new Comparator<Event>() {
-            @Override
-            public int compare(Event o1, Event o2) {
-                // We can assume that events do not have null start times
-                return o1.getStartDate().compareTo(o2.getStartDate());
-            }
-        });
         return eventsOfUser;
     }
 
