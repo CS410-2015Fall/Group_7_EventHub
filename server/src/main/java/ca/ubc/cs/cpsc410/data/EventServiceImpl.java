@@ -196,7 +196,6 @@ public class EventServiceImpl implements EventService {
      * @param event the event to find time for
      * @return an event object with the start and end dates modified with a suggested time duration
      */
-    @SuppressWarnings("deprecation")
     @Override
     public Event findTime(Event event) {
         // TODO push existingEvent startTime field forward by x amount (duration?) to ensure subsequent calls don't find the same time
@@ -211,9 +210,8 @@ public class EventServiceImpl implements EventService {
         if (startTime == null) {
             startTime = new Date();
         }
+        startTime = checkBoundaryTimes(startTime, duration);
         // endTime is startTime + duration in milliseconds
-        Date endTime = calculateEndTime(startTime, duration);
-
         User host = null;
         for (User existingUser : existingUsers) {
             if (existingUser.getUsername().equals(existingEvent.getHost())) {
@@ -257,20 +255,6 @@ public class EventServiceImpl implements EventService {
             if (userEvent.getId() == existingEvent.getId()) {
                 continue;
             }
-            // Using deprecated methods so we don't have to deal with math of epoch time or import other libraries
-            // if the startTime is before 8am we set the time to 8:00 am
-            if (startTime.getHours() < 8) {
-                startTime.setHours(8);
-                startTime.setMinutes(0);
-                startTime.setSeconds(0);
-            }
-            // if the endTime is after 10pm we set the day to the next day and set the time to 8:00 am
-            if (calculateEndTime(startTime, duration).getHours() > 22) {
-                startTime.setDate(startTime.getDate()+1);
-                startTime.setHours(8);
-                startTime.setMinutes(0);
-                startTime.setSeconds(0);
-            }
             // if startTime is after both the event's start and end time
             // we continue to the check the next event since our timeslot is past this event
             if (startTime.after(userEvent.getStartDate()) && startTime.after(userEvent.getEndDate())) {
@@ -280,21 +264,21 @@ public class EventServiceImpl implements EventService {
             // we have to adjust the startTime to the end of the current event and then continue to check the next event
             if (startTime.after(userEvent.getStartDate()) && startTime.before(userEvent.getEndDate())) {
                 startTime = userEvent.getEndDate();
+                startTime = checkBoundaryTimes(startTime, duration);
                 continue;
             }
             // we now know that AT LEAST startTime is before the current event, what about endTime?
-            endTime = calculateEndTime(startTime, duration);
             // if endTime is after the event's start time, we know the event starts in the middle of our timeslot
             // we have to adjust the startTime to the end of the current event and then continue to check the next event
-            if (endTime.after(userEvent.getStartDate())) {
+            if (calculateEndTime(startTime, duration).after(userEvent.getStartDate())) {
                 startTime = userEvent.getEndDate();
+                startTime = checkBoundaryTimes(startTime, duration);
                 continue;
             }
             // we now know we have a valid timeslot for the host!!
             // our timeslot starts after all the previous events
             // our timeslot ends before the current event
             break;
-
         }
         existingEvent.setStartDate(startTime);
         existingEvent.setEndDate(calculateEndTime(startTime, duration));
@@ -317,5 +301,24 @@ public class EventServiceImpl implements EventService {
     private Date calculateEndTime(Date startTime, int duration) {
         Date endTime = new Date(startTime.getTime() + (duration * 60000));
         return endTime;
+    }
+    
+    @SuppressWarnings("deprecation")
+    private Date checkBoundaryTimes(Date startTime, int duration) {
+        // Using deprecated methods so we don't have to deal with math of epoch time or import other libraries
+        // if the startTime is before 8am we set the time to 8:00 am
+        if (startTime.getHours() < 8) {
+            startTime.setHours(8);
+            startTime.setMinutes(0);
+            startTime.setSeconds(0);
+        }
+        // if the endTime is after 10pm we set the day to the next day and set the time to 8:00 am
+        if (calculateEndTime(startTime, duration).getHours() > 22) {
+            startTime.setDate(startTime.getDate()+1);
+            startTime.setHours(8);
+            startTime.setMinutes(0);
+            startTime.setSeconds(0);
+        }
+        return startTime;
     }
 }
