@@ -76,8 +76,12 @@ public class Event {
     }
 
     public void setName(String name) {
-        // max length for description field is set to 65535 bytes in our Event class
-        this.name = name.substring(0, Math.min(description.toString().length(), 65535));
+        if (name == null || name.isEmpty()) {
+            this.name = null;
+        } else {
+            // max length for description field is set to 65535 bytes in our Event class
+            this.name = name.substring(0, Math.min(name.toString().length(), 65535));
+        }
     }
 
     public String getDescription() {
@@ -85,8 +89,12 @@ public class Event {
     }
 
     public void setDescription(String description) {
-        // max length for description field is set to 65535 bytes in our Event class
-        this.description = description.substring(0, Math.min(description.toString().length(), 65535));
+        if (description == null || description.isEmpty()) {
+            this.description = null;
+        } else {
+            // max length for description field is set to 65535 bytes in our Event class
+            this.description = description.substring(0, Math.min(description.toString().length(), 65535));
+        }
     }
 
     public String getType() {
