@@ -144,9 +144,13 @@ public class CrossServiceTests {
         expectedUserPendingEvents.add(eventTwo.getId());
         expectedUserPendingEvents.add(eventThree.getId());
 
-        assertTrue(eventOne.getInvitees().size() == expectedEventInvitees.size());
-        assertTrue(eventTwo.getInvitees().size() == expectedEventInvitees.size());
-        assertTrue(eventThree.getInvitees().size() == expectedEventInvitees.size());
+        List<User> actualEventOneInvitees = eventService.getInvitees(eventOne);
+        List<User> actualEventTwoInvitees = eventService.getInvitees(eventTwo);
+        List<User> actualEventThreeInvitees = eventService.getInvitees(eventThree);
+        
+        assertTrue(actualEventOneInvitees.size() == expectedEventInvitees.size());
+        assertTrue(actualEventTwoInvitees.size() == expectedEventInvitees.size());
+        assertTrue(actualEventThreeInvitees.size() == expectedEventInvitees.size());
         
         assertTrue(userOne.getEvents().isEmpty());
         assertTrue(userTwo.getEvents().isEmpty());
@@ -154,8 +158,8 @@ public class CrossServiceTests {
         assertTrue(userOne.getPendingEvents().size() == expectedUserPendingEvents.size());
         assertTrue(userTwo.getPendingEvents().size() == expectedUserPendingEvents.size());
 
-        for (String invitee : eventOne.getInvitees()) {
-            assertTrue(expectedEventInvitees.contains(invitee));
+        for (User invitee : actualEventOneInvitees) {
+            assertTrue(expectedEventInvitees.contains(invitee.getUsername()));
         }
 
         for (int i = 0; i < expectedUserPendingEvents.size(); i++) {
@@ -178,15 +182,15 @@ public class CrossServiceTests {
         eventTwo = eventService.getEvent(eventTwo);
         eventThree = eventService.getEvent(eventThree);
 
-        List<String> expectedEventOneConfirmedInvitees = new ArrayList<String>();
-        expectedEventOneConfirmedInvitees.add(userOne.getUsername());
+        List<User> expectedEventOneConfirmedInvitees = new ArrayList<User>();
+        expectedEventOneConfirmedInvitees.add(userOne);
 
-        List<String> expectedEventTwoConfirmedInvitees = new ArrayList<String>();
-        expectedEventTwoConfirmedInvitees.add(userOne.getUsername());
-        expectedEventTwoConfirmedInvitees.add(userTwo.getUsername());
+        List<User> expectedEventTwoConfirmedInvitees = new ArrayList<User>();
+        expectedEventTwoConfirmedInvitees.add(userOne);
+        expectedEventTwoConfirmedInvitees.add(userTwo);
 
-        List<String> expectedEventThreeConfirmedInvitees = new ArrayList<String>();
-        expectedEventThreeConfirmedInvitees.add(userTwo.getUsername());
+        List<User> expectedEventThreeConfirmedInvitees = new ArrayList<User>();
+        expectedEventThreeConfirmedInvitees.add(userTwo);
 
         List<Integer> expectedUserOneAcceptedEvents = new ArrayList<Integer>();
         expectedUserOneAcceptedEvents.add(eventOne.getId());
@@ -195,6 +199,10 @@ public class CrossServiceTests {
         List<Integer> expectedUserTwoAcceptedEvents = new ArrayList<Integer>();
         expectedUserTwoAcceptedEvents.add(eventTwo.getId());
         expectedUserTwoAcceptedEvents.add(eventThree.getId());
+        
+        List<User> actualEventOneConfirmedInvitees = eventService.getConfirmedInvitees(eventOne);
+        List<User> actualEventTwoConfirmedInvitees = eventService.getConfirmedInvitees(eventTwo);
+        List<User> actualEventThreeConfirmedInvitees = eventService.getConfirmedInvitees(eventThree);
 
         assertTrue(userOne.getPendingEvents().isEmpty());
         assertTrue(userTwo.getPendingEvents().isEmpty());
@@ -214,16 +222,16 @@ public class CrossServiceTests {
             assertTrue(userTwo.getEvents().get(i) == expectedUserTwoAcceptedEvents.get(i));
         }
 
-        for (String invitee : expectedEventOneConfirmedInvitees) {
-            assertTrue(eventOne.getConfirmedInvitees().contains(invitee));
+        for (User invitee : expectedEventOneConfirmedInvitees) {
+            assertTrue(actualEventOneConfirmedInvitees.contains(invitee));
         }
 
-        for (String invitee : expectedEventTwoConfirmedInvitees) {
-            assertTrue(eventTwo.getConfirmedInvitees().contains(invitee));
+        for (User invitee : expectedEventTwoConfirmedInvitees) {
+            assertTrue(actualEventTwoConfirmedInvitees.contains(invitee));
         }
 
-        for (String invitee : expectedEventThreeConfirmedInvitees) {
-            assertTrue(eventThree.getConfirmedInvitees().contains(invitee));
+        for (User invitee : expectedEventThreeConfirmedInvitees) {
+            assertTrue(actualEventThreeConfirmedInvitees.contains(invitee));
         }
 
     }
