@@ -19,9 +19,6 @@ public class Guest {
     @Column(name = "eventId")
     private int eventId;
 
-    @Column(name = "response")
-    private String response;
-
     public int getId() {
         return id;
     }
@@ -38,20 +35,12 @@ public class Guest {
         this.eventId = eventId;
     }
 
-    public void setResponse(String response) {
-        this.response = response;
-    }
-
     public String getUsername() {
         return username;
     }
     
     public int getEventId() {
         return eventId;
-    }
-
-    public String getResponse() {
-        return response;
     }
 
 }
