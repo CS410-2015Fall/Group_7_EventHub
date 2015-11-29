@@ -24,12 +24,10 @@ public class UserServiceTests {
     private UserService service;
     @Autowired
     private EventRepository eventRepository;
-    private EventService eventService;
 
     @Before
     public void setUp() throws Exception {
         service = new UserServiceImpl(userRepository, eventRepository);
-        eventService = new EventServiceImpl(eventRepository, userRepository);
     }
 
     @Test
@@ -340,6 +338,32 @@ public class UserServiceTests {
             assertTrue(actualFriendsList.get(i).getEmail().equals(expectedFriendsList.get(i).getEmail()));
         }
     }
+    
+    @Test
+    public void acceptNonexistantPendingEvent() {
+    	try {
+    		User mockUserParams = createUserParams(100, "theLoner", "mockPassword", "acceptnothing@validemail.com", new ArrayList<String>());
+    		User user = service.createUser(mockUserParams);
+    		
+    		Guest acceptParam = createGuest(user.getUsername(), 9999999);
+    		service.acceptPendingEvent(acceptParam);
+    	} catch (RuntimeException re) {
+    		assertTrue(re.getMessage().contains(String.format("Error: Event id %d does not exist!", 9999999)));
+    	}
+    }
+    
+    @Test
+    public void rejectNonexistantPendingEvent() {
+    	try {
+    		User mockUserParams = createUserParams(100, "theSavage", "mockPassword", "rejectnothing@validemail.com", new ArrayList<String>());
+    		User user = service.createUser(mockUserParams);
+    		
+    		Guest rejectParam = createGuest(user.getUsername(), 9999999);
+    		service.rejectPendingEvent(rejectParam);
+    	} catch (RuntimeException re) {
+    		assertTrue(re.getMessage().contains(String.format("Error: Event id %d does not exist!", 9999999)));
+    	}
+    }
 
     private User createUserParams(int id, String username, String password, String email, List<String> friends) {
         User mockUserParams = new User();
@@ -352,6 +376,13 @@ public class UserServiceTests {
         mockUserParams.setFriends(friends);
 
         return mockUserParams;
+    }
+    
+    private Guest createGuest(String username, int eventId) {
+        Guest guest = new Guest();
+        guest.setUsername(username);
+        guest.setEventId(eventId);
+        return guest;
     }
 
 }

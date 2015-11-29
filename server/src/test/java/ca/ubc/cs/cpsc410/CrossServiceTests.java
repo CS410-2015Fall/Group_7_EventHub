@@ -32,7 +32,6 @@ public class CrossServiceTests {
 
     @Test
     public void verifyEventsAndPendingEvents() {
-        // TODO: Might need to change this test later on
         List<Event> expectedUserEvents = new ArrayList<Event>();
         List<Event> expectedUserPendingEvents = new ArrayList<Event>();
 
@@ -234,32 +233,6 @@ public class CrossServiceTests {
             assertTrue(actualEventThreeConfirmedInvitees.contains(invitee));
         }
 
-    }
-    
-    @Test
-    public void acceptNonexistantPendingEvent() {
-    	try {
-    		User mockUserParams = createUserParams(100, "theLoner", "mockPassword", "acceptnothing@validemail.com", new ArrayList<String>());
-    		User user = userService.createUser(mockUserParams);
-    		
-    		Guest acceptParam = createGuest(user.getUsername(), 9999999);
-    		userService.acceptPendingEvent(acceptParam);
-    	} catch (RuntimeException re) {
-    		assertTrue(re.getMessage().contains(String.format("Error: Event id %d does not exist!", 9999999)));
-    	}
-    }
-    
-    @Test
-    public void rejectNonexistantPendingEvent() {
-    	try {
-    		User mockUserParams = createUserParams(100, "theSavage", "mockPassword", "rejectnothing@validemail.com", new ArrayList<String>());
-    		User user = userService.createUser(mockUserParams);
-    		
-    		Guest rejectParam = createGuest(user.getUsername(), 9999999);
-    		userService.rejectPendingEvent(rejectParam);
-    	} catch (RuntimeException re) {
-    		assertTrue(re.getMessage().contains(String.format("Error: Event id %d does not exist!", 9999999)));
-    	}
     }
     
     @Test
