@@ -2,7 +2,7 @@ package ca.ubc.cs.cpsc410.data;
 
 import javax.persistence.*;
 import java.util.Date;
-import java.util.List;
+import java.util.Set;
 
 /**
  * Created by ryan on 28/10/15
@@ -49,11 +49,11 @@ public class Event {
 
     @ElementCollection(fetch = FetchType.EAGER, targetClass = String.class)
     @Column(name = "confirmedInvitees")
-    private List<String> confirmedInvitees;
+    private Set<String> confirmedInvitees;
 
     @ElementCollection(fetch = FetchType.EAGER, targetClass = String.class)
     @Column(name = "invitees")
-    private List<String> invitees;
+    private Set<String> invitees;
 
     public int getId() {
         return id;
@@ -135,19 +135,19 @@ public class Event {
         this.location = location;
     }
 
-    public List<String> getInvitees() {
+    public Set<String> getInvitees() {
         return invitees;
     }
 
-    public void setInvitees(List<String> invitees) {
+    public void setInvitees(Set<String> invitees) {
         this.invitees = invitees;
     }
 
-    public List<String> getConfirmedInvitees() {
+    public Set<String> getConfirmedInvitees() {
         return confirmedInvitees;
     }
 
-    public void setConfirmedInvitees(List<String> confirmedInvitees) {
+    public void setConfirmedInvitees(Set<String> confirmedInvitees) {
         this.confirmedInvitees = confirmedInvitees;
     }
 
