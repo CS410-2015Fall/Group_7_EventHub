@@ -227,6 +227,64 @@ public class CrossServiceTests {
         }
 
     }
+    
+    @Test
+    public void acceptNonexistantPendingEvent() {
+    	try {
+    		User mockUserParams = createUserParams(100, "theLoner", "mockPassword", "acceptnothing@validemail.com", new ArrayList<String>());
+    		User user = userService.createUser(mockUserParams);
+    		
+    		Guest acceptParam = createGuest(user.getUsername(), 9999999);
+    		userService.acceptPendingEvent(acceptParam);
+    	} catch (RuntimeException re) {
+    		assertTrue(re.getMessage().contains(String.format("Error: Event id %d does not exist!", 9999999)));
+    	}
+    }
+    
+    @Test
+    public void rejectNonexistantPendingEvent() {
+    	try {
+    		User mockUserParams = createUserParams(100, "theSavage", "mockPassword", "rejectnothing@validemail.com", new ArrayList<String>());
+    		User user = userService.createUser(mockUserParams);
+    		
+    		Guest rejectParam = createGuest(user.getUsername(), 9999999);
+    		userService.rejectPendingEvent(rejectParam);
+    	} catch (RuntimeException re) {
+    		assertTrue(re.getMessage().contains(String.format("Error: Event id %d does not exist!", 9999999)));
+    	}
+    }
+    
+    @Test
+    public void acceptPendingEventAsHost() {
+    	try {
+    		User mockUserParams = createUserParams(100, "oneManArmy", "mockPassword", "acceptself@validemail.com", new ArrayList<String>());
+    		Event mockEventParams = createEventParams("Special Day", mockUserParams.getUsername(), new Date(20500810), 1, false, new HashSet<String>(), new HashSet<String>());
+    		
+    		User user = userService.createUser(mockUserParams);
+    		Event event = eventService.createEvent(mockEventParams);
+    		
+    		Guest acceptParam = createGuest(user.getUsername(), event.getId());
+    		userService.acceptPendingEvent(acceptParam);
+    	} catch (RuntimeException re) {
+    		assertTrue(re.getMessage().contains("is the host of the event and so cannot accept or reject an invite to this event"));
+    	}
+    }
+    
+    @Test
+    public void rejectPendingEventAsHost() {
+    	try {
+    		User mockUserParams = createUserParams(100, "selfMockery", "mockPassword", "rejectself@validemail.com", new ArrayList<String>());
+    		Event mockEventParams = createEventParams("Same", mockUserParams.getUsername(), new Date(20500810), 1, false, new HashSet<String>(), new HashSet<String>());
+    		
+    		User user = userService.createUser(mockUserParams);
+    		Event event = eventService.createEvent(mockEventParams);
+    		
+    		Guest rejectParam = createGuest(user.getUsername(), event.getId());
+    		userService.rejectPendingEvent(rejectParam);
+    	} catch (RuntimeException re) {
+    		assertTrue(re.getMessage().contains("is the host of the event and so cannot accept or reject an invite to this event"));
+    	}
+    }
 
     private User createUserParams(int id, String username, String password, String email, List<String> friends) {
         User mockUserParams = new User();
