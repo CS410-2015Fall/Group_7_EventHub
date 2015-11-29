@@ -2,6 +2,8 @@ var App = angular.module('App');
 
 App.controller('DashCtrl', function($scope, $state, AuthService, UserDataService, $ionicPopup, $ionicLoading, API, $ionicModal, CalendarSync) {
 
+  $scope.username = AuthService.username();
+
   $scope.model = {};
   $scope.model.events = UserDataService.getEvents();
   $scope.model.invites = UserDataService.getInvites();

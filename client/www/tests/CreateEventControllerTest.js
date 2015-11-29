@@ -28,6 +28,7 @@ it('should create an event by calling API post with correct params', function() 
         'eventName': 'testEvent',
         'eventDescription': 'testDescription',
         'eventDate': new Date(1995, 11, 17),
+        'eventDuration': 60,
         'guests': []
     };
     $scope.formLocation = 'testLocation';
@@ -42,6 +43,7 @@ it('should create an event by calling API post with correct params', function() 
             'description': 'testDescription',
             'location': 'testLocation',
             'startDate': '1995-11-17',
+            'duration': 60,
             'host': 'napon',
             'invitees': [],
             'confirmedInvitees': [] 

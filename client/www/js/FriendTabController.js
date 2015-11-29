@@ -28,13 +28,13 @@ App.controller('FriendsController', function($scope, UserDataService, API, $ioni
         UserDataService.refresh();
         $ionicPopup.alert({
           title: 'Success',
-          template: response
+          template: 'New friend added.'
         });
       },
       function(response) {
         $ionicPopup.alert({
           title: 'Error',
-          template: response
+          template: 'Please try again later.'
         });
       }
     );
@@ -48,13 +48,13 @@ App.controller('FriendsController', function($scope, UserDataService, API, $ioni
         UserDataService.refresh();
         $ionicPopup.alert({
           title: 'Success',
-          template: response
+          template: 'Friend removed.'
         });
       },
       function(response) {
         $ionicPopup.alert({
           title: 'Error',
-          template: response
+          template: 'Please try again later.'
         });
       }
     );

@@ -78,7 +78,8 @@ App.controller('CreateEventCtrl', function($scope, $ionicPopup, $ionicModal, Use
       'name': data.eventName,
       'description': data.eventDescription,
       'location': $scope.formLocation,
-      'startDate': (1900 + data.eventDate.getYear()) + '-' + data.eventDate.getMonth() + '-' + data.eventDate.getDate(),
+      'startDate': (1900 + data.eventDate.getYear()) + '-' + (data.eventDate.getMonth() + 1) + '-' + data.eventDate.getDate(),
+      'duration': data.eventDuration,
       'host': UserDataService.getUsername(),
       'invitees': data.guests,
       'confirmedInvitees': []

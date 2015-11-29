@@ -18,6 +18,8 @@ App.factory('UserDataService', ['API', 'IMG', 'CalendarSync', function(API, IMG,
       refresh: refresh,
       syncExternalCalendars: syncExternalCalendars,
       syncFacebook: syncFacebook,
+      syncGoogle: syncGoogle,
+      removeFacebookToken: removeFacebookToken,
       setUser: setUser,
       isFacebookLinked: isFacebookLinked,
       isGoogleLinked: isGoogleLinked,
@@ -33,11 +35,11 @@ App.factory('UserDataService', ['API', 'IMG', 'CalendarSync', function(API, IMG,
     }
 
     function isFacebookLinked() {
-      return _user.facebookToken != null;
+      return _user.facebookToken != null && _user.facebookToken != 'N/A';
     }
 
     function isGoogleLinked() {
-      return true;
+      return _user.googleToken != null && _user.googleToken != 'N/A';
     }
 
     // Events.
@@ -56,7 +58,11 @@ App.factory('UserDataService', ['API', 'IMG', 'CalendarSync', function(API, IMG,
         function (response) {
           // On success, create a calendar entry on the device and refresh.
           var data = response.data;
-          CalendarSync.createCalendarEntry(data.name, data.location, data.description, data.startDate, data.endDate, function(s) {}, function(f) {});
+          CalendarSync.createCalendarEntry('[WeSync] ' + data.name, data.location, data.description, data.startDate, data.endDate, function(s) {
+            console.log('createSuccess');
+          }, function(f) {
+            console.log(f);
+          });
           loadAllEvents();
         }, function (response) {
           console.log(response);
@@ -70,7 +76,7 @@ App.factory('UserDataService', ['API', 'IMG', 'CalendarSync', function(API, IMG,
 
     function acceptInvite(eventId) {
       var request = {'eventId': eventId, 'username': _user.username};
-      API.post('/user/acceptPendingEvent', request, 
+      API.post('user/acceptPendingEvent', request, 
         function (response) {
           refresh();
         },
@@ -82,7 +88,7 @@ App.factory('UserDataService', ['API', 'IMG', 'CalendarSync', function(API, IMG,
 
     function declineInvite(eventId) {
       var request = {'eventId': eventId, 'username': _user.username};
-      API.post('/user/rejectPendingEvent', request, 
+      API.post('user/rejectPendingEvent', request, 
         function (response) {
           refresh();
         },
@@ -99,12 +105,19 @@ App.factory('UserDataService', ['API', 'IMG', 'CalendarSync', function(API, IMG,
         var events = data.data;
         for (var i = 0; i < events.length; i++) {
           var current = events[i];
-          if (current.type === 'wesync')
+          if (current.type === 'wesync') {
             current.avatar = IMG.wesync;
+            
+            // Check if this is finalized if so add to cal.
+            if (current.isFinalized) {
+              CalendarSync.syncFinalizedEvent(current);
+            }
+          }
           else if (current.type === 'facebook')
             current.avatar = IMG.facebook;
           else if (current.type === 'google') 
             current.avatar = IMG.google;
+
         }
         _events = events;
       }, function (err) {
@@ -115,7 +128,7 @@ App.factory('UserDataService', ['API', 'IMG', 'CalendarSync', function(API, IMG,
     function loadAllInvites() {
       var username = _user.username;
       var request = {'username': username};
-      API.post('/user/getPendingEvents', request, function(data) {
+      API.post('user/getPendingEvents', request, function(data) {
       _invites = data.data;
       }, function (err) {
         console.log(err);
@@ -144,9 +157,8 @@ App.factory('UserDataService', ['API', 'IMG', 'CalendarSync', function(API, IMG,
 
     function refreshUserSettings() {
       var request = {'username': _user.username};
-      var scope = this;
-      API.post('/user/findByUsername', request, function(s) {
-        scope.setUser(s.data); 
+      API.post('user/findByUsername', request, function(s) {
+        _user = s.data; 
       }, function(e) {
         console.log(e);
       });
@@ -155,11 +167,28 @@ App.factory('UserDataService', ['API', 'IMG', 'CalendarSync', function(API, IMG,
     function syncFacebook() {
       CalendarSync.fetchFacebookToken(
         function (token) {
-          API.commitFBAccessToken(_user.username, token, function(s){}, function(e) {});
+          API.commitFBAccessToken(_user.username, token, function(success){
+            refreshUserSettings();
+            API.post('facebook/getFacebookEvents', {'username': _user.username}, function(s) {
+              loadAllEvents();
+            }, function(e) {});
+          }, function(e) {});
         }, function (err) {
           console.log(err);
         }
       );  
+    }
+
+    function syncGoogle() {
+      CalendarSync.fetchGoogleEvents(
+        function (gEvents) {
+          API.uploadGoogleCalendarEvents(_user.username, gEvents, function(s) {
+            loadAllEvents();
+          }, function(e) {});
+        }, function (err) {
+          console.log(err);
+        }
+      );
     }
 
     function syncExternalCalendars() {
@@ -180,7 +209,7 @@ App.factory('UserDataService', ['API', 'IMG', 'CalendarSync', function(API, IMG,
     }
 
     function removeFacebookToken() {
-      API.commitFBAccessToken(_user.username, null, function(s){}, function(e) {});
+      API.commitFBAccessToken(_user.username, '', function(s){ refreshUserSettings(); }, function(e) {});
     }
 
 }]);

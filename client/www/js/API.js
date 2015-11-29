@@ -52,14 +52,17 @@ App.factory('API', ['$http', function($http) {
       url: 'http://vcheng.org:8080/user/addFacebookToken',
       data: request
     })
-    .then(function(response) { success(response); }, function(response) { fail(response); });
+    .then(function(response) { success(response); }, function(response) { 
+      debugger;
+      fail(response); 
+    });
   }
 
   function uploadGoogleCalendarEvents(username, events, success, fail) {
     for (var i = 0; i < events.length; i++) {
       events[i].username = username;
     }
-    console.log(events);
+    
     $http.defaults.headers.post['Content-Type'] = 'application/json;charset=UTF-8';
     $http({
       method: 'POST',

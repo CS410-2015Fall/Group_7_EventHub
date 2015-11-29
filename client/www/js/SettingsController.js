@@ -1,21 +1,20 @@
 var App = angular.module('App');
 
-App.controller('SettingsController', function($scope, UserDataService, CalendarSync) {
+App.controller('SettingsController', function($scope, UserDataService) {
   $scope.settings = {};
-  $scope.settings.fb = UserDataService.isFacebookLinked();
-  $scope.settings.google = UserDataService.isGoogleLinked();
 
-  // $scope.$watch('settings.fb', function(newValue, oldValue) {
-  //   if (newValue == false) {
-  //     UserDataService.removeFBToken();
-  //     console.log('A');
-  //   } else {
-  //     UserDataService.syncFacebook();
-  //     console.log('B');
-  //   }
-  // });
+  $scope.toggleFb = function(type) {
+    UserDataService.syncFacebook();
+  };
 
-  // $scope.$watch('settings.google', function(newValue, oldValue) {
-  //   alert('TODO');
-  // });
+  $scope.toggleGoogle = function(type) {
+    UserDataService.syncGoogle();
+  };
+});
+
+App.directive('socialBtn', function() {
+  return {
+    restrict: 'E',
+    template: '<i class="icon ion-link"></i>' 
+  };
 });
