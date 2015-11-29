@@ -255,7 +255,7 @@ public class UserServiceImpl implements UserService {
                 break;
             }
         }
-        if (existingEvent.getId() == guest.getEventId()) {
+        if (existingEvent.getId() == guest.getEventId() && !existingEvent.getConfirmedInvitees().contains(guest.getUsername())) {
             existingEvent.getConfirmedInvitees().add(guest.getUsername());
             eventRepository.save(existingEvent);
         }
