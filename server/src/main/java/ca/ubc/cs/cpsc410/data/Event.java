@@ -21,7 +21,7 @@ public class Event {
     @Column(name = "host")
     private String host;
 
-    @Column(name = "name")
+    @Column(name = "name", length = 65535)
     private String name;
 
     @Column(name = "description", length = 65535)
@@ -76,7 +76,8 @@ public class Event {
     }
 
     public void setName(String name) {
-        this.name = name;
+        // max length for description field is set to 65535 bytes in our Event class
+        this.name = name.substring(0, Math.min(description.toString().length(), 65535));
     }
 
     public String getDescription() {
@@ -84,7 +85,8 @@ public class Event {
     }
 
     public void setDescription(String description) {
-        this.description = description;
+        // max length for description field is set to 65535 bytes in our Event class
+        this.description = description.substring(0, Math.min(description.toString().length(), 65535));
     }
 
     public String getType() {
