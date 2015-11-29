@@ -47,11 +47,11 @@ public class Event {
     @Column(name = "location")
     private String location;
 
-    @ElementCollection(targetClass = String.class)
+    @ElementCollection(fetch = FetchType.EAGER, targetClass = String.class)
     @Column(name = "confirmedInvitees")
     private List<String> confirmedInvitees;
 
-    @ElementCollection(targetClass = String.class)
+    @ElementCollection(fetch = FetchType.EAGER, targetClass = String.class)
     @Column(name = "invitees")
     private List<String> invitees;
 

@@ -19,6 +19,9 @@ public class Guest {
     @Column(name = "eventId")
     private int eventId;
 
+    @Column(name = "response")
+    private String response;
+
     public int getId() {
         return id;
     }
@@ -42,5 +45,6 @@ public class Guest {
     public int getEventId() {
         return eventId;
     }
+
 
 }
