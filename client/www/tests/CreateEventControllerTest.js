@@ -42,7 +42,7 @@ it('should create an event by calling API post with correct params', function() 
             'name': 'testEvent',
             'description': 'testDescription',
             'location': 'testLocation',
-            'startDate': '1995-11-17',
+            'startDate': '1995-12-17',
             'duration': 60,
             'host': 'napon',
             'invitees': [],
