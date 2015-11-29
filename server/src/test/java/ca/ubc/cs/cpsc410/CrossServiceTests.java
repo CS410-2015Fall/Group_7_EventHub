@@ -147,6 +147,9 @@ public class CrossServiceTests {
         assertTrue(eventOne.getInvitees().size() == expectedEventInvitees.size());
         assertTrue(eventTwo.getInvitees().size() == expectedEventInvitees.size());
         assertTrue(eventThree.getInvitees().size() == expectedEventInvitees.size());
+        
+        assertTrue(userOne.getEvents().isEmpty());
+        assertTrue(userTwo.getEvents().isEmpty());
 
         assertTrue(userOne.getPendingEvents().size() == expectedUserPendingEvents.size());
         assertTrue(userTwo.getPendingEvents().size() == expectedUserPendingEvents.size());
@@ -161,8 +164,6 @@ public class CrossServiceTests {
         }
 
         userService.acceptPendingEvent(userOneEventOne);
-        userOne = userService.findByUsername(userOne);
-        eventOne = eventService.getEvent(eventOne);
         userService.acceptPendingEvent(userOneEventTwo);
         userService.rejectPendingEvent(userOneEventThree);
 
