@@ -339,6 +339,77 @@ public class CrossServiceTests {
     	assertTrue(event.getConfirmedInvitees().isEmpty());
     }
     
+    @Test 
+    public void findingTimeForEventWithUsersWithEvents() {
+    	User mockUserParamsOne = createUserParams(100, "guyWithEvents", "mockPassword", "guywithevents@validemail.com", new ArrayList<String>());
+    	User mockUserParamsTwo = createUserParams(100, "girlWithEvents", "mockPassword", "girlwithevents@validemail.com", new ArrayList<String>());
+    	User mockUserParamsThree = createUserParams(100, "hostWithEvents", "mockPassword", "hostwithevents@validemail.com", new ArrayList<String>());
+    	
+    	User userOne = userService.createUser(mockUserParamsOne);
+    	User userTwo = userService.createUser(mockUserParamsTwo);
+    	User userThree = userService.createUser(mockUserParamsThree);
+    	
+    	HashSet<String> confirmedInvitees = new HashSet<String>();
+    	confirmedInvitees.add(userTwo.getUsername());
+    	confirmedInvitees.add(userThree.getUsername());
+    	
+    	// 12/10/2015, 8:00:00 AM
+    	Event userOneEventParams = createEventParams("User One's Event", userOne.getUsername(), new Date(1449763200000L), 120, true, new HashSet<String>(), new HashSet<String>());
+    	// 12/10/2015, 10:59:00 AM
+    	Event userTwoEventParams = createEventParams("User Two's Event", userTwo.getUsername(), new Date(1449773940000L), 121, true, new HashSet<String>(), new HashSet<String>());
+    	// 12/10/2015, 4:00:00 PM
+    	Event userThreeEventParams = createEventParams("User Three's Event", userThree.getUsername(), new Date(1449792000000L), 120, true, new HashSet<String>(), new HashSet<String>());
+    	// 12/10/2015, 12:00:00 AM
+    	Event eventToFindTimeParams = createEventParams("The one and only", userOne.getUsername(), new Date(1449734400000L), 121, false, new HashSet<String>(), confirmedInvitees);
+    	// 12/10/2015, 10:58:00 AM
+    	Event eventToFindTimeTwoParams = createEventParams("The two and only", userOne.getUsername(), new Date(1449773880000L), 60, false, new HashSet<String>(), confirmedInvitees);
+    	
+    	eventService.createEvent(userOneEventParams);
+    	eventService.createEvent(userTwoEventParams);
+    	eventService.createEvent(userThreeEventParams);
+    	
+    	Event eventToFindTime = eventService.createEvent(eventToFindTimeParams);
+    	Event eventToFindTimeTwo = eventService.createEvent(eventToFindTimeTwoParams);
+    	
+    	eventToFindTime = eventService.findTime(eventToFindTime);	
+    	eventToFindTimeTwo = eventService.findTime(eventToFindTimeTwo);
+    	
+    	// 12/10/2015, 1:00:00 PM
+    	assertTrue(eventToFindTime.getStartDate().equals(new Date(1449781200000L)));
+    	// 12/10/2015, 3:01:00 PM
+    	assertTrue(eventToFindTime.getEndDate().equals(new Date(1449788460000L)));
+    	// 12/10/2015, 6:00:00 PM
+    	assertTrue(eventToFindTimeTwo.getStartDate().equals(new Date(1449799200000L)));
+    	// 12/10/2015, 7:00:00 PM
+    	assertTrue(eventToFindTimeTwo.getEndDate().equals(new Date(1449802800000L)));
+    }
+    
+    @Test
+    public void findTimeForFinalizedEvent() {
+    	User mockHostParams = createUserParams(100, "thatOneHost", "mockPassword", "thatonehost@validemail.com", new ArrayList<String>());
+    	User host = userService.createUser(mockHostParams);
+    	
+    	Event eventParams = createEventParams("that one event", host.getUsername(), new Date(), 1, true, new HashSet<String>(), new HashSet<String>());
+    	Event event = eventService.createEvent(eventParams);
+    	
+    	Event eventAfterFindTime = eventService.findTime(event);
+    	
+    	assertTrue(event.equals(eventAfterFindTime));
+    }
+    
+    @Test
+    public void findTimeForNonExistentEvent() {
+    	try {
+    		Event eventParams = createEventParams("WHERE'D I GO?!", "dudHost", new Date(), 1, true, new HashSet<String>(), new HashSet<String>());
+    		eventParams.setId(9999999);
+    		
+    		eventService.findTime(eventParams);
+    	} catch (RuntimeException re) {
+    		assertTrue(re.getMessage().equals("Error: Event 9999999 could not be found!"));
+    	}
+    	
+    }
+    
     @Test
     public void addHostAsInvitee() {
     	try {
