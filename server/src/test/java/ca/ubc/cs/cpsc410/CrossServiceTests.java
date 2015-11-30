@@ -266,6 +266,81 @@ public class CrossServiceTests {
     		assertTrue(re.getMessage().contains("is the host of the event and so cannot accept or reject an invite to this event"));
     	}
     }
+    
+    @Test
+    public void confirmAutoAddingInviteesEvents() {
+    	User mockUserParamsOne = createUserParams(100, "inviteeGuy", "mockPassword", "inviteeguy@validemail.com", new ArrayList<String>());
+    	User mockUserParamsTwo = createUserParams(100, "inviteeGal", "mockPassword", "inviteegal@validemail.com", new ArrayList<String>());
+    	User mockHostParams = createUserParams(100, "someKindOfHost", "mockPassword", "somekindofhost@validemail.com", new ArrayList<String>());
+    	
+    	User userOne = userService.createUser(mockUserParamsOne);
+    	User userTwo = userService.createUser(mockUserParamsTwo);
+    	User host = userService.createUser(mockHostParams);
+    	
+    	Set<String> invitees = new HashSet<String>();
+    	invitees.add(userOne.getUsername());
+    	
+    	Set<String> confirmedInvitees = new HashSet<String>();
+    	confirmedInvitees.add(userTwo.getUsername());
+    	
+    	Event mockEventParams = createEventParams("Special Day", host.getUsername(), new Date(20500810), 1, false, invitees, confirmedInvitees);
+    	Event event = eventService.createEvent(mockEventParams);
+    	
+    	userOne = userService.findByUsername(userOne);
+    	userTwo = userService.findByUsername(userTwo);
+    	host = userService.findByUsername(host);
+    	
+    	assertTrue(userOne.getPendingEvents().get(0) == event.getId());
+    	assertTrue(userTwo.getEvents().get(0) == event.getId());
+    	assertTrue(host.getEvents().get(0) == event.getId());
+    }
+    
+    @Test
+    public void addHostAsInvitee() {
+    	try {
+    		User mockHostParams = createUserParams(100, "inviteMyself", "mockPassword", "invitemyself@validemail.com", new ArrayList<String>());
+    		User host = userService.createUser(mockHostParams);
+    		
+    		Event mockEventParams = createEventParams("Special Day", host.getUsername(), new Date(20500810), 1, false, new HashSet<String>(), new HashSet<String>());
+        	Event event = eventService.createEvent(mockEventParams);
+        	
+        	Guest guest = createGuest(host.getUsername(), event.getId());
+        	List<Guest> inviteeParam = new ArrayList<Guest>();
+        	inviteeParam.add(guest);
+        	
+        	eventService.addInvitees(inviteeParam);
+    	} catch (RuntimeException re) {
+    		assertTrue(re.getMessage().contains("is the host of the event and so cannot accept or reject an invite to this event"));
+    	}
+    }
+    
+    @Test
+    public void inviteeGuestsHaveDifferentEventIds() {
+    	try {
+    		User mockUserParams = createUserParams(100, "randomDummy", "mockPassword", "randomdummy@validemail.com", new ArrayList<String>());
+    		User mockHostParams = createUserParams(100, "messyHost", "mockPassword", "messyhost@validemail.com", new ArrayList<String>());
+    		
+    		User host = userService.createUser(mockHostParams);
+    		User user = userService.createUser(mockUserParams);
+    		
+    		Event mockEventParamsOne = createEventParams("Different Event #1", host.getUsername(), new Date(20500812), 1, false, new HashSet<String>(), new HashSet<String>());
+    		Event mockEventParamsTwo = createEventParams("Different Event #2", host.getUsername(), new Date(20500811), 1, false, new HashSet<String>(), new HashSet<String>());
+        	
+    		Event eventOne = eventService.createEvent(mockEventParamsOne);
+        	Event eventTwo = eventService.createEvent(mockEventParamsTwo);
+        	
+        	Guest guestOne = createGuest(user.getUsername(), eventOne.getId());
+        	Guest guestTwo = createGuest(user.getUsername(), eventTwo.getId());
+        	
+        	List<Guest> inviteeParam = new ArrayList<Guest>();
+        	inviteeParam.add(guestOne);
+        	inviteeParam.add(guestTwo);
+        	
+        	eventService.addInvitees(inviteeParam);
+    	} catch (RuntimeException re) {
+    		assertTrue(re.getMessage().contains("Error: Guests must have the same event ID!"));
+    	}
+    }
 
     private User createUserParams(int id, String username, String password, String email, List<String> friends) {
         User mockUserParams = new User();

@@ -54,9 +54,11 @@ public class EventServiceImpl implements EventService {
         for (User existingUser : existingUsers) {
             if (event.getInvitees().contains(existingUser.getUsername())) {
                 existingUser.getPendingEvents().add(newEvent.getId());
+                userRepository.save(existingUser);
             }
             if (event.getConfirmedInvitees().contains(existingUser.getUsername())) {
                 existingUser.getEvents().add(newEvent.getId());
+                userRepository.save(existingUser);
             }
         }
         return newEvent;

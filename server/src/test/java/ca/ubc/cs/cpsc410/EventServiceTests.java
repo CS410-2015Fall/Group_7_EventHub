@@ -72,6 +72,28 @@ public class EventServiceTests {
     	}
     }
     
+    @Test
+    public void getInviteesOfNonExistantEvent() {
+    	try {
+    		Event nonExistingEvent = createEventParams("Doesn't Exist", "NoHostCalledThis", new Date(20500817), 1, true, new HashSet<String>(), new HashSet<String>());
+    		nonExistingEvent.setId(999999999);
+    		service.getInvitees(nonExistingEvent);
+    	} catch (RuntimeException re) {
+    		assertTrue(re.getMessage().contains("Error: Event id 999999999 cannot be found!"));
+    	}
+    }
+    
+    @Test
+    public void getConfirmedInviteesOfNonExistantEvent() {
+    	try {
+    		Event nonExistingEvent = createEventParams("Doesn't Exist", "NoHostCalledThis", new Date(20500817), 1, true, new HashSet<String>(), new HashSet<String>());
+    		nonExistingEvent.setId(999999999);
+    		service.getConfirmedInvitees(nonExistingEvent);
+    	} catch (RuntimeException re) {
+    		assertTrue(re.getMessage().contains("Error: Event id 999999999 cannot be found!"));
+    	}
+    }
+    
     private Event createEventParams(String name, String host, Date startDate, int duration, boolean isFinalized, Set<String> invitees, Set<String> confirmedInvitees) {
         Event mockEventParams = new Event();
         mockEventParams.setName(name);
