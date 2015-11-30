@@ -1,6 +1,8 @@
 package ca.ubc.cs.cpsc410.data;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,11 +20,13 @@ public class EventServiceImpl implements EventService {
 
     private final EventRepository eventRepository;
     private final UserRepository userRepository;
+    private final JavaMailSender javaMailSender;
 
     @Autowired
-    public EventServiceImpl(final EventRepository eventRepository, final UserRepository userRepository) {
+    public EventServiceImpl(final EventRepository eventRepository, final UserRepository userRepository, final JavaMailSender javaMailSender) {
         this.eventRepository = eventRepository;
         this.userRepository = userRepository;
+        this.javaMailSender = javaMailSender;
     }
 
     @Override
@@ -108,6 +112,7 @@ public class EventServiceImpl implements EventService {
             }
             existingEvent.setInvitees(null);
             existingEvent.setIsFinalized(true);
+            sendEmail(existingEvent);
             return eventRepository.save(existingEvent);
         }
         throw new RuntimeException(String.format(
@@ -331,4 +336,22 @@ public class EventServiceImpl implements EventService {
         Date returnTime = startTimeCal.getTime();
         return returnTime;
     }
+
+    /**
+     * Sends email to all confirmed invitees and host of a given event.
+     */
+    public void sendEmail(Event event) {
+        List<User> existingUsers = userRepository.findAll();
+        Event existingEvent = eventRepository.findOne(event.getId());
+        for (User existingUser : existingUsers) {
+            if (existingEvent.getHost().equals(existingUser.getUsername()) || existingEvent.getConfirmedInvitees().contains(existingUser.getUsername())) {
+                SimpleMailMessage mailMessage = new SimpleMailMessage();
+                mailMessage.setTo(existingUser.getEmail());
+                mailMessage.setSubject("Event notification");
+                mailMessage.setText(String.format("Hello %s,\nEvent %s has been finalized!", existingUser.getUsername(), existingEvent.getName()));
+                javaMailSender.send(mailMessage);
+            }
+        }
+    }
+
 }

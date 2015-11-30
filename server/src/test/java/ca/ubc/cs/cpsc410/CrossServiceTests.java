@@ -6,6 +6,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
@@ -23,11 +24,13 @@ public class CrossServiceTests {
     @Autowired
     private EventRepository eventRepository;
     private EventService eventService;
+    @Autowired
+    private JavaMailSender javaMailSender;
 
     @Before
     public void setUp() throws Exception {
         userService = new UserServiceImpl(userRepository, eventRepository);
-        eventService = new EventServiceImpl(eventRepository, userRepository);
+        eventService = new EventServiceImpl(eventRepository, userRepository, javaMailSender);
     }
 
     @Test
