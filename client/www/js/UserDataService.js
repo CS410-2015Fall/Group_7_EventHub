@@ -19,7 +19,6 @@ App.factory('UserDataService', ['API', 'IMG', 'CalendarSync', function(API, IMG,
       syncExternalCalendars: syncExternalCalendars,
       syncFacebook: syncFacebook,
       syncGoogle: syncGoogle,
-      removeFacebookToken: removeFacebookToken,
       setUser: setUser,
       isFacebookLinked: isFacebookLinked,
       isGoogleLinked: isGoogleLinked,
@@ -50,6 +49,7 @@ App.factory('UserDataService', ['API', 'IMG', 'CalendarSync', function(API, IMG,
 
     function setUser(user) {
       _user = user;
+      _friends = user.friends;
     }
 
     function finalizeEvent(eventId) {
@@ -214,10 +214,6 @@ App.factory('UserDataService', ['API', 'IMG', 'CalendarSync', function(API, IMG,
           }
         );
       }
-    }
-
-    function removeFacebookToken() {
-      API.commitFBAccessToken(_user.username, '', function(s){ refreshUserSettings(); }, function(e) {});
     }
 
 }]);

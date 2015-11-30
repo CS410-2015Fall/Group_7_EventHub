@@ -47,7 +47,8 @@ module.exports = function(config) {
       'www/tests/CreateEventControllerTest.js',
       'www/tests/FriendsControllerTest.js',
       'www/tests/RegisterCtrlTest.js',
-      'www/tests/DashControllerTest.js'
+      'www/tests/DashControllerTest.js',
+      'www/tests/UserDataServiceTest.js'
     ],
 
 
