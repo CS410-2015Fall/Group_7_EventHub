@@ -67,7 +67,7 @@ public class EventServiceImpl implements EventService {
     @Override
     public void cancelEvent(Event event) {
         List<User> existingUsers = userRepository.findAll();
-        Event existingEvent = eventRepository.getOne(event.getId());
+        Event existingEvent = eventRepository.findOne(event.getId());
         if (existingEvent != null) {
             for (User existingUser : existingUsers) {
                 if (existingEvent.getInvitees().contains(existingUser.getUsername())) {

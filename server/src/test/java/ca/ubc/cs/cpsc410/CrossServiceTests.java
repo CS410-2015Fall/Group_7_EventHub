@@ -268,7 +268,7 @@ public class CrossServiceTests {
     }
     
     @Test
-    public void confirmAutoAddingInviteesEvents() {
+    public void confirmAutoAddingInviteesEventsAndCancellingEvent() {
     	User mockUserParamsOne = createUserParams(100, "inviteeGuy", "mockPassword", "inviteeguy@validemail.com", new ArrayList<String>());
     	User mockUserParamsTwo = createUserParams(100, "inviteeGal", "mockPassword", "inviteegal@validemail.com", new ArrayList<String>());
     	User mockHostParams = createUserParams(100, "someKindOfHost", "mockPassword", "somekindofhost@validemail.com", new ArrayList<String>());
@@ -293,6 +293,50 @@ public class CrossServiceTests {
     	assertTrue(userOne.getPendingEvents().get(0) == event.getId());
     	assertTrue(userTwo.getEvents().get(0) == event.getId());
     	assertTrue(host.getEvents().get(0) == event.getId());
+    	
+    	eventService.cancelEvent(event);
+    	
+    	userOne = userService.findByUsername(userOne);
+    	userTwo = userService.findByUsername(userTwo);
+    	host = userService.findByUsername(host);
+    	
+    	assertTrue(userOne.getPendingEvents().isEmpty());
+    	assertTrue(userTwo.getEvents().isEmpty());
+    	assertTrue(host.getEvents().isEmpty());
+    }
+    
+    @Test
+    public void finalizeEventWithInvitees() {
+    	User mockUserParamsOne = createUserParams(100, "firstInvitee", "mockPassword", "firstinvitee@validemail.com", new ArrayList<String>());
+    	User mockUserParamsTwo = createUserParams(100, "secondInvitee", "mockPassword", "secondinvitee@validemail.com", new ArrayList<String>());
+    	User mockHostParams = createUserParams(100, "theOnlyHost", "mockPassword", "theonlyhost@validemail.com", new ArrayList<String>());
+    	
+    	User userOne = userService.createUser(mockUserParamsOne);
+    	User userTwo = userService.createUser(mockUserParamsTwo);
+    	User host = userService.createUser(mockHostParams);
+    	
+    	Set<String> invitees = new HashSet<String>();
+    	invitees.add(userOne.getUsername());
+    	invitees.add(userTwo.getUsername());
+    	
+    	Event mockEventParams = createEventParams("Special Day", host.getUsername(), new Date(20500810), 1, false, invitees, new HashSet<String>());
+    	Event event = eventService.createEvent(mockEventParams);
+    	
+    	eventService.finalizeEvent(event);
+    	
+    	event = eventService.getEvent(event);
+    	userOne = userService.findByUsername(userOne);
+    	userTwo = userService.findByUsername(userTwo);
+    	host = userService.findByUsername(host);
+    	
+    	assertTrue(userOne.getPendingEvents().isEmpty());
+    	assertTrue(userTwo.getPendingEvents().isEmpty());
+    	assertTrue(userOne.getEvents().isEmpty());
+    	assertTrue(userTwo.getEvents().isEmpty());
+    	assertTrue(host.getEvents().contains(event.getId()));
+    	assertTrue(event.getIsFinalized());
+    	assertTrue(event.getInvitees().isEmpty());
+    	assertTrue(event.getConfirmedInvitees().isEmpty());
     }
     
     @Test
