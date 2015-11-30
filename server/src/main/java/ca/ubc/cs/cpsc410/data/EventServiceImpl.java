@@ -54,9 +54,11 @@ public class EventServiceImpl implements EventService {
         for (User existingUser : existingUsers) {
             if (event.getInvitees().contains(existingUser.getUsername())) {
                 existingUser.getPendingEvents().add(newEvent.getId());
+                userRepository.save(existingUser);
             }
             if (event.getConfirmedInvitees().contains(existingUser.getUsername())) {
                 existingUser.getEvents().add(newEvent.getId());
+                userRepository.save(existingUser);
             }
         }
         return newEvent;
@@ -65,7 +67,7 @@ public class EventServiceImpl implements EventService {
     @Override
     public void cancelEvent(Event event) {
         List<User> existingUsers = userRepository.findAll();
-        Event existingEvent = eventRepository.getOne(event.getId());
+        Event existingEvent = eventRepository.findOne(event.getId());
         if (existingEvent != null) {
             for (User existingUser : existingUsers) {
                 if (existingEvent.getInvitees().contains(existingUser.getUsername())) {
