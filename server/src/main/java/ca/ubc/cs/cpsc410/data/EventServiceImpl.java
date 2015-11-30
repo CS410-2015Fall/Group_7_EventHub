@@ -348,7 +348,7 @@ public class EventServiceImpl implements EventService {
                 SimpleMailMessage mailMessage = new SimpleMailMessage();
                 mailMessage.setTo(existingUser.getEmail());
                 mailMessage.setSubject("Event notification");
-                mailMessage.setText(String.format("Hello %s,\nEvent %s has been finalized!", existingUser.getUsername(), existingEvent.getName()));
+                mailMessage.setText(String.format("Hello %s,\nEvent %s has been finalized!\nPlease check WeSync for details.\n", existingUser.getUsername(), existingEvent.getName()));
                 javaMailSender.send(mailMessage);
             }
         }
