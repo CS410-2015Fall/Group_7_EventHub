@@ -84,7 +84,7 @@ App.controller('CreateEventCtrl', function($scope, $ionicPopup, $ionicModal, Use
       'invitees': data.guests,
       'confirmedInvitees': []
     };
-
+    debugger;
     API.post('event/createEvent', request,
       function(response) {
         window.history.back();

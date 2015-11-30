@@ -164,29 +164,37 @@ App.factory('UserDataService', ['API', 'IMG', 'CalendarSync', function(API, IMG,
       });
     }
 
-    function syncFacebook() {
+    function syncFacebook(success, fail) {
+      var succeed = success;
       CalendarSync.fetchFacebookToken(
         function (token) {
           API.commitFBAccessToken(_user.username, token, function(success){
             refreshUserSettings();
             API.post('facebook/getFacebookEvents', {'username': _user.username}, function(s) {
               loadAllEvents();
-            }, function(e) {});
-          }, function(e) {});
+              succeed();
+            }, function(e) {
+              fail();
+            });
+          }, function(e) {
+            fail();
+          });
         }, function (err) {
-          console.log(err);
+          fail();
         }
       );  
     }
 
-    function syncGoogle() {
+    function syncGoogle(success, fail) {
       CalendarSync.fetchGoogleEvents(
         function (gEvents) {
           API.uploadGoogleCalendarEvents(_user.username, gEvents, function(s) {
+            API.post('user/addGoogleToken', {"username": _user.username, "googleToken":"true"}, function() {}, function() {});
             loadAllEvents();
-          }, function(e) {});
+            success();
+          }, function(e) { fail(); });
         }, function (err) {
-          console.log(err);
+          fail();
         }
       );
     }

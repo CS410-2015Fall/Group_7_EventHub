@@ -3,6 +3,17 @@
 
 module.exports = function(config) {
   config.set({
+    reporters: ['progress', 'html'],
+
+    htmlReporter: {
+        outputDir: 'karma_html',
+        templatePath: null,
+        focusOnFailures: true,
+        namedFiles: false,
+        pageTitle: null,
+        urlFriendlyName: false,
+        reportName: 'test-report-summary'
+    },
 
     // base path that will be used to resolve all patterns (eg. files, exclude)
     basePath: '',
@@ -24,16 +35,19 @@ module.exports = function(config) {
       'www/lib/checklist-model/checklist-model.js',
       'www/js/app.js',
       'www/js/API.js',
-      'www/js/AuthController.js',
       'www/js/DashController.js',
       'www/js/FriendTabController.js',
+      'www/js/AuthControllers.js',
       'www/js/CreateEventController.js',
       'www/js/SettingsController.js',
       'www/js/AuthService.js',
       'www/js/UserDataService.js',
       'www/js/constants.js',
       'www/js/CalendarSync.js',
-      'www/tests/*.js',
+      'www/tests/CreateEventControllerTest.js',
+      'www/tests/FriendsControllerTest.js',
+      'www/tests/RegisterCtrlTest.js',
+      'www/tests/DashControllerTest.js'
     ],
 
 

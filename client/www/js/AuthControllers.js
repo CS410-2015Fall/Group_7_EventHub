@@ -35,7 +35,7 @@ App.controller('LoginCtrl', function($scope, $state, $ionicPopup, AuthService, U
   };
 });
 
-App.controller('RegisterCtrl', function($scope, $state, $http, $ionicPopup, API) {
+angular.module('App').controller('RegisterCtrl', function($scope, $http, $ionicPopup, API) {
   $scope.register = function(data) {
     var request = {'username': data.username, 'password': data.password, 'email': data.email};
     API.post('user/createUser', request, 
