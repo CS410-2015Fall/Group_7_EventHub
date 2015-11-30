@@ -20,6 +20,14 @@ After running the server component, it will be accessible from
 http://localhost:8080. Vincent will also have a remotely accessible version
 of the server running at http://vcheng.org:8080.
 
+# Test coverage
+
+We use the [Maven Surefire Report plugin](https://maven.apache.org/surefire/maven-surefire-report-plugin/)
+to generate test reports. These reports will be generated and placed in
+server/target/site/index.html.
+
+    $ mvn site
+
 # Development tips
 
 Instead of using System.out.println() to print arbitrary strings in your code,
