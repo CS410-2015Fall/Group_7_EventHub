@@ -50,5 +50,5 @@ public interface UserService {
     User addGoogleToken(User user);
 
     User addGoogleEvents(List<GoogleEvent> googleEvents);
-
+    
 }
