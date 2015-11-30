@@ -9,9 +9,7 @@ import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 import static org.junit.Assert.assertTrue;
 
@@ -34,7 +32,6 @@ public class CrossServiceTests {
 
     @Test
     public void verifyEventsAndPendingEvents() {
-        // TODO: Might need to change this test later on
         List<Event> expectedUserEvents = new ArrayList<Event>();
         List<Event> expectedUserPendingEvents = new ArrayList<Event>();
 
@@ -43,24 +40,8 @@ public class CrossServiceTests {
 
         User host = userService.createUser(mockHostParams);
 
-        Event mockEventOne = new Event();
-        mockEventOne.setIsFinalized(true);
-        mockEventOne.setName("SomeEvent");
-        mockEventOne.setHost(host.getUsername());
-        mockEventOne.setStartDate(new Date(20500815));
-        mockEventOne.setDuration(1);
-        mockEventOne.setInvitees(new ArrayList<String>());
-        mockEventOne.setConfirmedInvitees(new ArrayList<String>());
-
-        Event mockEventTwo = new Event();
-        mockEventTwo.setIsFinalized(true);
-        mockEventTwo.setName("SomeOtherEvent");
-        mockEventTwo.setHost(host.getUsername());
-        mockEventTwo.setStartDate(new Date(20500816));
-        mockEventTwo.setDuration(1);
-        mockEventTwo.setInvitees(new ArrayList<String>());
-        mockEventTwo.setConfirmedInvitees(new ArrayList<String>());
-
+        Event mockEventOne = createEventParams("SomeEvent", host.getUsername(), new Date(20500815), 1, true, new HashSet<String>(), new HashSet<String>());
+        Event mockEventTwo = createEventParams("SomeOtherEvent", host.getUsername(), new Date(20500816), 1, true, new HashSet<String>(), new HashSet<String>());
 
         Event eventOne = eventService.createEvent(mockEventOne);
         Event eventTwo = eventService.createEvent(mockEventTwo);
@@ -68,23 +49,8 @@ public class CrossServiceTests {
         expectedUserEvents.add(eventOne);
         expectedUserEvents.add(eventTwo);
 
-        Event mockPendingEventOne = new Event();
-        mockPendingEventOne.setIsFinalized(false);
-        mockPendingEventOne.setName("Undetermined");
-        mockPendingEventOne.setHost(host.getUsername());
-        mockPendingEventOne.setStartDate(new Date(20500817));
-        mockPendingEventOne.setDuration(1);
-        mockPendingEventOne.setInvitees(new ArrayList<String>());
-        mockPendingEventOne.setConfirmedInvitees(new ArrayList<String>());
-
-        Event mockPendingEventTwo = new Event();
-        mockPendingEventTwo.setIsFinalized(false);
-        mockPendingEventTwo.setName("I don't know");
-        mockPendingEventTwo.setHost(host.getUsername());
-        mockPendingEventTwo.setStartDate(new Date(20500818));
-        mockPendingEventTwo.setDuration(1);
-        mockPendingEventTwo.setInvitees(new ArrayList<String>());
-        mockPendingEventTwo.setConfirmedInvitees(new ArrayList<String>());
+        Event mockPendingEventOne = createEventParams("Undetermined", host.getUsername(), new Date(20500817), 1, false, new HashSet<String>(), new HashSet<String>());
+        Event mockPendingEventTwo = createEventParams("I don't know", host.getUsername(), new Date(20500818), 1, false, new HashSet<String>(), new HashSet<String>());
 
         Event pendingEventOne = eventService.createEvent(mockPendingEventOne);
         Event pendingEventTwo = eventService.createEvent(mockPendingEventTwo);
@@ -124,6 +90,183 @@ public class CrossServiceTests {
 
     }
 
+    @Test
+    public void addInviteesAndHaveUsersAcceptAndRejectPendingEvents() {
+        User mockUserParamsOne = createUserParams(100, "aManWithADecision", "mockPassword", "manofthehour@validemail.com", new ArrayList<String>());
+        User mockUserParamsTwo = createUserParams(100, "aWomanWithADecision", "mockPassword", "womanofthehour@validemail.com", new ArrayList<String>());
+        User mockHostParams = createUserParams(100, "desperateHost", "mockPassword", "ineedfriends@validemail.com", new ArrayList<String>());
+
+        User host = userService.createUser(mockHostParams);
+        User userOne = userService.createUser(mockUserParamsOne);
+        User userTwo = userService.createUser(mockUserParamsTwo);
+
+        Event mockPendingEventOne = createEventParams("RandomEvent1", host.getUsername(), new Date(20500810), 1, false, new HashSet<String>(), new HashSet<String>());
+        Event mockPendingEventTwo = createEventParams("RandomEvent2", host.getUsername(), new Date(20500811), 1, false, new HashSet<String>(), new HashSet<String>());
+        Event mockPendingEventThree = createEventParams("RandomEvent3", host.getUsername(), new Date(20500812), 1, false, new HashSet<String>(), new HashSet<String>());
+
+        Event eventOne = eventService.createEvent(mockPendingEventOne);
+        Event eventTwo = eventService.createEvent(mockPendingEventTwo);
+        Event eventThree = eventService.createEvent(mockPendingEventThree);
+
+        Guest userOneEventOne = createGuest(userOne.getUsername(), eventOne.getId());
+        Guest userOneEventTwo = createGuest(userOne.getUsername(), eventTwo.getId());
+        Guest userOneEventThree = createGuest(userOne.getUsername(), eventThree.getId());
+        Guest userTwoEventOne = createGuest(userTwo.getUsername(), eventOne.getId());
+        Guest userTwoEventTwo = createGuest(userTwo.getUsername(), eventTwo.getId());
+        Guest userTwoEventThree = createGuest(userTwo.getUsername(), eventThree.getId());
+
+        List<Guest> eventOneGuests = new ArrayList<Guest>();
+        eventOneGuests.add(userOneEventOne);
+        eventOneGuests.add(userTwoEventOne);
+
+        List<Guest> eventTwoGuests = new ArrayList<Guest>();
+        eventTwoGuests.add(userOneEventTwo);
+        eventTwoGuests.add(userTwoEventTwo);
+
+        List<Guest> eventThreeGuests = new ArrayList<Guest>();
+        eventThreeGuests.add(userOneEventThree);
+        eventThreeGuests.add(userTwoEventThree);
+
+        eventOne = eventService.addInvitees(eventOneGuests);
+        eventTwo = eventService.addInvitees(eventTwoGuests);
+        eventThree = eventService.addInvitees(eventThreeGuests);
+
+        userOne = userService.findByUsername(userOne);
+        userTwo = userService.findByUsername(userTwo);
+
+        List<String> expectedEventInvitees = new ArrayList<String>();
+        expectedEventInvitees.add(userOne.getUsername());
+        expectedEventInvitees.add(userTwo.getUsername());
+
+        List<Integer> expectedUserPendingEvents = new ArrayList<Integer>();
+        expectedUserPendingEvents.add(eventOne.getId());
+        expectedUserPendingEvents.add(eventTwo.getId());
+        expectedUserPendingEvents.add(eventThree.getId());
+
+        List<User> actualEventOneInvitees = eventService.getInvitees(eventOne);
+        List<User> actualEventTwoInvitees = eventService.getInvitees(eventTwo);
+        List<User> actualEventThreeInvitees = eventService.getInvitees(eventThree);
+        
+        assertTrue(actualEventOneInvitees.size() == expectedEventInvitees.size());
+        assertTrue(actualEventTwoInvitees.size() == expectedEventInvitees.size());
+        assertTrue(actualEventThreeInvitees.size() == expectedEventInvitees.size());
+        
+        assertTrue(userOne.getEvents().isEmpty());
+        assertTrue(userTwo.getEvents().isEmpty());
+
+        assertTrue(userOne.getPendingEvents().size() == expectedUserPendingEvents.size());
+        assertTrue(userTwo.getPendingEvents().size() == expectedUserPendingEvents.size());
+
+        for (User invitee : actualEventOneInvitees) {
+            assertTrue(expectedEventInvitees.contains(invitee.getUsername()));
+        }
+
+        for (int i = 0; i < expectedUserPendingEvents.size(); i++) {
+            assertTrue(userOne.getPendingEvents().get(i) == expectedUserPendingEvents.get(i));
+            assertTrue(userTwo.getPendingEvents().get(i) == expectedUserPendingEvents.get(i));
+        }
+
+        userService.acceptPendingEvent(userOneEventOne);
+        userService.acceptPendingEvent(userOneEventTwo);
+        userService.rejectPendingEvent(userOneEventThree);
+
+        userService.rejectPendingEvent(userTwoEventOne);
+        userService.acceptPendingEvent(userTwoEventTwo);
+        userService.acceptPendingEvent(userTwoEventThree);
+
+        userOne = userService.findByUsername(userOne);
+        userTwo = userService.findByUsername(userTwo);
+
+        eventOne = eventService.getEvent(eventOne);
+        eventTwo = eventService.getEvent(eventTwo);
+        eventThree = eventService.getEvent(eventThree);
+
+        List<User> expectedEventOneConfirmedInvitees = new ArrayList<User>();
+        expectedEventOneConfirmedInvitees.add(userOne);
+
+        List<User> expectedEventTwoConfirmedInvitees = new ArrayList<User>();
+        expectedEventTwoConfirmedInvitees.add(userOne);
+        expectedEventTwoConfirmedInvitees.add(userTwo);
+
+        List<User> expectedEventThreeConfirmedInvitees = new ArrayList<User>();
+        expectedEventThreeConfirmedInvitees.add(userTwo);
+
+        List<Integer> expectedUserOneAcceptedEvents = new ArrayList<Integer>();
+        expectedUserOneAcceptedEvents.add(eventOne.getId());
+        expectedUserOneAcceptedEvents.add(eventTwo.getId());
+
+        List<Integer> expectedUserTwoAcceptedEvents = new ArrayList<Integer>();
+        expectedUserTwoAcceptedEvents.add(eventTwo.getId());
+        expectedUserTwoAcceptedEvents.add(eventThree.getId());
+        
+        List<User> actualEventOneConfirmedInvitees = eventService.getConfirmedInvitees(eventOne);
+        List<User> actualEventTwoConfirmedInvitees = eventService.getConfirmedInvitees(eventTwo);
+        List<User> actualEventThreeConfirmedInvitees = eventService.getConfirmedInvitees(eventThree);
+
+        assertTrue(userOne.getPendingEvents().isEmpty());
+        assertTrue(userTwo.getPendingEvents().isEmpty());
+
+        assertTrue(userOne.getEvents().size() == expectedUserOneAcceptedEvents.size());
+        assertTrue(userTwo.getEvents().size() == expectedUserTwoAcceptedEvents.size());
+
+        assertTrue(eventOne.getConfirmedInvitees().size() == expectedEventOneConfirmedInvitees.size());
+        assertTrue(eventTwo.getConfirmedInvitees().size() == expectedEventTwoConfirmedInvitees.size());
+        assertTrue(eventThree.getConfirmedInvitees().size() == expectedEventThreeConfirmedInvitees.size());
+
+        for (int i = 0; i < expectedUserOneAcceptedEvents.size(); i++) {
+            assertTrue(userOne.getEvents().get(i) == expectedUserOneAcceptedEvents.get(i));
+        }
+
+        for (int i = 0; i < expectedUserTwoAcceptedEvents.size(); i++) {
+            assertTrue(userTwo.getEvents().get(i) == expectedUserTwoAcceptedEvents.get(i));
+        }
+
+        for (User invitee : expectedEventOneConfirmedInvitees) {
+            assertTrue(actualEventOneConfirmedInvitees.contains(invitee));
+        }
+
+        for (User invitee : expectedEventTwoConfirmedInvitees) {
+            assertTrue(actualEventTwoConfirmedInvitees.contains(invitee));
+        }
+
+        for (User invitee : expectedEventThreeConfirmedInvitees) {
+            assertTrue(actualEventThreeConfirmedInvitees.contains(invitee));
+        }
+
+    }
+    
+    @Test
+    public void acceptPendingEventAsHost() {
+    	try {
+    		User mockUserParams = createUserParams(100, "oneManArmy", "mockPassword", "acceptself@validemail.com", new ArrayList<String>());
+    		Event mockEventParams = createEventParams("Special Day", mockUserParams.getUsername(), new Date(20500810), 1, false, new HashSet<String>(), new HashSet<String>());
+    		
+    		User user = userService.createUser(mockUserParams);
+    		Event event = eventService.createEvent(mockEventParams);
+    		
+    		Guest acceptParam = createGuest(user.getUsername(), event.getId());
+    		userService.acceptPendingEvent(acceptParam);
+    	} catch (RuntimeException re) {
+    		assertTrue(re.getMessage().contains("is the host of the event and so cannot accept or reject an invite to this event"));
+    	}
+    }
+    
+    @Test
+    public void rejectPendingEventAsHost() {
+    	try {
+    		User mockUserParams = createUserParams(100, "selfMockery", "mockPassword", "rejectself@validemail.com", new ArrayList<String>());
+    		Event mockEventParams = createEventParams("Same", mockUserParams.getUsername(), new Date(20500810), 1, false, new HashSet<String>(), new HashSet<String>());
+    		
+    		User user = userService.createUser(mockUserParams);
+    		Event event = eventService.createEvent(mockEventParams);
+    		
+    		Guest rejectParam = createGuest(user.getUsername(), event.getId());
+    		userService.rejectPendingEvent(rejectParam);
+    	} catch (RuntimeException re) {
+    		assertTrue(re.getMessage().contains("is the host of the event and so cannot accept or reject an invite to this event"));
+    	}
+    }
+
     private User createUserParams(int id, String username, String password, String email, List<String> friends) {
         User mockUserParams = new User();
         // Do NOT change the id field of a User entity; id is a primary key automatically generated
@@ -135,6 +278,25 @@ public class CrossServiceTests {
         mockUserParams.setFriends(friends);
 
         return mockUserParams;
+    }
+
+    private Event createEventParams(String name, String host, Date startDate, int duration, boolean isFinalized, Set<String> invitees, Set<String> confirmedInvitees) {
+        Event mockEventParams = new Event();
+        mockEventParams.setName(name);
+        mockEventParams.setHost(host);
+        mockEventParams.setStartDate(startDate);
+        mockEventParams.setDuration(duration);
+        mockEventParams.setIsFinalized(isFinalized);
+        mockEventParams.setInvitees(invitees);
+        mockEventParams.setConfirmedInvitees(confirmedInvitees);
+        return mockEventParams;
+    }
+
+    private Guest createGuest(String username, int eventId) {
+        Guest guest = new Guest();
+        guest.setUsername(username);
+        guest.setEventId(eventId);
+        return guest;
     }
 
 }

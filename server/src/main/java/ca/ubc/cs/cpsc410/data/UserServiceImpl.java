@@ -252,9 +252,10 @@ public class UserServiceImpl implements UserService {
             if (existingUser.getUsername().equals(guest.getUsername())) {
                 existingUser.getEvents().add(guest.getEventId());
                 removeAndSaveEventId(existingUser, guest);
+                break;
             }
         }
-        if (existingEvent.getId() == guest.getEventId()) {
+        if (existingEvent.getId() == guest.getEventId() && !existingEvent.getConfirmedInvitees().contains(guest.getUsername())) {
             existingEvent.getConfirmedInvitees().add(guest.getUsername());
             eventRepository.save(existingEvent);
         }
@@ -273,6 +274,7 @@ public class UserServiceImpl implements UserService {
         for (User existingUser : existingUsers) {
             if (existingUser.getUsername().equals(guest.getUsername())) {
                 removeAndSaveEventId(existingUser, guest);
+                break;
             }
         }
     }

@@ -38,10 +38,6 @@ public class Guest {
         this.eventId = eventId;
     }
 
-    public void setResponse(String response) {
-        this.response = response;
-    }
-
     public String getUsername() {
         return username;
     }
@@ -50,8 +46,5 @@ public class Guest {
         return eventId;
     }
 
-    public String getResponse() {
-        return response;
-    }
 
 }

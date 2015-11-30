@@ -88,8 +88,7 @@ public class FacebookServiceImpl implements FacebookService {
                     }
                     Object description = extraData.get("description");
                     if (description != null) {
-                        // max length for description field is set to 65535 bytes in our Event class
-                        wesyncEvent.setDescription(description.toString().substring(0, Math.min(description.toString().length(), 65535)));
+                        wesyncEvent.setDescription(description.toString());
                     }
                 }
                 Event savedWesyncEvent = eventRepository.save(wesyncEvent);

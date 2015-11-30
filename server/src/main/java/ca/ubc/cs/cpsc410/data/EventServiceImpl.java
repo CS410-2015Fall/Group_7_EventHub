@@ -305,12 +305,12 @@ public class EventServiceImpl implements EventService {
         Date endTime = new Date(startTime.getTime() + (duration * 60000));
         return endTime;
     }
-    
+
     private Date setNewStartTime(Date startTime, int duration) {
         // if the startTime is before 8am we set the time to 8:00 am
         Calendar startTimeCal = Calendar.getInstance();
         startTimeCal.setTime(startTime);
-        startTimeCal.setTimeZone(TimeZone.getTimeZone("UTC"));
+        startTimeCal.setTimeZone(TimeZone.getTimeZone("America/Los_Angeles"));
         if (startTimeCal.get(Calendar.HOUR_OF_DAY) < 8) {
             startTimeCal.set(Calendar.HOUR_OF_DAY, 8);
             startTimeCal.set(Calendar.MINUTE, 0);
@@ -318,7 +318,7 @@ public class EventServiceImpl implements EventService {
         }
         Calendar endTimeCal = Calendar.getInstance();
         endTimeCal.setTime(calculateEndTime(startTime, duration));
-        endTimeCal.setTimeZone(TimeZone.getTimeZone("UTC"));
+        endTimeCal.setTimeZone(TimeZone.getTimeZone("America/Los_Angeles"));
         // if the endTime is after 10pm we set the day to the next day and set the time to 8:00 am
         if (endTimeCal.get(Calendar.HOUR_OF_DAY) > 22) {
             startTimeCal.add(Calendar.DATE, 1);
