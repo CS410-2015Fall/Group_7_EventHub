@@ -112,7 +112,10 @@ public class EventServiceImpl implements EventService {
             }
             existingEvent.setInvitees(null);
             existingEvent.setIsFinalized(true);
-            sendEmail(existingEvent);
+            // only send email if not on Travis
+            if (System.getenv("TRAVIS") == null) {
+                sendEmail(existingEvent);
+            }
             return eventRepository.save(existingEvent);
         }
         throw new RuntimeException(String.format(
