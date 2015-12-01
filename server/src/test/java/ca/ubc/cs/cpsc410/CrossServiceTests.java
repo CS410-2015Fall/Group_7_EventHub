@@ -38,8 +38,8 @@ public class CrossServiceTests {
         List<Event> expectedUserEvents = new ArrayList<Event>();
         List<Event> expectedUserPendingEvents = new ArrayList<Event>();
 
-        User mockUserParams = createUserParams(100, "mrPopular", "mockPassword", "popular@validemail.com", new ArrayList<String>());
-        User mockHostParams = createUserParams(100, "host", "mockPassword", "host@validemail.com", new ArrayList<String>());
+        User mockUserParams = createUserParams(100, "mrPopular", "mockPassword", "popular@contoso.com", new ArrayList<String>());
+        User mockHostParams = createUserParams(100, "host", "mockPassword", "host@contoso.com", new ArrayList<String>());
 
         User host = userService.createUser(mockHostParams);
 
@@ -95,9 +95,9 @@ public class CrossServiceTests {
 
     @Test
     public void addInviteesAndHaveUsersAcceptAndRejectPendingEvents() {
-        User mockUserParamsOne = createUserParams(100, "aManWithADecision", "mockPassword", "manofthehour@validemail.com", new ArrayList<String>());
-        User mockUserParamsTwo = createUserParams(100, "aWomanWithADecision", "mockPassword", "womanofthehour@validemail.com", new ArrayList<String>());
-        User mockHostParams = createUserParams(100, "desperateHost", "mockPassword", "ineedfriends@validemail.com", new ArrayList<String>());
+        User mockUserParamsOne = createUserParams(100, "aManWithADecision", "mockPassword", "manofthehour@contoso.com", new ArrayList<String>());
+        User mockUserParamsTwo = createUserParams(100, "aWomanWithADecision", "mockPassword", "womanofthehour@contoso.com", new ArrayList<String>());
+        User mockHostParams = createUserParams(100, "desperateHost", "mockPassword", "ineedfriends@contoso.com", new ArrayList<String>());
 
         User host = userService.createUser(mockHostParams);
         User userOne = userService.createUser(mockUserParamsOne);
@@ -241,7 +241,7 @@ public class CrossServiceTests {
     @Test
     public void acceptPendingEventAsHost() {
     	try {
-    		User mockUserParams = createUserParams(100, "oneManArmy", "mockPassword", "acceptself@validemail.com", new ArrayList<String>());
+    		User mockUserParams = createUserParams(100, "oneManArmy", "mockPassword", "acceptself@contoso.com", new ArrayList<String>());
     		Event mockEventParams = createEventParams("Special Day", mockUserParams.getUsername(), new Date(20500810), 1, false, new HashSet<String>(), new HashSet<String>());
     		
     		User user = userService.createUser(mockUserParams);
@@ -257,7 +257,7 @@ public class CrossServiceTests {
     @Test
     public void rejectPendingEventAsHost() {
     	try {
-    		User mockUserParams = createUserParams(100, "selfMockery", "mockPassword", "rejectself@validemail.com", new ArrayList<String>());
+    		User mockUserParams = createUserParams(100, "selfMockery", "mockPassword", "rejectself@contoso.com", new ArrayList<String>());
     		Event mockEventParams = createEventParams("Same", mockUserParams.getUsername(), new Date(20500810), 1, false, new HashSet<String>(), new HashSet<String>());
     		
     		User user = userService.createUser(mockUserParams);
@@ -272,9 +272,9 @@ public class CrossServiceTests {
     
     @Test
     public void confirmAutoAddingInviteesEventsAndCancellingEvent() {
-    	User mockUserParamsOne = createUserParams(100, "inviteeGuy", "mockPassword", "inviteeguy@validemail.com", new ArrayList<String>());
-    	User mockUserParamsTwo = createUserParams(100, "inviteeGal", "mockPassword", "inviteegal@validemail.com", new ArrayList<String>());
-    	User mockHostParams = createUserParams(100, "someKindOfHost", "mockPassword", "somekindofhost@validemail.com", new ArrayList<String>());
+    	User mockUserParamsOne = createUserParams(100, "inviteeGuy", "mockPassword", "inviteeguy@contoso.com", new ArrayList<String>());
+    	User mockUserParamsTwo = createUserParams(100, "inviteeGal", "mockPassword", "inviteegal@contoso.com", new ArrayList<String>());
+    	User mockHostParams = createUserParams(100, "someKindOfHost", "mockPassword", "somekindofhost@contoso.com", new ArrayList<String>());
     	
     	User userOne = userService.createUser(mockUserParamsOne);
     	User userTwo = userService.createUser(mockUserParamsTwo);
@@ -310,9 +310,9 @@ public class CrossServiceTests {
     
     @Test
     public void finalizeEventWithInvitees() {
-    	User mockUserParamsOne = createUserParams(100, "firstInvitee", "mockPassword", "firstinvitee@validemail.com", new ArrayList<String>());
-    	User mockUserParamsTwo = createUserParams(100, "secondInvitee", "mockPassword", "secondinvitee@validemail.com", new ArrayList<String>());
-    	User mockHostParams = createUserParams(100, "theOnlyHost", "mockPassword", "theonlyhost@validemail.com", new ArrayList<String>());
+    	User mockUserParamsOne = createUserParams(100, "firstInvitee", "mockPassword", "firstinvitee@contoso.com", new ArrayList<String>());
+    	User mockUserParamsTwo = createUserParams(100, "secondInvitee", "mockPassword", "secondinvitee@contoso.com", new ArrayList<String>());
+    	User mockHostParams = createUserParams(100, "theOnlyHost", "mockPassword", "theonlyhost@contoso.com", new ArrayList<String>());
     	
     	User userOne = userService.createUser(mockUserParamsOne);
     	User userTwo = userService.createUser(mockUserParamsTwo);
@@ -344,9 +344,9 @@ public class CrossServiceTests {
     
     @Test 
     public void findingTimeForEventWithUsersWithEvents() {
-    	User mockUserParamsOne = createUserParams(100, "guyWithEvents", "mockPassword", "guywithevents@validemail.com", new ArrayList<String>());
-    	User mockUserParamsTwo = createUserParams(100, "girlWithEvents", "mockPassword", "girlwithevents@validemail.com", new ArrayList<String>());
-    	User mockUserParamsThree = createUserParams(100, "hostWithEvents", "mockPassword", "hostwithevents@validemail.com", new ArrayList<String>());
+    	User mockUserParamsOne = createUserParams(100, "guyWithEvents", "mockPassword", "guywithevents@contoso.com", new ArrayList<String>());
+    	User mockUserParamsTwo = createUserParams(100, "girlWithEvents", "mockPassword", "girlwithevents@contoso.com", new ArrayList<String>());
+    	User mockUserParamsThree = createUserParams(100, "hostWithEvents", "mockPassword", "hostwithevents@contoso.com", new ArrayList<String>());
     	
     	User userOne = userService.createUser(mockUserParamsOne);
     	User userTwo = userService.createUser(mockUserParamsTwo);
@@ -389,7 +389,7 @@ public class CrossServiceTests {
     
     @Test
     public void findTimeForFinalizedEvent() {
-    	User mockHostParams = createUserParams(100, "thatOneHost", "mockPassword", "thatonehost@validemail.com", new ArrayList<String>());
+    	User mockHostParams = createUserParams(100, "thatOneHost", "mockPassword", "thatonehost@contoso.com", new ArrayList<String>());
     	User host = userService.createUser(mockHostParams);
     	
     	Event eventParams = createEventParams("that one event", host.getUsername(), new Date(), 1, true, new HashSet<String>(), new HashSet<String>());
@@ -416,7 +416,7 @@ public class CrossServiceTests {
     @Test
     public void addHostAsInvitee() {
     	try {
-    		User mockHostParams = createUserParams(100, "inviteMyself", "mockPassword", "invitemyself@validemail.com", new ArrayList<String>());
+    		User mockHostParams = createUserParams(100, "inviteMyself", "mockPassword", "invitemyself@contoso.com", new ArrayList<String>());
     		User host = userService.createUser(mockHostParams);
     		
     		Event mockEventParams = createEventParams("Special Day", host.getUsername(), new Date(20500810), 1, false, new HashSet<String>(), new HashSet<String>());
@@ -435,8 +435,8 @@ public class CrossServiceTests {
     @Test
     public void inviteeGuestsHaveDifferentEventIds() {
     	try {
-    		User mockUserParams = createUserParams(100, "randomDummy", "mockPassword", "randomdummy@validemail.com", new ArrayList<String>());
-    		User mockHostParams = createUserParams(100, "messyHost", "mockPassword", "messyhost@validemail.com", new ArrayList<String>());
+    		User mockUserParams = createUserParams(100, "randomDummy", "mockPassword", "randomdummy@contoso.com", new ArrayList<String>());
+    		User mockHostParams = createUserParams(100, "messyHost", "mockPassword", "messyhost@contoso.com", new ArrayList<String>());
     		
     		User host = userService.createUser(mockHostParams);
     		User user = userService.createUser(mockUserParams);

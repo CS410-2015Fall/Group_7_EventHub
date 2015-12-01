@@ -298,10 +298,10 @@ public class UserServiceTests {
         List<User> addFriendTwoParam = new ArrayList<User>();
         List<User> addFriendThreeParam = new ArrayList<User>();
         List<User> expectedFriendsList = new ArrayList<User>();
-        User friendOneParams = createUserParams(100, "theSidekick", "mockPassword", "sidekick@validemail.com", new ArrayList<String>());
-        User friendTwoParams = createUserParams(100, "theLackey", "mockPassword", "lackey@validemail.com", new ArrayList<String>());
-        User friendThreeParams = createUserParams(100, "theAntagonist", "mockPassword", "antagonist@validemail.com", new ArrayList<String>());
-        User mockUserParams = createUserParams(100, "theMainProtagonist", "mockPassword", "protagonist@validemail.com", new ArrayList<String>());
+        User friendOneParams = createUserParams(100, "theSidekick", "mockPassword", "sidekick@contoso.com", new ArrayList<String>());
+        User friendTwoParams = createUserParams(100, "theLackey", "mockPassword", "lackey@contoso.com", new ArrayList<String>());
+        User friendThreeParams = createUserParams(100, "theAntagonist", "mockPassword", "antagonist@contoso.com", new ArrayList<String>());
+        User mockUserParams = createUserParams(100, "theMainProtagonist", "mockPassword", "protagonist@contoso.com", new ArrayList<String>());
 
         User friendOne = service.createUser(friendOneParams);
         User friendTwo = service.createUser(friendTwoParams);
@@ -342,7 +342,7 @@ public class UserServiceTests {
     @Test
     public void acceptNonexistantPendingEvent() {
     	try {
-    		User mockUserParams = createUserParams(100, "theLoner", "mockPassword", "acceptnothing@validemail.com", new ArrayList<String>());
+    		User mockUserParams = createUserParams(100, "theLoner", "mockPassword", "acceptnothing@contoso.com", new ArrayList<String>());
     		User user = service.createUser(mockUserParams);
     		
     		Guest acceptParam = createGuest(user.getUsername(), 9999999);
@@ -355,7 +355,7 @@ public class UserServiceTests {
     @Test
     public void rejectNonexistantPendingEvent() {
     	try {
-    		User mockUserParams = createUserParams(100, "theSavage", "mockPassword", "rejectnothing@validemail.com", new ArrayList<String>());
+    		User mockUserParams = createUserParams(100, "theSavage", "mockPassword", "rejectnothing@contoso.com", new ArrayList<String>());
     		User user = service.createUser(mockUserParams);
     		
     		Guest rejectParam = createGuest(user.getUsername(), 9999999);
